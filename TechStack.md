@@ -6,8 +6,12 @@
 
 ## Backend
 
-* Java / Python / Javascript
+* Java / Python
 
 ## DB
 
 * MySql Database
+
+    - Store players scores
+    - Store player leaderboards
+    - Store user login
