@@ -218,20 +218,20 @@ stateDiagram
 sequenceDiagram
 
 participant ReactFrontend
-participant DjangoBackend
+participant JavaSpringBackend
 participant MySQLDatabase
 
-ReactFrontend ->> DjangoBackend: HTTP Request (e.g., GET /api/data)
-activate DjangoBackend
+ReactFrontend ->> JavaSpringBackend: HTTP Request (e.g., GET /api/data)
+activate JavaSpringBackend
 
-DjangoBackend ->> MySQLDatabase: Query (e.g., SELECT * FROM data_table)
+JavaSpringBackend ->> MySQLDatabase: Query (e.g., SELECT * FROM data_table)
 activate MySQLDatabase
 
-MySQLDatabase -->> DjangoBackend: Result Set
+MySQLDatabase -->> JavaSpringBackend: Result Set
 deactivate MySQLDatabase
 
-DjangoBackend -->> ReactFrontend: JSON Response
-deactivate DjangoBackend
+JavaSpringBackend -->> ReactFrontend: JSON Response
+deactivate JavaSpringBackend
 ```
 
 ### Standards & Conventions
