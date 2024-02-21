@@ -1,8 +1,6 @@
 # Requirements and Specification Document
 
-## TeamName
-
-<!--The name of your team.-->
+## Full House of Badgers
 
 ### Project Abstract
 
