@@ -6,13 +6,13 @@
 
 <!--A one paragraph summary of what the software will do.-->
 
-A card game engine that allows users to play a variety of card games, starting with Eucre. Allows players to log in to an account and stores leaderboards for players in a MySQL database.
-
-This is an example paragraph written in markdown. You can use *italics*, **bold**, and other formatting options. You can also <u>use inline html</u> to format your text. The example sections included in this document are not necessarily all the sections you will want, and it is possible that you won't use all the one's provided. It is your responsibility to create a document that adequately conveys all the information about your project specifications and requirements.
-
-Please view this file's source to see `<!--comments-->` with guidance on how you might use the different sections of this document. 
+The card game engine is a piece of software designed to cater to the players, offering a wide variety of card games. Players are welcomed into a dynamic virtual arena where they can engage in thrilling matches against friends or challengers from around the globe. The users will interact with a React frontend that communicates with our java backend card engine. The engine will connect to a MySQL database pod to store user logins as well as user scores and leaderboards.
 
 ### Customer
+
+The customer for this software in general is anyone who wants to play card games like Eucre socially.
+
+Customer from 506 staff:
 
 <!--A brief description of the customer for this software, both in general (the population who might eventually use such a system) and specifically for this document (the customer(s) who informed this document). Every project will have a customer from the CS506 instructional staff. Requirements should not be derived simply from discussion among team members. Ideally your customer should not only talk to you about requirements but also be excited later in the semester to use the system.-->
 
