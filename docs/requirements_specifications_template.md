@@ -6,6 +6,8 @@
 
 <!--A one paragraph summary of what the software will do.-->
 
+A card game engine that allows users to play a variety of card games, starting with Eucre. Allows players to log in to an account and stores leaderboards for players in a MySQL database.
+
 This is an example paragraph written in markdown. You can use *italics*, **bold**, and other formatting options. You can also <u>use inline html</u> to format your text. The example sections included in this document are not necessarily all the sections you will want, and it is possible that you won't use all the one's provided. It is your responsibility to create a document that adequately conveys all the information about your project specifications and requirements.
 
 Please view this file's source to see `<!--comments-->` with guidance on how you might use the different sections of this document. 
@@ -85,8 +87,6 @@ Images can be included with `![alt_text](image_path)`
 You can make headings at different levels by writing `# Heading` with the number of `#` corresponding to the heading level (e.g. `## h2`).
 
 #### Technology Stack
-
-Here are some sample technology stacks that you can use for inspiration:
 
 ```mermaid
 flowchart RL
@@ -236,4 +236,10 @@ deactivate JavaSpringBackend
 
 ### Standards & Conventions
 
+- Coding Standards Doc Goes Here
+
 <!--Here you can document your coding standards and conventions. This includes decisions about naming, style guides, etc.-->
+
+### Architecture Diagram
+
+![Architecture Diagram](./sysArchDiag.jpg)
