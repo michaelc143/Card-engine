@@ -1,0 +1,177 @@
+Coding Standard Document
+Java Backend
+
+-Naming Conventions
+We generally follow the camel case convention in Java programming. It means that all the classes and interfaces should be nouns, in mixed cases with the first letter of each internal word capitalized. All the methods should be verbs, in mixed case with the first letter lowercase and with the first letter of each internal word capitalized. The variables should be meaningful and one character variable names must be avoided. A constant variable is defined in the capital case. 
+
+All the classes and interfaces should be nouns:
+Example:
+Line, AudioSystem
+
+All the methods should be verbs, in mixed case with the first letter lowercase and with the first letter of each internal word capitalized:
+Example:
+getName(), computeTotalWidth()
+
+A constant variable is defined in the capital case:
+Example:
+MAX_ITERATIONS, COLOR_RED
+
+-Curly Braces
+Curly braces are used to define the bodies of classes, methods, and loops. There are two standard formats for the usage of curly braces, either of which is used. 
+* No blank lines should be present after the opening brace or before the closing brace.
+* A curly brace is applied at the end of the line that starts the class, method, loop, etc., and the closing brace is on a line by itself, lined up vertically with the start of the first line. For example:
+Example:
+class Badgers {
+   ... Badgers(){
+    // Constructor
+       ...
+   }
+
+   int Badger(int a, float b){
+   
+       ... for (int i = 0; i < Field; i++){
+           ....
+       }
+   }
+}
+
+* Each curly brace is added on a new line, and the pair is aligned vertically. The preceding code snippet in this format would be as follows:
+Example:
+class Badgers  
+{
+   ... Badgers()
+   { // Constructor
+       ...
+   }
+   int Badger(int a, float b)
+   {
+       ... for (int i = 0; i < Field; i++)
+       {
+           ....
+       }...;
+   }
+}
+
+-Indentation: The unit of indentation should be 4 spaces. Tab-stops should be set exactly every 8 spaces. All indentation must be achieved by the space character and tab characters must not exist in the resultant source file. The recognized standard for increasing readability of each line is:
+* Apply indentation to alike items in a vertical list (such as end-of-line comments, and identifiers in declarations).
+* Surround the binary operators (including assignment) by spaces.
+* Follow a semicolon or comma by a space.
+* Add a space between a keyword(“if”, “while”, “return”, “catch”, “switch”, “for”) and a succeeding parenthesis.
+* Surplus parentheses can also help to highlight the structure of expressions (but avoid using too many nested parentheses).
+* Insert blank lines to differentiate between the important parts of the code.
+Example:
+class Badgers {
+   private int s;
+   private double d;
+
+   Badgers()
+   { // Constructor
+       s = 1;
+       d = 3.14;
+   }
+
+   int Badger(int a, float b)
+   {
+       // Must initialize local variables
+       int l = 0;
+       float le = 1;
+       int n = 10;
+       l = n - 2;
+       le = l + b * 3;
+
+       for (int i = 0; i & lt; n; i++) {
+           l = l * 2;
+           l = l - n;
+       }
+       return l + a;
+   }
+}
+
+-White Space: White spaces also play a major part in readability as follows: 
+* Operators should be surrounded by a space character. 
+
+Example:
+The operation should be written as: 
+a = (b + c) * d;
+And not as: 
+a=(b+c)*d 
+
+Reserved words of Java should be followed by white space. 
+
+Example:
+The loop must be initialized as: 
+while (true) {…} 
+And not as: 
+while(true){…} 
+
+* Commas should be followed by white space. 
+Example:
+The functions must be initialized as: 
+fun(a, b, c, d); 
+And not as: 
+fun(a, b, c, d); 
+
+* Colons should be surrounded by white space. 
+Example:
+The case statements must be initialized as: 
+case 100 : break; 
+And not as: 
+case 100:break; 
+
+* Semicolons in for statements should be followed by a space character.
+Example:
+The for loop must be initialized as: 
+for (i = 0; i < n; i++) 
+And not as: 
+for(i=0;i<n;i++) 
+
+-Comments: Java programs can have two types of comments. They are Implementation and Documentation. Comments should contain only the information that is relevant for reading and understanding the program. For example, information about how the package is built or in what directory it resides should not be included in the program as a comment.
+* Implementation Comments: Implementation comments are delimited by //. Java also allows the use of /*…*/ for implementation comments. Implementation comments are used for notes about a particular implementation or for temporarily removing code. Programs can have four styles of implementation comments: block, single-line, trailing, and temporarily removing code.
+* Block comments are used to provide descriptions of files, methods, data structures, and algorithms. Block comments may be used at the beginning of each file and before each method or within methods. Block comments inside a method should be indented to the same level as the code they describe. A block comment should have a blank line before its start unless it comes immediately after the start of a compound statement.
+Example:
+// block comment on line 1 
+// block comment on line 2 
+// block comment on line 3 
+
+* Single-line comments can appear on a single line indented to the level of the code that follows. If a comment cannot be written in a single line, it should follow the block comment format. A single-line comment should be preceded by a blank line unless it comes immediately after the start of a compound statement. 
+Example:
+a = 10; 
+b = 20;
+// a single-line comment 
+c = a * b; 
+
+* Trailing(very short) comments can appear on the same line of the code they describe but should be separated from the code at a far off distance. If more than one short comment appears in a section of related code, they should all be indented to the same tab setting. For example:
+if (a == 2) {
+   b = true; // special case
+}
+else {
+   c = isPrime(x); // works only for odd
+}
+
+* Temporarily removing code: The // delimiter can comment out a partial or a complete line. It can also be used in multiple lines to comment out entire sections of code. It is important to note that this should only be used temporarily while the code is in active development; the unused code should eventually be physically removed as it can make the source more difficult to maintain. 
+Example:
+if (a > 1) {
+b = a; // + 1;
+...
+}
+else {
+// b = 2;
+...
+}
+* Documentation Comments: Documentation comments describe Java classes, interfaces, constructors, methods, and fields. They are delimited by /**…*/. Note the double-asterisk (**) at the beginning with one comment per class, interface, or member. This comment should appear just before the declaration with no space between the comment and the code it refers to. Documentation comments can be extracted to HTML files using the javadoc tool. Javadoc of class members can be specified on a single line.
+Example:
+
+/** This is a java documentation comment */
+private int comments_;
+
+
+
+Reference:
+https://www.geeksforgeeks.org/coding-guidelines-in-java/
+https://se-education.org/guides/conventions/java/
+
+
+
+
+
+
