@@ -242,4 +242,4 @@ deactivate JavaSpringBackend
 
 ### Architecture Diagram
 
-![Architecture Diagram](./sysArchDiag.jpg)
+[Link to architecture diagram](https://drive.google.com/file/d/1oqKS26a37G5v7DhYKaEtYxw-6xVGIYjf/view?usp=sharing)
