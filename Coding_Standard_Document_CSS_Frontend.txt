@@ -1,5 +1,6 @@
 Coding Standard Document
 CSS Frontend
+
 -Structure
 There are plenty of different methods for structuring a stylesheet. With the CSS in core, it is important to retain a high degree of legibility. This enables subsequent contributors to have a clear understanding of the flow of the document.
 * Use tabs, not spaces, to indent each property.
