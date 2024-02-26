@@ -1,5 +1,6 @@
 Coding Standard Document
 Java Backend
+
 -Naming Conventions
 We generally follow the camel case convention in Java programming. It means that all the classes and interfaces should be nouns, in mixed cases with the first letter of each internal word capitalized. All the methods should be verbs, in mixed case with the first letter lowercase and with the first letter of each internal word capitalized. The variables should be meaningful and one character variable names must be avoided. A constant variable is defined in the capital case. 
 
