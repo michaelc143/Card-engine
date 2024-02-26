@@ -4,7 +4,7 @@ Team: Full House of Badgers
 List of Initial Roles:
 
 Tomas - Database and server
-Quinn - Backend/figma models
+Quinn - Backend/figma models/server
 Michael - Frontend/Backend
 Jeremiah - UI/Frontend
 Aidan - Backend/Game Logic
