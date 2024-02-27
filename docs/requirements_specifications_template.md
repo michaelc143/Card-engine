@@ -242,9 +242,14 @@ deactivate JavaBackend
 
 ### Standards & Conventions
 
-- Coding Standards Doc Goes Here
+[Coding Standards - HTML](./Coding%20Standards/Coding_Standard_Document_HTML_Frontend.txt)
 
-<!--Here you can document your coding standards and conventions. This includes decisions about naming, style guides, etc.-->
+[Coding Standards - Javascript](./Coding%20Standards/Coding_Standard_Document_Javascript_Frontend.txt)
+
+[Coding Standards - CSS](./Coding%20Standards/Coding_Standard_Document_CSS_Frontend.txt)
+
+[Coding Standards - Java](./Coding%20Standards/Coding_Standard_Document_Java_Backend.txt)
+
 
 ### Architecture Diagram
 
