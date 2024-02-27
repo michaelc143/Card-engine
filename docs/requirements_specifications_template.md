@@ -14,6 +14,12 @@ The customer for this software in general is anyone who wants to play card games
 
 Customer from 506 staff:
 
+### Tech Stack
+
+* Frontend: React
+* Backend: Java
+* Database: MySQL
+
 <!--A brief description of the customer for this software, both in general (the population who might eventually use such a system) and specifically for this document (the customer(s) who informed this document). Every project will have a customer from the CS506 instructional staff. Requirements should not be derived simply from discussion among team members. Ideally your customer should not only talk to you about requirements but also be excited later in the semester to use the system.-->
 
 ### User Requirements
@@ -95,7 +101,7 @@ subgraph Front End
 end
 	
 subgraph Back End
-	B(Java: Spring Boot)
+	B(Java)
 end
 	
 subgraph Database
@@ -218,20 +224,20 @@ stateDiagram
 sequenceDiagram
 
 participant ReactFrontend
-participant JavaSpringBackend
+participant JavaBackend
 participant MySQLDatabase
 
-ReactFrontend ->> JavaSpringBackend: HTTP Request (e.g., GET /api/data)
-activate JavaSpringBackend
+ReactFrontend ->> JavaBackend: HTTP Request (e.g., GET /api/data)
+activate JavaBackend
 
-JavaSpringBackend ->> MySQLDatabase: Query (e.g., SELECT * FROM data_table)
+JavaBackend ->> MySQLDatabase: Query (e.g., SELECT * FROM data_table)
 activate MySQLDatabase
 
-MySQLDatabase -->> JavaSpringBackend: Result Set
+MySQLDatabase -->> JavaBackend: Result Set
 deactivate MySQLDatabase
 
-JavaSpringBackend -->> ReactFrontend: JSON Response
-deactivate JavaSpringBackend
+JavaBackend -->> ReactFrontend: JSON Response
+deactivate JavaBackend
 ```
 
 ### Standards & Conventions
