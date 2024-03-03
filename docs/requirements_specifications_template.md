@@ -151,6 +151,19 @@ classDiagram
         - int currentPlayerIndex;
         - Round currentRound
         - List -Round- roundHistory
+        + Long getId()
+        + void setId(long id)
+        + List -Player- getPlayers()
+        + void setPlayers(List -Player- players)
+        + List -Card- getCards()
+        + void setCards(List -Card- cards)
+        + int getCurrentPlayerIndex()
+        + void setCurrentPlayerIndex(int index)
+        + Round getCurrentRound()
+        + void setCurrentRound(Round round)
+        + List -Round- getRounds()
+        + void setRounds(List -Round- rounds)
+
     }
     class Card {
         - Suit suit
@@ -171,7 +184,7 @@ classDiagram
         + Long getPlayerId()
     }
     class Round {
-        -  List -Card- deck;
+        - List -Card- deck;
         - List -Card- allCards;
         - List -Player- players;
         - Card.SUIT trump;
@@ -186,6 +199,37 @@ classDiagram
         - boolean dealerNeedsToDiscard;
         - Card turnedUpCard;
         - Card.SUIT[] callableSuits;
+        + List -Card- getDeck()
+        + List -Card- getAllCards()
+        + List -Player- getPlayers()
+        + Card.Suit getTrump()
+        + Trick getCurrentTrick()
+        + int[] getTrickCount()
+        + List -Trick- getTrickHistory()
+        + int getDealer()
+        + int getCallingTeam()
+        + boolean isInPreGameState()
+        + boolean isCardTurnedUp()
+        + boolean isStickTheDealer()
+        + boolean isDealerNeedsToDiscard()
+        + Card getTurnedUpCard()
+        + Card.Suit[] getCallableSuits()
+
+        + void setDeck(List -Card- deck)
+        + void setAllCards(List -Card- allCards)
+        + void setPlayers(List -Player- players)
+        + void setTrump(Card.Suit trump)
+        + void setCurrentTrick(Trick currentTrick)
+        + void setTrickCount(int[] trickCount)
+        + void setTrickHistory(List -Trick- trickHistory)
+        + void setDealer(int dealer)
+        + void setCallingTeam(int callingTeam)
+        + void setInPreGameState(boolean isInPreGameState)
+        + void setCardTurnedUp(boolean isCardTurnedUp)
+        + void setStickTheDealer(boolean isStickTheDealer)
+        + void setDealerNeedsToDiscard(boolean dealerNeedsToDiscard)
+        + void setTurnedUpCard(Card turnedUpCard)
+        + void setCallableSuits(Card.Suit[] callableSuits)
     }
     class Trick {
         - int leadingPlayer;
@@ -194,7 +238,22 @@ classDiagram
         - int currentWinner;
         - Card currentWinningCard;
         - Card.SUIT trump;
-        - ArrayList<Card> cardsPlayed;
+        - List -Card- cardsPlayed;
+        + int getLeadingPlayer()
+        + void setLeadingPlayer(int leadingPlayer)
+        + Card.SUIT getLeadingSuit()
+        + void setLeadingSuit(Card.SUIT leadingSuit)
+        + int getCurrentPlayer()
+        + void setCurrentPlayer(int currentPlayer)
+        + int getCurrentWinner()
+        + void setCurrentWinner(int currentWinner)
+        + Card getCurrentWinningCard()
+        + void setCurrentWinningCard(Card card)
+        + Card.SUIT getTrump()
+        + void setTrump(Card.SUIT trump)
+        + List -Card- getCardsPlayed()
+        + void setCardsPlayed(List -Card- cardsPlayed)
+
     }
     Game <|-- Card
     Game <|-- Player
