@@ -4,8 +4,6 @@
 
 ### Project Abstract
 
-<!--A one paragraph summary of what the software will do.-->
-
 The card game engine is a piece of software designed to cater to the players, offering a wide variety of card games. Players are welcomed into a dynamic virtual arena where they can engage in thrilling matches against friends or challengers from around the globe. The users will interact with a React frontend that communicates with our java backend card engine. The engine will connect to a MySQL database pod to store user logins as well as user scores and leaderboards.
 
 ### Customer
@@ -38,14 +36,6 @@ Here is a user requirements sample from [Crookshanks](https://learning-oreilly-c
 
 <div align="center"><small><i>Excerpt from Crookshanks Table 2-2 showing example user requirements for a timekeeping system</i></small></div>
 
-- You 
-  - Can
-    - Use
-- Bullet
-  - Points
-    - In
-    - Markdown
-
 ### Use Cases & User Stories
 
 <!--Use cases and user stories that support the user requirements in the previous section. The use cases should be based off user stories. Every major scenario should be represented by a use case, and every use case should say something not already illustrated by the other use cases. Diagrams (such as sequence charts) are encouraged. Ask the customer what are the most important use cases to implement by the deadline. You can have a total ordering, or mark use cases with “must have,” “useful,” or “optional.” For each use case you may list one or more concrete acceptance tests (concrete scenarios that the customer will try to see if the use case is implemented).-->
@@ -54,22 +44,18 @@ Here is a sample user story from [Clean Agile](https://learning-oreilly-com.ezpr
 
 > As the driver of a car, in order to increase my velocity, I will press my foot harder on the accelerator pedal.
 
-1. You
-   1. Can
-      1. Also
-2. Use
-   1. Numbered
-      1. Lists
-
 ### User Interface Requirements
 
 <!--Describes any customer user interface requirements including graphical user interface requirements as well as data exchange format requirements. This also should include necessary reporting and other forms of human readable input and output. This should focus on how the feature or product and user interact to create the desired workflow. Describing your intended interface as “easy” or “intuitive” will get you nowhere unless it is accompanied by details.-->
 
 <!--NOTE: Please include illustrations or screenshots of what your user interface would look like -- even if they’re rough -- and interleave it with your description.-->
 
-Images can be included with `![alt_text](image_path)`
+* Place user interface mockups here
 
 ### Security Requirements
+
+* Logins should be stored in the database with the passwords being hashed before being sent to the backend.
+* Anyone accessing the backend should be authenticated before sending requests.
 
 <!--Discuss what security requirements are necessary and why. Are there privacy or confidentiality issues? Is your system vulnerable to denial-of-service attacks?-->
 
@@ -82,7 +68,7 @@ Images can be included with `![alt_text](image_path)`
 | change |    how    | columns |
 | are    | justified |         |
 
-### Specification
+## Specification
 
 <!--A detailed specification of the system. UML, or other diagrams, such as finite automata, or other appropriate specification formalisms, are encouraged over natural language.-->
 
@@ -90,9 +76,7 @@ Images can be included with `![alt_text](image_path)`
 
 <!--Included below are some sample diagrams, including some example tech stack diagrams.-->
 
-You can make headings at different levels by writing `# Heading` with the number of `#` corresponding to the heading level (e.g. `## h2`).
-
-#### Technology Stack
+### Technology Stack
 
 ```mermaid
 flowchart RL
@@ -156,31 +140,66 @@ erDiagram
 
 ```mermaid
 ---
-title: Sample Class Diagram for Animal Program
+title: Class Diagrams (Game, Card, Player, Round, Trick)
 ---
 classDiagram
-    class Animal {
-        - String name
-        + Animal(String name)
-        + void setName(String name)
-        + String getName()
-        + void makeSound()
+    class Game {
+        - Long id
+        - List -Player- players;
+        - List -List-Card-- playersHands;
+        - List -Card- allCards;
+        - int currentPlayerIndex;
+        - Round currentRound
+        - List -Round- roundHistory
     }
-    class Dog {
-        + Dog(String name)
-        + void makeSound()
+    class Card {
+        - Suit suit
+        - Rank rank
+        - Enum Rank(NINE, TEN, JACK, QUEEN, KING, ACE)
+        - Enum Suit(HEARTS, DIAMONDS, CLUBS, SPADES)
+        + Suit getSuit()
+        + Rank getRank()
+        + void setRank(Rank rank)
+        + void setSuit(Suit suit)
     }
-    class Cat {
-        + Cat(String name)
-        + void makeSound()
+    class Player {
+        - Long id
+        - String playerName
+        + void setPlayerName(String playerName)
+        + void setPlayerId(Long id)
+        + String getPlayerName()
+        + Long getPlayerId()
     }
-    class Bird {
-        + Bird(String name)
-        + void makeSound()
+    class Round {
+        -  List -Card- deck;
+        - List -Card- allCards;
+        - List -Player- players;
+        - Card.SUIT trump;
+        - Trick currentTrick;
+        - int[] trickCount;
+        - List -Trick- trickHistory;
+        - int dealer;
+        - int callingTeam;
+        - boolean isInPreGameState;
+        - boolean isCardTurnedUp;
+        - boolean isStickTheDealer;
+        - boolean dealerNeedsToDiscard;
+        - Card turnedUpCard;
+        - Card.SUIT[] callableSuits;
     }
-    Animal <|-- Dog
-    Animal <|-- Cat
-    Animal <|-- Bird
+    class Trick {
+        - int leadingPlayer;
+        - Card.SUIT leadingSuit;
+        - int currentPlayer;
+        - int currentWinner;
+        - Card currentWinningCard;
+        - Card.SUIT trump;
+        - ArrayList<Card> cardsPlayed;
+    }
+    Game <|-- Card
+    Game <|-- Player
+    Game <|-- Round
+    Game <|-- Trick
 ```
 
 #### Flowchart
@@ -249,7 +268,6 @@ deactivate JavaBackend
 [Coding Standards - CSS](./Coding%20Standards/Coding_Standard_Document_CSS_Frontend.txt)
 
 [Coding Standards - Java](./Coding%20Standards/Coding_Standard_Document_Java_Backend.txt)
-
 
 ### Architecture Diagram
 
