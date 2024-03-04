@@ -178,10 +178,13 @@ classDiagram
     class Player {
         - Long id
         - String playerName
+        - List -Card- playerHand
         + void setPlayerName(String playerName)
         + void setPlayerId(Long id)
         + String getPlayerName()
         + Long getPlayerId()
+        + void setPlayerHand(List -Card- playerHand)
+        + List -Card- getPlayerHand()
     }
     class Round {
         - List -Card- deck;
