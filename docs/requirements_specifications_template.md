@@ -112,46 +112,6 @@ A <-->|"REST API"| B
 B <--> C
 ```
 
-#### Database
-
-```mermaid
----
-title: Sample Database ERD for an Order System
----
-erDiagram
-    Customer ||--o{ Order : "placed by"
-    Order ||--o{ OrderItem : "contains"
-    Product ||--o{ OrderItem : "included in"
-
-    Customer {
-        int customer_id PK
-        string name
-        string email
-        string phone
-    }
-
-    Order {
-        int order_id PK
-        int customer_id FK
-        string order_date
-        string status
-    }
-
-    Product {
-        int product_id PK
-        string name
-        string description
-        decimal price
-    }
-
-    OrderItem {
-        int order_item_id PK
-        int order_id FK
-        int product_id FK
-        int quantity
-    }
-```
-
 #### Class Diagram
 
 ```mermaid
@@ -254,3 +214,26 @@ deactivate JavaBackend
 ### Architecture Diagram
 
 [Link to architecture diagram](https://drive.google.com/file/d/1oqKS26a37G5v7DhYKaEtYxw-6xVGIYjf/view?usp=sharing)
+
+### Database
+
+```mermaid
+---
+Database ERD for card game engine
+---
+erDiagram
+    User ||--o{ EuchreStats : "created by"
+
+    User {
+        uuid user_id PK
+        string user_name
+        string email
+    }
+
+    EuchreStats {
+        uuid user_id PK FK
+        int high_score
+        date date_of_high_score
+    }
+```
+#### [Lucid Design of Database](https://lucid.app/lucidchart/38c7a343-541e-40ad-a2ea-9f5dfa94c63b/edit?viewport_loc=-932%2C-242%2C1696%2C782%2C0_0&invitationId=inv_97f3b8ff-9664-466a-b975-71f93ab525e1)
