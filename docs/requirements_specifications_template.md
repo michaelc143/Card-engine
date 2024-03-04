@@ -265,19 +265,26 @@ classDiagram
 
 ```mermaid
 ---
-title: Sample Program Flowchart
+title: Euchre Game Flowchart
 ---
+
 graph TD;
-    Start([Start]) --> Input_Data[/Input Data/];
-    Input_Data --> Process_Data[Process Data];
-    Process_Data --> Validate_Data{Validate Data};
-    Validate_Data -->|Valid| Process_Valid_Data[Process Valid Data];
-    Validate_Data -->|Invalid| Error_Message[/Error Message/];
-    Process_Valid_Data --> Analyze_Data[Analyze Data];
-    Analyze_Data --> Generate_Output[Generate Output];
-    Generate_Output --> Display_Output[/Display Output/];
-    Display_Output --> End([End]);
-    Error_Message --> End;
+    Start([Start]) --> Shuffle_Deck[/Shuffle Deck/];
+    Shuffle_Deck --> Deal_Cards[Deal Cards];
+    Deal_Cards --> Bid_Phase{Bid Phase};
+    Bid_Phase -->|Complete| Trump_Suit[Choose Trump Suit];
+    Bid_Phase -->|Incomplete| Pass_Round[Pass Round];
+    Trump_Suit --> Play_Phase{Play Phase};
+    Pass_Round -->|Not Last Round| Bid_Phase;
+    Pass_Round -->|Last Round| Score_Game[Score Game];
+    Play_Phase --> Play_Card[Play Card];
+    Play_Card -->|Not Last Trick| Next_Player[Next Player];
+    Play_Card -->|Last Trick| Score_Tricks[Score Tricks];
+    Next_Player --> Play_Phase;
+    Score_Tricks -->|Not Last Round| Next_Round[Next Round];
+    Score_Tricks -->|Last Round| Score_Game;
+    Next_Round --> Deal_Cards;
+    Score_Game --> End([End]);
 ```
 
 #### Behavior
