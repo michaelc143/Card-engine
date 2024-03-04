@@ -50,7 +50,7 @@ Here is a sample user story from [Clean Agile](https://learning-oreilly-com.ezpr
 
 <!--NOTE: Please include illustrations or screenshots of what your user interface would look like -- even if they’re rough -- and interleave it with your description.-->
 
-![Low fidelity prototype](./lowfidelityproto.jpg)
+![Low fidelity prototype](../frontend/Low-Fidelity-Prototype.jpg)
 
 ### Security Requirements
 
