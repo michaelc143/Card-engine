@@ -271,18 +271,20 @@ title: Euchre Game Flowchart
 graph TD;
     Start([Start]) --> Shuffle_Deck[/Shuffle Deck/];
     Shuffle_Deck --> Deal_Cards[Deal Cards];
-    Deal_Cards --> Bid_Phase{Bid Phase};
-    Bid_Phase -->|Complete| Trump_Suit[Choose Trump Suit];
-    Bid_Phase -->|Incomplete| Pass_Round[Pass Round];
-    Trump_Suit --> Play_Phase{Play Phase};
-    Pass_Round -->|Not Last Round| Bid_Phase;
-    Pass_Round -->|Last Round| Score_Game[Score Game];
+    Deal_Cards --> Bid_Phase_1{Bid Phase 1};
+    Bid_Phase_1 -->|Face-up Card| Trump_Face_Up[Select Face-up Card as Trump];
+    Trump_Face_Up -->|Suit Named| Play_Phase{Play Phase};
+    Trump_Face_Up -->|All Players Pass| Bid_Phase_2{Bid Phase 2};
+    Bid_Phase_2 -->|Someone Names Suit| Trump_Named_Suit[Name Suit as Trump];
+    Bid_Phase_2 -->|No Suit Named| End_Round[End Round No Points];
+    Trump_Named_Suit --> Play_Phase;
+    End_Round --> Deal_Cards;
     Play_Phase --> Play_Card[Play Card];
     Play_Card -->|Not Last Trick| Next_Player[Next Player];
     Play_Card -->|Last Trick| Score_Tricks[Score Tricks];
     Next_Player --> Play_Phase;
     Score_Tricks -->|Not Last Round| Next_Round[Next Round];
-    Score_Tricks -->|Last Round| Score_Game;
+    Score_Tricks -->|Last Round| Score_Game[Score Game];
     Next_Round --> Deal_Cards;
     Score_Game --> End([End]);
 ```
