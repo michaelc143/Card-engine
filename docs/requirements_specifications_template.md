@@ -222,7 +222,7 @@ deactivate JavaBackend
 Database ERD for card game engine
 ---
 erDiagram
-    User ||--o{ EuchreStats : "created by"
+    User ||--o{ EuchreStats : "created by"}
 
     User {
         uuid user_id PK
