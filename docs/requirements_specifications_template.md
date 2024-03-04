@@ -96,8 +96,6 @@ A <-->|"REST API"| B
 B <--> C
 ```
 
-#### [Lucid Design of Database](https://lucid.app/lucidchart/38c7a343-541e-40ad-a2ea-9f5dfa94c63b/edit?viewport_loc=-932%2C-242%2C1696%2C782%2C0_0&invitationId=inv_97f3b8ff-9664-466a-b975-71f93ab525e1)
-
 #### Class Diagram
 
 ```mermaid
