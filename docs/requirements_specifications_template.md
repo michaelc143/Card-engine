@@ -293,16 +293,27 @@ graph TD;
 
 ```mermaid
 ---
-title: Sample State Diagram For Coffee Application
+title: Euchre Game State Diagram
 ---
 stateDiagram
-    [*] --> Ready
-    Ready --> Brewing : Start Brewing
-    Brewing --> Ready : Brew Complete
-    Brewing --> WaterLowError : Water Low
-    WaterLowError --> Ready : Refill Water
-    Brewing --> BeansLowError : Beans Low
-    BeansLowError --> Ready : Refill Beans
+    [*] --> ShuffleDeck
+    ShuffleDeck --> DealCards : Shuffle Deck
+    DealCards --> BidPhase1 : Deal Cards
+    BidPhase1 --> TrumpFaceUp : Face-up Card
+    TrumpFaceUp --> PlayPhase : Suit Named
+    TrumpFaceUp --> BidPhase2 : All Players Pass
+    BidPhase2 --> TrumpNamedSuit : Someone Names Suit
+    BidPhase2 --> EndRound : No Suit Named
+    TrumpNamedSuit --> PlayPhase : Trump Named
+    EndRound --> DealCards : End Round No Points
+    PlayPhase --> PlayCard : Play Card
+    PlayCard --> NextPlayer : Not Last Trick
+    PlayCard --> ScoreTricks : Last Trick
+    NextPlayer --> PlayPhase : Next Player
+    ScoreTricks --> NextRound : Not Last Round
+    ScoreTricks --> ScoreGame : Last Round
+    NextRound --> DealCards : Next Round
+    ScoreGame --> End : Game Over
 ```
 
 #### Sequence Diagram
