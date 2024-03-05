@@ -1,0 +1,10 @@
+.container {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+h1,
+p {
+    text-align: center;
+}
