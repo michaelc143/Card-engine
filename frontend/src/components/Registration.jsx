@@ -7,7 +7,8 @@ function Registration({ onRegister }) {
     const handleRegister = () => {
         if (username) {
             onRegister(username, true);
-        } else {
+        } 
+        else {
             alert('Please enter username');
         }
     };

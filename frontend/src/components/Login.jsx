@@ -7,7 +7,8 @@ function Login({ onLogin }) {
 	const handleLogin = () => {
 		if (username) {
 			onLogin(username, true);
-		} else {
+		} 
+		else {
 			alert('Please enter username');
 		}
 	};
@@ -16,10 +17,10 @@ function Login({ onLogin }) {
 		<div className="login-box">
 			<h2>Login</h2>
 			<input
-			type="text"
-			placeholder="Username"
-			value={username}
-			onChange={(e) => setUsername(e.target.value)}
+				type="text"
+				placeholder="Username"
+				value={username}
+				onChange={(e) => setUsername(e.target.value)}
 			/>
 			<button className="login-btn" onClick={handleLogin}>
 			Login
