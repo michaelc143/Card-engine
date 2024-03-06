@@ -10,5 +10,11 @@ export default defineConfig({
     watch: {
       usePolling: true
     }
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./setup.js'],
+    testMatch: ['./src/*.test.jsx'],
+    globals: true
   }
 })

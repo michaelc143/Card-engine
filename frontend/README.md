@@ -1,9 +1,16 @@
-# How to use
+# How to run the frontend
 
 ```bash
 cd ./frontend
 npm install
 npm run dev
+```
+
+## How to run unit tests
+
+```bash
+cd ./frontend
+npm test
 ```
 
 ## Project Structure
