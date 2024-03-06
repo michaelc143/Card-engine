@@ -6,6 +6,13 @@ npm install
 npm run dev
 ```
 
+## Project Structure
+
+This project is layed out so that files that require one another are as close as possible. The main files to work with to develop the frontend are all contained within the src directory. Within the src directory, there are a few other directories to keep things clean.
+
+* Components: Used to store components that can be used and reused across the project. There are directories for each component within this directory that stores their JSX file as well as their css styling file.
+* Assets: Used to store static files such as images
+* Main.jsx and App.jsx: Main.jsx is used to allow react to build the DOM tree using the App component as the entry point for the root element in index.html. App.jsx currently has basic login and registration functionality that requires the user to login/register themselves in order to view the home page.
 
 # React + Vite
 
