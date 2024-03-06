@@ -4,26 +4,26 @@ import Login from './Login';
 import Registration from './Registration';
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [username, setUsername] = useState('');
-    const [isRegistering, setIsRegistering] = useState(false);
+	const [loggedIn, setLoggedIn] = useState(false);
+	const [username, setUsername] = useState('');
+	const [isRegistering, setIsRegistering] = useState(false);
 
-    const handleLogin = (username, isLogged) => {
-      setUsername(username);
-      setLoggedIn(isLogged);
-    };
+	const handleLogin = (username, isLogged) => {
+		setUsername(username);
+		setLoggedIn(isLogged);
+	};
 
-    const handleRegister = (username, isLogged) => {
+	const handleRegister = (username, isLogged) => {
 		alert(`Successfully registered ${username}!`);
 		setUsername(username);
 		setIsRegistering(false);
-    };
+	};
 
-    const handleToggleMode = () => {
+	const handleToggleMode = () => {
 		setIsRegistering(!isRegistering);
-    };
+	};
 
-    return (
+	return (
 		<div className="container">
 		<h1>Welcome to Card Engine!</h1>
 		{
@@ -55,7 +55,7 @@ function App() {
 			)
 		}
 		</div>
-    );
+	);
 }
 
 export default App;
