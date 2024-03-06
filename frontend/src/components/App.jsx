@@ -1,40 +1,61 @@
-import { useState } from 'react'
-import '../styles/App.css'
+import { useState } from 'react';
+import '../styles/App.css';
 import Login from './Login';
+import Registration from './Registration';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [username, setUsername] = useState(''); // Probably should use session storage to store login to persist through refreshes
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [username, setUsername] = useState('');
+    const [isRegistering, setIsRegistering] = useState(false);
 
-  const handleLogin = (username, isLogged) => {
-    // VERIFY USER HAS ACCOUNT BY SENDING REQUEST TO BACKEND TO LOGIN
-    setUsername(username); // Set the username in the state
-    setLoggedIn(isLogged); // Set the user as logged in
-  };
+    const handleLogin = (username, isLogged) => {
+      setUsername(username);
+      setLoggedIn(isLogged);
+    };
 
-  const handleRegister = (username) => {
-    // SEND REGISTER REQUEST TO BACKEND TO CREATE NEW USER
-    alert('Successfully registered ' + username + '!');
-  }
+    const handleRegister = (username, isLogged) => {
+		alert(`Successfully registered ${username}!`);
+		setUsername(username);
+		setIsRegistering(false);
+    };
 
-  return (
-    <div className='container'>
-      <h1>Welcome to Card Engine!</h1>
-      {
-      loggedIn ? 
-        (
-          <p>Welcome {username}!</p>
-        ) 
-        : 
-        (
-          <>
-            <p>Doesn't seem like you're logged in!</p>
-            <Login onLogin={handleLogin} onRegister={handleRegister} />
-          </>
-        )
-      }
-    </div>
-  );
+    const handleToggleMode = () => {
+		setIsRegistering(!isRegistering);
+    };
+
+    return (
+		<div className="container">
+		<h1>Welcome to Card Engine!</h1>
+		{
+			loggedIn 
+			?
+			
+			( // Once we have components for the game/lobby, they go in this area
+				<p>Welcome {username}!</p>
+			) 
+			: 
+			( //User not logged in yet, prompt with login and option to register
+				<>
+				<p>Doesn't seem like you're logged in!</p>
+				{isRegistering ? (
+					<Registration onRegister={handleRegister} />
+				) : (
+					<Login onLogin={handleLogin} />
+				)}
+				<button className="toggle-btn" onClick={handleToggleMode}>
+					{
+						isRegistering
+						? 
+						'Already have a login? Login Here'
+						: 
+						'New player? Register Here'
+					}
+				</button>
+				</>
+			)
+		}
+		</div>
+    );
 }
 
-export default App
+export default App;
