@@ -9,17 +9,27 @@ function App() {
 	const [isRegistering, setIsRegistering] = useState(false);
 
 	const handleLogin = (username, isLogged) => {
+		// This function is used to signify when a user is logged in. It stores the username in the username
+		// state variable and sets loggedIn to true to communicate that the user is logged in.
+		// This function will be modified once the login endpoint is complete so that it sends a request
+		// to the backend to make sure the user is in the database.
 		setUsername(username);
 		setLoggedIn(isLogged);
 	};
 
 	const handleRegister = (username, isLogged) => {
+		// This function serves as a way of registering a new user to the application. It alerts the user
+		// that they have successfully registered, sets their username to what they indicated, and
+		// switches the component shown from Registration to Login.
 		alert(`Successfully registered ${username}!`);
 		setUsername(username);
 		setIsRegistering(false);
 	};
 
 	const handleToggleMode = () => {
+		// This function is used to toggle between Login and Register components being shown. This 
+		// function is called by the button at the bottom of the pre-homepage to let the user
+		// switch back and forth between logging in and registering.
 		setIsRegistering(!isRegistering);
 	};
 
