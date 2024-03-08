@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  db3:
+    image: mysql/mysql-server:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: lucky_badger
+      MYSQL_DATABASE: WhatAndWho
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - wawdat3:/var/lib/mysql
+    ports:
+      - "53336:3306"
+
+volumes:
+  wawdat3:
