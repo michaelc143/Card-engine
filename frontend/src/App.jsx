@@ -21,6 +21,8 @@ function App() {
 		// This function serves as a way of registering a new user to the application. It alerts the user
 		// that they have successfully registered, sets their username to what they indicated, and
 		// switches the component shown from Registration to Login.
+		// This function will be modified once the register endpoint is complete so that it sends a request
+		// to the backend to add the user to the database.
 		alert(`Successfully registered ${username}!`);
 		setUsername(username);
 		setIsRegistering(false);
