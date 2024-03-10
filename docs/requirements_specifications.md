@@ -54,7 +54,6 @@ Here is a sample user story from [Clean Agile](https://learning-oreilly-com.ezpr
 
 ### Security Requirements
 
-* Logins should be stored in the database with the passwords being hashed before being sent to the backend.
 * Anyone accessing the backend should be authenticated before sending requests.
 
 <!--Discuss what security requirements are necessary and why. Are there privacy or confidentiality issues? Is your system vulnerable to denial-of-service attacks?-->
@@ -322,7 +321,7 @@ deactivate JavaBackend
 Database ERD for card game engine
 ---
 erDiagram
-    User ||--o{ EuchreStats : "created by"}
+    User ||--o{ EuchreStats : "created by"
 
     User {
         uuid user_id PK
