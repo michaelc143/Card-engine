@@ -2,17 +2,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import App from "./App";
 
 describe('App', () => {
-    it('renders page title', () => {
-        render(<App />);
-        const pageTitle = screen.getAllByText(/Welcome to Card engine!/i);
-        expect(pageTitle.length).toBeGreaterThan(0);
-    });
+	it('renders page title', () => {
+		render(<App />);
+		const pageTitle = screen.getAllByText(/Welcome to Card engine!/i);
+		expect(pageTitle.length).toBeGreaterThan(0);
+	});
 
 	it('renders login component when not logged in and not registering', () => {
 		render(<App />);
 		const loginComponent = screen.getByText(/Doesn't seem like you're logged in!/i);
 		expect(loginComponent).toBeInTheDocument();
-    });
+	});
 
 	it('toggles between login and registration modes', () => {
 		render(<App />);
