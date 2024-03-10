@@ -17,7 +17,7 @@ function Registration({ onRegister }) {
     };
 
     return (
-        <div className="registration-box">
+        <div className="registration-box" data-testid="registration-box">
             <h2>Register</h2>
             <input
                 type="text"
