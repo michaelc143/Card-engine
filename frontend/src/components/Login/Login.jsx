@@ -17,7 +17,7 @@ function Login({ onLogin }) {
 	};
 
 	return (
-		<div className="login-box">
+		<div className="login-box" data-testid="login-box">
 			<h2>Login</h2>
 			<input
 				type="text"
