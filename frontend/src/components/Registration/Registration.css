@@ -1,11 +1,16 @@
-.container {
-	max-width: 800px;
+.registration-box {
+	display: flex;
+	border: 2px solid black;
+	padding: 20px;
+	border-radius: 8px;
+	width: 300px;
 	margin: 0 auto;
-	padding: 2rem;
-	text-align: center;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
 }
 
-.toggle-btn {
+.register-btn {
 	margin-top: 2rem;
 	padding: 0.5rem 1rem;
 	border-radius: 4px;
@@ -17,6 +22,6 @@
 	transition: background-color 0.3s ease;
 }
 
-.toggle-btn:hover {
+.register-btn:hover {
 	background-color: #0056b3;
 }
