@@ -13,6 +13,8 @@ cd ./frontend
 npm test
 ```
 
+Note: Unit test files should be placed in the same folder as the component JSX and CSS files.
+
 ## Project Structure
 
 This project is layed out so that files that require one another are as close as possible. The main files to work with to develop the frontend are all contained within the src directory. Within the src directory, there are a few other directories to keep things clean.
