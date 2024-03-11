@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.io.PrintWriter;
 
 @RestController
+@CrossOrigin
 public class CardEngineController {
 
     private final String url = "jdbc:mysql://localhost:53346/CardEngine";
