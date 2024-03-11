@@ -13,13 +13,7 @@ function App() {
 		// state variable and sets loggedIn to true to communicate that the user is logged in.
 		// This function will be modified once the login endpoint is complete so that it sends a request
 		// to the backend to make sure the user is in the database.
-		fetch('http://localhost:8080/login', { //Currently broken due to CORS
-			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ username }),
-		  })
+		fetch(`http://localhost:8080/login?username=${username}`, {method: 'POST',})
 		  .then(response => {
 			console.log(response);
 			if (response.ok) {
