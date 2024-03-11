@@ -323,7 +323,9 @@ deactivate JavaBackend
 
 ### Architecture Diagram
 
-[Link to architecture diagram](https://drive.google.com/file/d/1oqKS26a37G5v7DhYKaEtYxw-6xVGIYjf/view?usp=sharing)
+[Gitlab Link to architecture diagram](./archDiagram.png)
+
+[External Link to architecture diagram](https://drive.google.com/file/d/1oqKS26a37G5v7DhYKaEtYxw-6xVGIYjf/view?usp=sharing)
 
 ### Database
 
