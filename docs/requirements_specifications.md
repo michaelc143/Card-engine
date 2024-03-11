@@ -8,9 +8,8 @@ The card game engine is a piece of software designed to cater to the players, of
 
 ### Customer
 
-The customer for this software in general is anyone who wants to play card games like Eucre socially.
+The customer for this software in general is anyone who wants to play card games like euchre socially.
 
-Customer from 506 staff:
 
 ### Tech Stack
 
@@ -24,25 +23,37 @@ Customer from 506 staff:
 
 <!--This section lists the behavior that the users see. This information needs to be presented in a logical, organized fashion. It is most helpful if this section is organized in outline form: a bullet list of major topics (e.g., one for each kind of user, or each major piece of system functionality) each with some number of subtopics.-->
 
-Here is a user requirements sample from [Crookshanks](https://learning-oreilly-com.ezproxy.library.wisc.edu/library/view/practical-software-development/9781484206201/9781484206218_Ch02.xhtml):
-
 | ID   | Description                                                  | Priority | Status |
 | ---- | ------------------------------------------------------------ | -------- | ------ |
-| R11  | Users should not have to sign into the system; their current network login should be used for identification. | Med      | Done   |
-| R12  | The user should pick a project first; the tasks available are a derivative of the project. | High     | Open   |
-| R13  | A full-time employee should not be able to submit a time card with less than 40 hours per week recorded. | High     | Open   |
-| R14  | A contractor can submit any number of hours up to 60 without special approval. | Med      | Open   |
-| R15  | A team lead can see his/her team's time cards before they are submitted but cannot approve them until the user submits it. | High     | Open   |
+| #12  | Users should not have to sign into the client. | Med      | Open   |
+| &1  | Users should be able to setup a game of euchre and play | High     | Open   |
+| &5  | A user looking to delete their account should be able to do so | Med     | Open   |
+| &4  | A user looking to see their lifetime statistics should be able to download them | Med      | Open   |
+| &7  | A user looking to play a game with just their friends should be able to setup a private lobby | Low     | Open   |
 
-<div align="center"><small><i>Excerpt from Crookshanks Table 2-2 showing example user requirements for a timekeeping system</i></small></div>
 
 ### Use Cases & User Stories
 
 <!--Use cases and user stories that support the user requirements in the previous section. The use cases should be based off user stories. Every major scenario should be represented by a use case, and every use case should say something not already illustrated by the other use cases. Diagrams (such as sequence charts) are encouraged. Ask the customer what are the most important use cases to implement by the deadline. You can have a total ordering, or mark use cases with “must have,” “useful,” or “optional.” For each use case you may list one or more concrete acceptance tests (concrete scenarios that the customer will try to see if the use case is implemented).-->
 
-Here is a sample user story from [Clean Agile](https://learning-oreilly-com.ezproxy.library.wisc.edu/library/view/clean-agile-back/9780135782002/ch03.xhtml#ch03lev1sec1) using a markdown block quote:
+Our main user story is as follows:
+> As a player I want to be able to play Euchre
+> As a player I want to be able to access and download my lifetime stats
+> As a player I want to be able to change my name, delete my stats, and delete my account
 
-> As the driver of a car, in order to increase my velocity, I will press my foot harder on the accelerator pedal.
+With sub-stories currently being:
+> As a player I want to interact with the cards
+> As a player I want to be able to have an account
+> As a player I want to have my statistics tracked
+> As a player I want to be able to create a private lobby
+
+![Use cases](use-cases.png)
+
+As for acceptance critera, they are as follows:
+* A user must be able to log on or make an account (in all use cases)
+* A user must be able to create or find a game of euchre and play it to completion
+* A user must be able to access their statistics and be able to download a file of their lifetime statistics
+* A user must be able to edit characteristics of their account such as their name and but able to delete their stored statistics and/or their account entirely
 
 ### User Interface Requirements
 
@@ -50,7 +61,10 @@ Here is a sample user story from [Clean Agile](https://learning-oreilly-com.ezpr
 
 <!--NOTE: Please include illustrations or screenshots of what your user interface would look like -- even if they’re rough -- and interleave it with your description.-->
 
-![Low fidelity prototype](../frontend/Low-Fidelity-Prototype.jpg)
+![Low-fidelity prototype](../frontend/interface-prototypes/Low-Fidelity-Prototype.jpg)
+![High-fidelity prototype](../frontend/interface-prototypes/high-fidelity.pdf)
+
+The high-fidelity interface is centered around a smaller, simpler box at first (see: "Menu", "Profile", and "Settings" panels for reference) that then expands into a full board upon entering a game. The small box from before then becomes the center of the board and a space for in-game notifications (e.g. win message, lose message, and what the candidate suit is). An interactive prototype can be found via a Figma file link [here](https://www.figma.com/file/DkZ46YNauuJN5EXRmbBwsD/506-hfp?type=design&node-id=0%3A1&mode=design&t=gyZW5bYysmys202g-1) which is available to view without a Figma account and for free.
 
 ### Security Requirements
 
@@ -62,10 +76,7 @@ Here is a sample user story from [Clean Agile](https://learning-oreilly-com.ezpr
 
 <!--List here all of the external entities, other than users, on which your system will depend. For example, if your system inter-operates with sendmail, or if you will depend on Apache for the web server, or if you must target both Unix and Windows, list those requirements here. List also memory requirements, performance/speed requirements, data capacity requirements, if applicable.-->
 
-| You    |    can    |    also |
-| ------ | :-------: | ------: |
-| change |    how    | columns |
-| are    | justified |         |
+As of now, the interface is designed specifically for a 16:9 monitor.
 
 ## Specification
 
