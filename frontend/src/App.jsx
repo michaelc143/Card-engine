@@ -21,7 +21,7 @@ function App() {
                                         setUsername(username);
                                         setLoggedIn(isLogged);
                                 } else {
-                                        throw new Error(data);
+                                        alert('User does not exist with that name');
                                 }
                         })
                         .catch(error => {
