@@ -35,9 +35,23 @@ function App() {
 		// switches the component shown from Registration to Login.
 		// This function will be modified once the register endpoint is complete so that it sends a request
 		// to the backend to add the user to the database.
-		alert(`Successfully registered ${username}!`);
-		setUsername(username);
-		setIsRegistering(false);
+		fetch(`http://localhost:8080/register?username=${username}`, {method: 'POST',})
+                .then(response => response.text())
+                        .then(data => {
+                                console.log(data);
+                                if (data === 'User successfully registered') {
+                                        setUsername(username);
+					alert(`Successfully registered ${username}`);
+                                        setIsRegistering(false);
+                                } else if (data === 'User already exists') {
+					alert('Username already taken');
+				} else {
+                                        throw new Error(data);
+                                }
+                        })
+                        .catch(error => {
+                                console.error('Error:', error);
+                        });
 	};
 
 	const handleToggleMode = () => {
