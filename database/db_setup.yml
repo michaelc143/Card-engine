@@ -5,10 +5,10 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: lucky_badger
-      MYSQL_DATABASE: FullHouseBadger
+      MYSQL_DATABASE: full_house_badger
       MYSQL_ROOT_HOST: '%'
     volumes:
-      - wawdat3:/var/lib/mysql
+      - fullhousedat:/var/lib/mysql
     ports:
       - "53306:3306"
   phpmyadmin3:
@@ -21,6 +21,6 @@ services:
       PMA_USER: root
       PMA_PASSWORD: lucky_badger
     ports:
-      - "50083:80"
+      - "50080:80"
 volumes:
-  wawdat3:
+  fullhousedat:
