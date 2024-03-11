@@ -36,16 +36,16 @@ The customer for this software in general is anyone who wants to play card games
 
 <!--Use cases and user stories that support the user requirements in the previous section. The use cases should be based off user stories. Every major scenario should be represented by a use case, and every use case should say something not already illustrated by the other use cases. Diagrams (such as sequence charts) are encouraged. Ask the customer what are the most important use cases to implement by the deadline. You can have a total ordering, or mark use cases with “must have,” “useful,” or “optional.” For each use case you may list one or more concrete acceptance tests (concrete scenarios that the customer will try to see if the use case is implemented).-->
 
-Our main user story is as follows:
-> As a player I want to be able to play Euchre
-> As a player I want to be able to access and download my lifetime stats
-> As a player I want to be able to change my name, delete my stats, and delete my account
+Our main user stories are as follows:
+* As a player I want to be able to play Euchre
+* As a player I want to be able to access and download my lifetime stats
+* As a player I want to be able to change my name, delete my stats, and delete my account
 
 With sub-stories currently being:
-> As a player I want to interact with the cards
-> As a player I want to be able to have an account
-> As a player I want to have my statistics tracked
-> As a player I want to be able to create a private lobby
+* As a player I want to interact with the cards
+* As a player I want to be able to have an account
+* As a player I want to have my statistics tracked
+* As a player I want to be able to create a private lobby
 
 ![Use cases](use-cases.png)
 
