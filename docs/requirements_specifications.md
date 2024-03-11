@@ -62,7 +62,7 @@ As for acceptance critera, they are as follows:
 <!--NOTE: Please include illustrations or screenshots of what your user interface would look like -- even if they’re rough -- and interleave it with your description.-->
 
 ![Low-fidelity prototype](../frontend/interface-prototypes/Low-Fidelity-Prototype.jpg)
-![High-fidelity prototype](../frontend/interface-prototypes/high-fidelity.pdf)
+[High-fidelity prototype link](../frontend/interface-prototypes/high-fidelity.pdf)
 
 The high-fidelity interface is centered around a smaller, simpler box at first (see: "Menu", "Profile", and "Settings" panels for reference) that then expands into a full board upon entering a game. The small box from before then becomes the center of the board and a space for in-game notifications (e.g. win message, lose message, and what the candidate suit is). An interactive prototype can be found via a Figma file link [here](https://www.figma.com/file/DkZ46YNauuJN5EXRmbBwsD/506-hfp?type=design&node-id=0%3A1&mode=design&t=gyZW5bYysmys202g-1) which is available to view without a Figma account and for free.
 
