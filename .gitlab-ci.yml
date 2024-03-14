@@ -29,7 +29,7 @@ test-frontend:
 
 build-backend:
   stage: build
-  image: openjdk:18-jdk
+  image: openjdk:18-jdk-alpine
   script:
     - cd backend
     - ./gradlew assemble
