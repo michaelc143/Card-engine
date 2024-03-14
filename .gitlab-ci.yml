@@ -4,6 +4,11 @@ stages:
   - build
   - test
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - frontend/node_modules/
+
 build-frontend:
   stage: build
   script:
@@ -21,3 +26,14 @@ test-frontend:
     - cd frontend
     - npm ci
     - npm run test
+
+build-backend:
+  stage: build
+  image: openjdk:18-jdk
+  script:
+    - cd backend
+    - ./gradlew assemble
+  artifacts:
+    paths:
+      - backend/build/libs/*.jar
+    expire_in: 1 week
