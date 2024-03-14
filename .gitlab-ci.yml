@@ -1,0 +1,23 @@
+image: node:latest
+
+stages:
+  - build
+  - test
+
+build-frontend:
+  stage: build
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+    - frontend/dist
+    expire_in: 1 week
+
+test-frontend:
+  stage: test
+  script:
+    - cd frontend
+    - npm ci
+    - npm run test
