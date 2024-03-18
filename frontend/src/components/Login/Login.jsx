@@ -30,7 +30,7 @@ function Login({ onLogin, handleToggleMode, showToast }) {
 			Login
 			</button>
 			<button className="toggle-btn" onClick={handleToggleMode}>
-				New player? Register Here
+				Sign up
 			</button>
 		</div>
 	);

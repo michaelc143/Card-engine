@@ -20,7 +20,7 @@ describe('App', () => {
 		const loginText = screen.getByText(/Login:/i);
 		expect(loginText).toBeInTheDocument();
 
-		const toggleButton = screen.getByRole('button', { name: /New player\? Register Here/i });
+		const toggleButton = screen.getByRole('button', { name: /Sign up/i });
 		expect(toggleButton).toBeInTheDocument();
 	
 		fireEvent.click(toggleButton);
@@ -33,7 +33,7 @@ describe('App', () => {
 	
 		fireEvent.click(updatedButtonText);
 		
-		const originalButtonText = screen.getByRole('button', { name: /New player\? Register Here/i });
+		const originalButtonText = screen.getByRole('button', { name: /Sign up/i });
 		expect(originalButtonText).toBeInTheDocument();
 	});
 });

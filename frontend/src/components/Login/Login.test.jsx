@@ -24,7 +24,7 @@ describe('Login', () => {
 
 	it('shows the button to switch to register screen', () => {
 		render(<Login />);
-		const swapButtonText = screen.getByRole('button', { name: /New player\? Register Here/i });
+		const swapButtonText = screen.getByRole('button', { name: /Sign up/i });
 		expect(swapButtonText).toBeInTheDocument();
 	});
     
