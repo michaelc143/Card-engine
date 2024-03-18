@@ -27,7 +27,7 @@ function Login({ onLogin, handleToggleMode, showToast }) {
 				onChange={(e) => setUsername(e.target.value)}
 			/>
 			<button className="login-btn" onClick={handleLogin}>
-				Login
+				&gt;
 			</button>
 			<h2>New?</h2>
 			<button className="toggle-btn" onClick={handleToggleMode}>
