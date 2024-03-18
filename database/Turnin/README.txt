@@ -1,2 +1,0 @@
-Aidan Koenig
-Tomas Valdes
