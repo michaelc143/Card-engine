@@ -19,8 +19,8 @@ build-frontend:
     paths:
     - frontend/dist
     expire_in: 1 week
-  # rules:
-  #   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
 
 test-frontend:
   stage: test
@@ -28,8 +28,8 @@ test-frontend:
     - cd frontend
     - npm ci
     - npm run test
-  # rules:
-  #   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
 
 build-backend:
   stage: build
@@ -41,5 +41,5 @@ build-backend:
     paths:
       - backend/build/libs/*.jar
     expire_in: 1 week
-  # rules:
-  #   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
