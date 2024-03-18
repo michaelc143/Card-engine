@@ -22,6 +22,12 @@ describe('Login', () => {
 		expect(usernameInput).toHaveValue('testuser');
 	});
 
+	it('shows the new? text above the toggle btn', () => {
+		render(<Login />);
+		const pageTitle = screen.getAllByText(/New?/i);
+		expect(pageTitle.length).toBeGreaterThan(0);
+	});
+
 	it('shows the button to switch to register screen', () => {
 		render(<Login />);
 		const swapButtonText = screen.getByRole('button', { name: /Sign up/i });

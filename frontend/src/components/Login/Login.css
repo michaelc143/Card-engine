@@ -1,17 +1,14 @@
 .login-box {
-    display: flex;
     border: 2px solid black;
     padding: 20px;
     border-radius: 8px;
     width: 300px;
     margin: 0 auto;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
 }
 
 .login-btn {
     margin-top: 2rem;
+    margin-left: 1rem;
     padding: 0.5rem 1rem;
     border-radius: 4px;
     border: none;
@@ -32,4 +29,9 @@
 
 .login-input::placeholder {
     font-style: italic;
+}
+
+.login-h2 {
+    margin-top: 1rem;
+    margin-bottom: 0rem;
 }

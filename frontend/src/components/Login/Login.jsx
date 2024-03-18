@@ -18,7 +18,7 @@ function Login({ onLogin, handleToggleMode, showToast }) {
 
 	return (
 		<div className="login-box" data-testid="login-box">
-			<h2>Login:</h2>
+			<h2 className='login-h2'>Login:</h2>
 			<input
 				className='login-input'
 				type="text"
@@ -27,8 +27,9 @@ function Login({ onLogin, handleToggleMode, showToast }) {
 				onChange={(e) => setUsername(e.target.value)}
 			/>
 			<button className="login-btn" onClick={handleLogin}>
-			Login
+				Login
 			</button>
+			<h2>New?</h2>
 			<button className="toggle-btn" onClick={handleToggleMode}>
 				Sign up
 			</button>
