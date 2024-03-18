@@ -29,3 +29,7 @@
 .login-input {
     border: 2px dashed;
 }
+
+.login-input::placeholder {
+    font-style: italic;
+}

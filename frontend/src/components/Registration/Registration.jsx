@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Registration.css';
 
-function Registration({ onRegister, handleToggleMode }) {
+function Registration({ onRegister, handleToggleMode, showToast }) {
     const [username, setUsername] = useState('');
     const [isRegistering, setIsRegistering] = useState(true);
 
@@ -13,7 +13,7 @@ function Registration({ onRegister, handleToggleMode }) {
             onRegister(username, true);
         } 
         else {
-            alert('Please enter username');
+            showToast('Username not specified for registration', 'error');
         }
     };
 

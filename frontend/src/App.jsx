@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
 import {ToastContainer, toast} from 'react-toastify';
@@ -58,9 +59,18 @@ function App() {
 		setIsRegistering(!isRegistering);
 	};
 
+	const showToast = (message, type) => {
+		// Use toast function based on type (error, success, etc.)
+		// Types allowed - success, info, warn, error
+		toast[type](message);
+	}
+
 	return (
 		<div className="container">
-		<ToastContainer />
+		<ToastContainer 
+			limit={5}
+			stacked={true}
+		/>
 		<h1>Eucre</h1>
 		{
 			loggedIn 
@@ -73,9 +83,17 @@ function App() {
 			( //User not logged in yet, prompt with login and option to register
 				<>
 				{isRegistering ? (
-					<Registration onRegister={handleRegister} handleToggleMode={handleToggleMode} />
+					<Registration 
+						onRegister={handleRegister}
+						handleToggleMode={handleToggleMode}
+						showToast={showToast}
+					/>
 				) : (
-					<Login onLogin={handleLogin} handleToggleMode={handleToggleMode} />
+					<Login
+						onLogin={handleLogin}
+						handleToggleMode={handleToggleMode}
+						showToast={showToast}
+					/>
 				)}
 				</>
 			)

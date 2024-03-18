@@ -21,6 +21,12 @@ describe('Registration', () => {
 		fireEvent.change(usernameInput, { target: { value: 'testuser' } });
 		expect(usernameInput).toHaveValue('testuser');
 	});
+
+	it('shows the button to switch to login screen', () => {
+		render(<Registration />);
+		const swapButtonText = screen.getByRole('button', { name: /Already have a login\? Login Here/i });
+		expect(swapButtonText).toBeInTheDocument();
+	});
     
 	it('calls the onRegister callback with the correct username when login button is clicked', () => {
 		const onRegisterMock = vi.fn();

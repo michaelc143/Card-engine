@@ -21,6 +21,12 @@ describe('Login', () => {
 		fireEvent.change(usernameInput, { target: { value: 'testuser' } });
 		expect(usernameInput).toHaveValue('testuser');
 	});
+
+	it('shows the button to switch to register screen', () => {
+		render(<Login />);
+		const swapButtonText = screen.getByRole('button', { name: /New player\? Register Here/i });
+		expect(swapButtonText).toBeInTheDocument();
+	});
     
 	it('calls the onLogin callback with the correct username when login button is clicked', () => {
 		const onLoginMock = vi.fn();

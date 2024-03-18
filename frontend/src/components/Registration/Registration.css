@@ -29,3 +29,7 @@
 .register-input {
     border: 2px dashed;
 }
+
+.register-input::placeholder {
+    font-style: italic;
+}
