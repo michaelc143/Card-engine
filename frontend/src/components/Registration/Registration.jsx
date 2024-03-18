@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './Registration.css';
 
-function Registration({ onRegister }) {
+function Registration({ onRegister, handleToggleMode }) {
     const [username, setUsername] = useState('');
+    const [isRegistering, setIsRegistering] = useState(true);
 
     const handleRegister = () => {
         // Checks if the user has inputted a username
@@ -18,8 +19,9 @@ function Registration({ onRegister }) {
 
     return (
         <div className="registration-box" data-testid="registration-box">
-            <h2>Register</h2>
+            <h2>Register:</h2>
             <input
+                className='register-input'
                 type="text"
                 placeholder="Username"
                 value={username}
@@ -28,6 +30,9 @@ function Registration({ onRegister }) {
             <button className="register-btn" onClick={handleRegister}>
             Register
             </button>
+            <button className="toggle-btn" onClick={handleToggleMode}>
+				{isRegistering ? 'Already have a login? Login Here' : 'New player? Register Here'}
+			</button>
         </div>
     );
 }

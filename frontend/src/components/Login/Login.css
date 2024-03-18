@@ -25,3 +25,7 @@
 .login-btn:hover {
     background-color: #0056b3;
 }
+
+.login-input {
+    border: 2px dashed;
+}

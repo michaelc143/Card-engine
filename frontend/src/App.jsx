@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
+import {ToastContainer, toast} from 'react-toastify';
 
 function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
@@ -59,7 +60,8 @@ function App() {
 
 	return (
 		<div className="container">
-		<h1>Welcome to Card Engine!</h1>
+		<ToastContainer />
+		<h1>Eucre</h1>
 		{
 			loggedIn 
 			?
@@ -70,21 +72,11 @@ function App() {
 			: 
 			( //User not logged in yet, prompt with login and option to register
 				<>
-				<p>Doesn't seem like you're logged in!</p>
 				{isRegistering ? (
-					<Registration onRegister={handleRegister} />
+					<Registration onRegister={handleRegister} handleToggleMode={handleToggleMode} />
 				) : (
-					<Login onLogin={handleLogin} />
+					<Login onLogin={handleLogin} handleToggleMode={handleToggleMode} />
 				)}
-				<button className="toggle-btn" onClick={handleToggleMode}>
-					{
-						isRegistering
-						? 
-						'Already have a login? Login Here'
-						: 
-						'New player? Register Here'
-					}
-				</button>
 				</>
 			)
 		}
