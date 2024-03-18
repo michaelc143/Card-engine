@@ -29,7 +29,7 @@ function Login({ onLogin, handleToggleMode, showToast }) {
 			<button className="login-btn" onClick={handleLogin}>
 				&gt;
 			</button>
-			<h2>New?</h2>
+			<h2 className='new-player-h2'>New?</h2>
 			<button className="toggle-btn" onClick={handleToggleMode}>
 				Sign up
 			</button>

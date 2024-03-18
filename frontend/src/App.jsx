@@ -56,15 +56,12 @@ function App() {
 	};
 
 	const handleToggleMode = () => {
-		// This function is used to toggle between Login and Register components being shown. This 
-		// function is called by the button at the bottom of the pre-homepage to let the user
-		// switch back and forth between logging in and registering.
+		// Toggle between login and registration component
 		setIsRegistering(!isRegistering);
 	};
 
 	const showToast = (message, type) => {
-		// Toast function based on type (error, success, etc.), used to display toast messages
-		// Types allowed - success, info, warn, error
+		// Toast function based on type (success, info, warn, error), used to display toast messages
 		toast[type](message);
 	}
 
