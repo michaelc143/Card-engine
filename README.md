@@ -2,6 +2,12 @@
 
 # Card Engine
 
+## How to develop using the CSL machines
+
+```bash
+ssh -L 8080:localhost:8080 -L 3000:localhost:3000 username@cs506-team-25.cs.wisc.edu
+```
+
 ## How to use the docker compose
 
 * Start the docker daemon
@@ -17,4 +23,11 @@ docker compose up
 cd ./frontend
 npm install
 npm run dev
+```
+
+## How to Use The Backend
+
+```bash
+cd ./backend
+./gradlew bootrun
 ```
