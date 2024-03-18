@@ -14,19 +14,20 @@ function App() {
 		// This function is used to signify when a user is logged in. It stores the username in the username
 		// state variable and sets loggedIn to true to communicate that the user is logged in.
 		fetch(`http://localhost:8080/login?username=${username}`, {method: 'POST',})
-		.then(response => response.text())
-                        .then(data => {
-                                console.log(data);
-                                if (data === 'Logged in') {
-                                        setUsername(username);
-                                        setLoggedIn(isLogged);
-                                } else {
-                                        alert('User does not exist with that name');
-                                }
-                        })
-                        .catch(error => {
-                                console.error('Error:', error);
-                        });
+			.then(response => response.text())
+				.then(data => {
+					console.log(data); // Used in development to debug
+					if (data === 'Logged in') {
+						setUsername(username);
+						setLoggedIn(isLogged);
+					} 
+					else {
+						alert('User does not exist with that name');
+					}
+				})
+			.catch(error => {
+				console.error('Error:', error);
+		});
 	};
 
 	const handleRegister = (username, isLogged) => {
@@ -34,22 +35,24 @@ function App() {
 		// that they have successfully registered, sets their username to what they indicated, and
 		// switches the component shown from Registration to Login.
 		fetch(`http://localhost:8080/register?username=${username}`, {method: 'POST',})
-                .then(response => response.text())
-                        .then(data => {
-                                console.log(data);
-                                if (data === 'User successfully registered') {
-                                        setUsername(username);
-					alert(`Successfully registered ${username}`);
-                                        setIsRegistering(false);
-                                } else if (data === 'User already exists') {
-					alert('Username already taken');
-				} else {
-                                        throw new Error(data);
-                                }
-                        })
-                        .catch(error => {
-                                console.error('Error:', error);
-                        });
+			.then(response => response.text())
+				.then(data => {
+					console.log(data); // Used in development to debug
+					if (data === 'User successfully registered') {
+						setUsername(username);
+						alert(`Successfully registered ${username}`);
+						setIsRegistering(false);
+						} 
+					else if (data === 'User already exists') {
+						alert('Username already taken');
+					}
+					else {
+						throw new Error(data);
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+		});
 	};
 
 	const handleToggleMode = () => {
@@ -60,7 +63,7 @@ function App() {
 	};
 
 	const showToast = (message, type) => {
-		// Use toast function based on type (error, success, etc.)
+		// Toast function based on type (error, success, etc.), used to display toast messages
 		// Types allowed - success, info, warn, error
 		toast[type](message);
 	}

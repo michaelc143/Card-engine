@@ -3,7 +3,6 @@ import './Registration.css';
 
 function Registration({ onRegister, handleToggleMode, showToast }) {
     const [username, setUsername] = useState('');
-    const [isRegistering, setIsRegistering] = useState(true);
 
     const handleRegister = () => {
         // Checks if the user has inputted a username
@@ -31,7 +30,7 @@ function Registration({ onRegister, handleToggleMode, showToast }) {
             Register
             </button>
             <button className="toggle-btn" onClick={handleToggleMode}>
-				{isRegistering ? 'Already have a login? Login Here' : 'New player? Register Here'}
+				Already have a login? Login Here
 			</button>
         </div>
     );
