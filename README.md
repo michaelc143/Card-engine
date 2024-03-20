@@ -6,6 +6,9 @@
 * Run the following to startup services
 
 ```bash
+cd ./frontend
+docker build . -t eucrefrontend
+cd ../
 docker compose up
 ```
 
