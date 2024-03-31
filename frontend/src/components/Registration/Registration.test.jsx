@@ -24,15 +24,21 @@ describe('Registration', () => {
 
 	it('shows the button to switch to login screen', () => {
 		render(<Registration />);
-		const swapButtonText = screen.getByRole('button', { name: /Already have a login\? Login Here/i });
+		const swapButtonText = screen.getByRole('button', { name: /Already have a login/i });
 		expect(swapButtonText).toBeInTheDocument();
+	});
+
+	it('renders the register button with the > symbol', () => {
+		render(<Registration />);
+		const loginButton = screen.getByRole('button', { name: />/i });
+		expect(loginButton).toHaveTextContent('>');
 	});
     
 	it('calls the onRegister callback with the correct username when login button is clicked', () => {
 		const onRegisterMock = vi.fn();
 		render(<Registration onRegister={onRegisterMock} />);
 		const usernameInput = screen.getByPlaceholderText('Username');
-		const registerButton = screen.getByRole('button', { name: 'Register' });
+		const registerButton = screen.getByRole('button', { name: />/i });
 
 		fireEvent.change(usernameInput, { target: { value: 'testuser' } });
 		fireEvent.click(registerButton);

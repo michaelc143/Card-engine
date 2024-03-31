@@ -18,7 +18,7 @@ function Registration({ onRegister, handleToggleMode, showToast }) {
 
     return (
         <div className="registration-box" data-testid="registration-box">
-            <h2>Register:</h2>
+            <h2 className='register-h2'>Register:</h2>
             <input
                 className='register-input'
                 type="text"
@@ -27,10 +27,10 @@ function Registration({ onRegister, handleToggleMode, showToast }) {
                 onChange={(e) => setUsername(e.target.value)}
             />
             <button className="register-btn" onClick={handleRegister}>
-            Register
+                &gt;
             </button>
             <button className="toggle-btn" onClick={handleToggleMode}>
-				Already have a login? Login Here
+				Already have a login?
 			</button>
         </div>
     );

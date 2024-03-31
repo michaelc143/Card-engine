@@ -28,7 +28,7 @@ describe('App', () => {
 		const registerText = screen.getByText(/Register:/i);
 		expect(registerText).toBeInTheDocument();
 
-		const updatedButtonText = screen.getByRole('button', { name: /Already have a login\? Login Here/i });
+		const updatedButtonText = screen.getByRole('button', { name: /Already have a login/i });
 		expect(updatedButtonText).toBeInTheDocument();
 	
 		fireEvent.click(updatedButtonText);
