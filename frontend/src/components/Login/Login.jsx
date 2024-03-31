@@ -4,12 +4,17 @@ import './Login.css';
 function Login({ onLogin, handleToggleMode, showToast }) {
 	const [username, setUsername] = useState('');
 
+	/**
+	* Handles the login process.
+	* @function
+	* @description Checks if the user has inputted a username. If a username is provided, it sends the username to the parent component to run the `handleLogin` function. If no username is entered, it displays an error toast.
+	* @param {string} [username] - The username entered by the user.
+	* @param {function} onLogin - The function to be called in the parent component with the provided username.
+	* @param {function} showToast - The function to display a toast message.
+	*/
 	const handleLogin = () => {
-		// Checks if the user has inputted a username
-		// If username there, sends username to the parent component to run handleLogin in parent component
-		// Alerts user if no username entered
 		if (username) {
-			onLogin(username, true);
+			onLogin(username);
 		} 
 		else {
 			showToast('Username not specified for login', 'error');

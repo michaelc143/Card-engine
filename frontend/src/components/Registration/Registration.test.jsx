@@ -43,6 +43,6 @@ describe('Registration', () => {
 		fireEvent.change(usernameInput, { target: { value: 'testuser' } });
 		fireEvent.click(registerButton);
 
-		expect(onRegisterMock).toHaveBeenCalledWith('testuser', true);
+		expect(onRegisterMock).toHaveBeenCalledWith('testuser');
 	});
 });

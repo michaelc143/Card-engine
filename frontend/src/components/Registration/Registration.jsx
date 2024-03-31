@@ -4,12 +4,17 @@ import './Registration.css';
 function Registration({ onRegister, handleToggleMode, showToast }) {
     const [username, setUsername] = useState('');
 
+    /**
+    * Handles the registration process.
+    * @function
+    * @description Checks if the user has inputted a username. If a username is provided, it sends the username to the parent component to run the `handleRegistration` function. If no username is entered, it displays an error toast.
+    * @param {string} [username] - The username entered by the user.
+    * @param {function} onRegister - The function to be called in the parent component with the provided username.
+    * @param {function} showToast - The function to display a toast message.
+    */
     const handleRegister = () => {
-        // Checks if the user has inputted a username
-		// If username there, sends username to the parent component to run handleRegistration in parent component
-		// Alerts user if no username entered
         if (username) {
-            onRegister(username, true);
+            onRegister(username);
         } 
         else {
             showToast('Username not specified for registration', 'error');

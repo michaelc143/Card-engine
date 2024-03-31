@@ -49,6 +49,6 @@ describe('Login', () => {
 		fireEvent.change(usernameInput, { target: { value: 'testuser' } });
 		fireEvent.click(loginButton);
 
-		expect(onLoginMock).toHaveBeenCalledWith('testuser', true);
+		expect(onLoginMock).toHaveBeenCalledWith('testuser');
 	});
 });

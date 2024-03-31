@@ -10,16 +10,19 @@ function App() {
 	const [username, setUsername] = useState('');
 	const [isRegistering, setIsRegistering] = useState(false);
 
-	const handleLogin = (username, isLogged) => {
-		// This function is used to signify when a user is logged in. It stores the username in the username
-		// state variable and sets loggedIn to true to communicate that the user is logged in.
+	/**
+	* @function
+	* @description Handles the user login process. It stores the username in the username state variable and sets loggedIn to true to communicate that the user is logged in.
+	* @param {string} username - The username entered by the user.
+	*/
+	const handleLogin = (username) => {
 		fetch(`http://localhost:8080/login?username=${username}`, {method: 'POST',})
 			.then(response => response.text())
 				.then(data => {
 					console.log(data); // Used in development to debug
 					if (data === 'Logged in') {
 						setUsername(username);
-						setLoggedIn(isLogged);
+						setLoggedIn(true);
 					} 
 					else {
 						alert('User does not exist with that name');
@@ -30,10 +33,12 @@ function App() {
 		});
 	};
 
-	const handleRegister = (username, isLogged) => {
-		// This function serves as a way of registering a new user to the application. It alerts the user
-		// that they have successfully registered, sets their username to what they indicated, and
-		// switches the component shown from Registration to Login.
+	/**
+	* @function
+	* @description Handles the user registration process. It alerts the user that they have successfully registered, sets their username to what they indicated, and switches the component shown from Registration to Login.
+	* @param {string} username - The username entered by the user.
+	*/
+	const handleRegister = (username) => {
 		fetch(`http://localhost:8080/register?username=${username}`, {method: 'POST',})
 			.then(response => response.text())
 				.then(data => {
@@ -55,13 +60,21 @@ function App() {
 		});
 	};
 
+	/**
+	* @function
+	* @description Toggles the mode between login and registration component.
+	*/
 	const handleToggleMode = () => {
-		// Toggle between login and registration component
 		setIsRegistering(!isRegistering);
 	};
 
+	/**
+	* @function
+	* @description Displays a toast message based on the provided type.
+	* @param {string} message - The message to be displayed in the toast.
+	* @param {('success'|'info'|'warn'|'error')} type - The type of toast message to be displayed.
+	*/
 	const showToast = (message, type) => {
-		// Toast function based on type (success, info, warn, error), used to display toast messages
 		toast[type](message);
 	}
 
