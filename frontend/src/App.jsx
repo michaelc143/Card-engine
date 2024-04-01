@@ -11,13 +11,20 @@ Modal.setAppElement('#root'); // Required for accessibility
 function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [username, setUsername] = useState('');
-	const [isRegistering, setIsRegistering] = useState(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 
+	/**
+	* @function
+	* @description Opens the registration modal.
+	*/
 	const openModal = () => {
 		setModalIsOpen(true);
 	};
 	
+	/**
+	* @function
+	* @description Closes the registration modal.
+	*/
 	const closeModal = () => {
 		setModalIsOpen(false);
 	};
@@ -58,7 +65,7 @@ function App() {
 					if (data === 'User successfully registered') {
 						setUsername(username);
 						alert(`Successfully registered ${username}`);
-						setIsRegistering(false);
+						closeModal();
 						} 
 					else if (data === 'User already exists') {
 						alert('Username already taken');
