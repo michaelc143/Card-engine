@@ -3,7 +3,8 @@
     padding: 20px;
     border-radius: 8px;
     width: 300px;
-    margin: 0 auto;
+    width: 90%;
+    height: 100%;
 }
 
 .register-btn {
@@ -25,6 +26,7 @@
 
 .register-input {
     border: 2px dashed;
+    margin-left: 10rem;
 }
 
 .register-input::placeholder {
@@ -37,6 +39,17 @@
     text-align: left;
 }
 
-.toggle-btn {
+.reg-toggle-btn {
 	margin-top:0.5rem;
+    padding: 2.5rem 1rem;
+	border-radius: 4px;
+	background: none;
+	border: none;
+	color: #36454F;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	font-style: italic;
+	text-decoration: underline;
+    margin-left: 5.5rem;
 }

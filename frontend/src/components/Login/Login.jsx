@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Login.css';
 
-function Login({ onLogin, handleToggleMode, showToast }) {
+function Login({ onLogin, showToast, openModal }) {
 	const [username, setUsername] = useState('');
 
 	/**
@@ -35,7 +35,7 @@ function Login({ onLogin, handleToggleMode, showToast }) {
 				&gt;
 			</button>
 			<h2 className='new-player-h2'>New?</h2>
-			<button className="toggle-btn" onClick={handleToggleMode}>
+			<button className="toggle-btn" onClick={openModal}>
 				Sign up
 			</button>
 		</div>

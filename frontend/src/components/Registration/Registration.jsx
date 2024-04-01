@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Registration.css';
 
-function Registration({ onRegister, handleToggleMode, showToast }) {
+function Registration({ onRegister, showToast, closeModal }) {
     const [username, setUsername] = useState('');
 
     /**
@@ -34,7 +34,7 @@ function Registration({ onRegister, handleToggleMode, showToast }) {
             <button className="register-btn" onClick={handleRegister}>
                 &gt;
             </button>
-            <button className="toggle-btn" onClick={handleToggleMode}>
+            <button className="reg-toggle-btn" onClick={closeModal}>
 				Already have a login?
 			</button>
         </div>

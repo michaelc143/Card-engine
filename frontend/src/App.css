@@ -4,16 +4,3 @@
 	padding: 2rem;
 	text-align: center;
 }
-
-.toggle-btn {
-	padding: 0.5rem 1rem;
-	border-radius: 4px;
-	background: none;
-	border: none;
-	color: #36454F;
-	font-size: 1rem;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
-	font-style: italic;
-	text-decoration: underline;
-}
