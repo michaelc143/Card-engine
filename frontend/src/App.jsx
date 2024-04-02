@@ -3,7 +3,7 @@ import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
-import Settings from './components/Settings/Settings';
+import FindGame from './components/FindGame/FindGame';
 import {ToastContainer, toast} from 'react-toastify';
 import Modal from 'react-modal';
 
@@ -12,22 +12,39 @@ Modal.setAppElement('#root');
 function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [username, setUsername] = useState('');
-	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [regModalIsOpen, setRegModalIsOpen] = useState(false);
+	const [findGameModalIsOpen, setfindGameModalIsOpen] = useState(false);
 
 	/**
 	* @function
 	* @description Opens the registration modal.
 	*/
-	const openModal = () => {
-		setModalIsOpen(true);
+	const openRegModal = () => {
+		setRegModalIsOpen(true);
 	};
 	
 	/**
 	* @function
 	* @description Closes the registration modal.
 	*/
-	const closeModal = () => {
-		setModalIsOpen(false);
+	const closeRegModal = () => {
+		setRegModalIsOpen(false);
+	};
+
+	/**
+	* @function
+	* @description Opens the findGame modal.
+	*/
+	const openfindGameModal = () => {
+		setfindGameModalIsOpen(true);
+	};
+	
+	/**
+	* @function
+	* @description Closes the findGame modal.
+	*/
+	const closefindGameModal = () => {
+		setfindGameModalIsOpen(false);
 	};
 
 	/**
@@ -45,7 +62,7 @@ function App() {
 						setLoggedIn(true);
 					} 
 					else {
-						alert('User does not exist with that name');
+						showToast('User does not exist with that name', 'error');
 					}
 				})
 			.catch(error => {
@@ -65,11 +82,12 @@ function App() {
 					console.log(data); // Used in development to debug
 					if (data === 'User successfully registered') {
 						setUsername(username);
-						alert(`Successfully registered ${username}`);
-						closeModal();
+						showToast(`Successfully registered ${username}`, 'success');
+						closeRegModal();
 						} 
 					else if (data === 'User already exists') {
 						alert('Username already taken');
+						showToast('Username already taken', 'error');
 					}
 					else {
 						throw new Error(data);
@@ -104,7 +122,34 @@ function App() {
 			( // Once we have components for the game/lobby, they go in this area
 				<>
 					<p>Welcome {username}!</p>
-					<Settings />
+					<button onClick={openfindGameModal}>
+						Find Game
+					</button>
+					<Modal
+						isOpen={findGameModalIsOpen}
+						onRequestClose={closefindGameModal}
+						contentLabel="Registration Modal"
+						style={{
+							overlay: {
+								backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+							},
+							content: {
+								width: '600px', // Set the desired width
+								height: '500px', // Set the desired height
+								margin: 'auto', // Center the modal vertically and horizontally
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center', // Center the content horizontally
+								justifyContent: 'center', // Center the content vertically
+								borderRadius: '10px', // Add this line to round the edges
+							},
+						}}
+					>
+						<FindGame
+							showToast={showToast}
+							closeModal={closefindGameModal}
+						/>
+					</Modal>
 				</>
 			) 
 			: 
@@ -112,12 +157,12 @@ function App() {
 			<>
 				<Login
 					onLogin={handleLogin}
-					openModal={openModal}
+					openModal={openRegModal}
 					showToast={showToast}
 				/>
 				<Modal
-					isOpen={modalIsOpen}
-					onRequestClose={closeModal}
+					isOpen={regModalIsOpen}
+					onRequestClose={closeRegModal}
 					contentLabel="Registration Modal"
 					style={{
 						overlay: {
@@ -138,7 +183,7 @@ function App() {
 					<Registration
 						onRegister={handleRegister}
 						showToast={showToast}
-						closeModal={closeModal}
+						closeModal={closeRegModal}
 					/>
 				</Modal>
 			</>
