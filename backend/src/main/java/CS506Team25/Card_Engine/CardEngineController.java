@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 @CrossOrigin
 public class CardEngineController {
 
-    private final String url = "jdbc:mysql://localhost:53346/CardEngine";
+    private final String url = "jdbc:mysql://localhost:53306/full_house_badger";
     private final String databaseUsername = "root";
     private final String password = "lucky_badger";
 
@@ -27,7 +27,7 @@ public class CardEngineController {
     @PostMapping("/login")
     public String login(@RequestParam String username) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE username = ?")) {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
 
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -46,7 +46,7 @@ public class CardEngineController {
     @PostMapping("/register")
     public String register(@RequestParam String username) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE username = ?")) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
 
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -55,7 +55,7 @@ public class CardEngineController {
                 }
             }
             
-            PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO Users (username) VALUES (?)");
+            PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO users (user_name) VALUES (?)");
             insertStatement.setString(1, username);
             int rowsInserted = insertStatement.executeUpdate();
             if(rowsInserted > 0){
