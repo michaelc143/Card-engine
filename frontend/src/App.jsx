@@ -7,7 +7,8 @@ import Settings from './components/Settings/Settings';
 import {ToastContainer, toast} from 'react-toastify';
 import Modal from 'react-modal';
 
-Modal.setAppElement('#root'); 
+Modal.setAppElement('#root');
+
 function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [username, setUsername] = useState('');
