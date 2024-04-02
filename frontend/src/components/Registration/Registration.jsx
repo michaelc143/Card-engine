@@ -1,33 +1,42 @@
 import React, { useState } from 'react';
 import './Registration.css';
 
-function Registration({ onRegister }) {
+function Registration({ onRegister, showToast, closeModal }) {
     const [username, setUsername] = useState('');
 
+    /**
+    * Handles the registration process.
+    * @function
+    * @description Checks if the user has inputted a username. If a username is provided, it sends the username to the parent component to run the `handleRegistration` function. If no username is entered, it displays an error toast.
+    * @param {string} [username] - The username entered by the user.
+    * @param {function} onRegister - The function to be called in the parent component with the provided username.
+    * @param {function} showToast - The function to display a toast message.
+    */
     const handleRegister = () => {
-        // Checks if the user has inputted a username
-		// If username there, sends username to the parent component to run handleRegistration in parent component
-		// Alerts user if no username entered
         if (username) {
-            onRegister(username, true);
+            onRegister(username);
         } 
         else {
-            alert('Please enter username');
+            showToast('Username not specified for registration', 'error');
         }
     };
 
     return (
         <div className="registration-box" data-testid="registration-box">
-            <h2>Register</h2>
+            <h2 className='register-h2'>Register:</h2>
             <input
+                className='register-input'
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
             />
             <button className="register-btn" onClick={handleRegister}>
-            Register
+                &gt;
             </button>
+            <button className="reg-toggle-btn" onClick={closeModal}>
+				Already have a login?
+			</button>
         </div>
     );
 }
