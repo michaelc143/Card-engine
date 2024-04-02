@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
+import Settings from './components/Settings/Settings';
 
 function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
@@ -65,7 +66,10 @@ function App() {
 			?
 			
 			( // Once we have components for the game/lobby, they go in this area
-				<p>Welcome {username}!</p>
+				<>
+					<p>Welcome {username}!</p>
+					<Settings />
+				</>
 			) 
 			: 
 			( //User not logged in yet, prompt with login and option to register
