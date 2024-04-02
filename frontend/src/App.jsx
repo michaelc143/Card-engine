@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
 import FindGame from './components/FindGame/FindGame';
+import CreateGame from './components/CreateGame/CreateGame';
 import {ToastContainer, toast} from 'react-toastify';
 import Modal from 'react-modal';
 
@@ -14,6 +15,7 @@ function App() {
 	const [username, setUsername] = useState('');
 	const [regModalIsOpen, setRegModalIsOpen] = useState(false);
 	const [findGameModalIsOpen, setfindGameModalIsOpen] = useState(false);
+	const [createGameModalIsOpen, setCreateGameModalIsOpen] = useState(false);
 
 	/**
 	* @function
@@ -45,6 +47,22 @@ function App() {
 	*/
 	const closefindGameModal = () => {
 		setfindGameModalIsOpen(false);
+	};
+
+	/**
+	* @function
+	* @description Opens the createGame modal.
+	*/
+	const openCreateGameModal = () => {
+		setCreateGameModalIsOpen(true);
+	};
+	
+	/**
+	* @function
+	* @description Closes the createGame modal.
+	*/
+	const closeCreateGameModal = () => {
+		setCreateGameModalIsOpen(false);
 	};
 
 	/**
@@ -125,7 +143,7 @@ function App() {
 					<button onClick={openfindGameModal}>
 						Find Game
 					</button>
-					<Modal
+					<Modal // Find Game modal popup
 						isOpen={findGameModalIsOpen}
 						onRequestClose={closefindGameModal}
 						contentLabel="Registration Modal"
@@ -148,6 +166,34 @@ function App() {
 						<FindGame
 							showToast={showToast}
 							closeModal={closefindGameModal}
+						/>
+					</Modal>
+					<button onClick={openCreateGameModal}>
+						Create Game
+					</button>
+					<Modal //create game modal popup
+						isOpen={createGameModalIsOpen}
+						onRequestClose={closeCreateGameModal}
+						contentLabel="Registration Modal"
+						style={{
+							overlay: {
+								backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+							},
+							content: {
+								width: '600px', // Set the desired width
+								height: '500px', // Set the desired height
+								margin: 'auto', // Center the modal vertically and horizontally
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center', // Center the content horizontally
+								justifyContent: 'center', // Center the content vertically
+								borderRadius: '10px', // Add this line to round the edges
+							},
+						}}
+					>
+						<CreateGame
+							showToast={showToast}
+							closeModal={closeCreateGameModal}
 						/>
 					</Modal>
 				</>
