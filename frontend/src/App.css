@@ -4,19 +4,3 @@
 	padding: 2rem;
 	text-align: center;
 }
-
-.toggle-btn {
-	margin-top: 2rem;
-	padding: 0.5rem 1rem;
-	border-radius: 4px;
-	border: none;
-	background-color: #007bff;
-	color: #fff;
-	font-size: 1rem;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
-}
-
-.toggle-btn:hover {
-	background-color: #0056b3;
-}
