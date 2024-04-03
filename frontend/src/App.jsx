@@ -3,12 +3,9 @@ import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
-import FindGame from './components/FindGame/FindGame';
-import CreateGame from './components/CreateGame/CreateGame';
+import GameMenu from './components/gameMenu/gameMenu';
 import {ToastContainer, toast} from 'react-toastify';
 import Modal from 'react-modal';
-import accountSVG from './assets/account.svg';
-import settingsSVG from './assets/settings.svg';
 
 Modal.setAppElement('#root');
 
@@ -139,74 +136,15 @@ function App() {
 			?
 			
 			( // Once we have components for the game/lobby, they go in this area
-				<>
-					<div style={{display: 'flex', flexDirection: 'column'}}>
-						<div className='upper-bar'>
-							<h2 className='menu-header'>Menu.</h2>
-							<div>
-								<img src={accountSVG} />
-								<img src={settingsSVG} />
-							</div>
-						</div>
-						<a className='menu-button' style={{marginLeft: '35rem'}} onClick={openfindGameModal}>
-							Find Game
-						</a>
-						<Modal // Find Game modal popup
-							isOpen={findGameModalIsOpen}
-							onRequestClose={closefindGameModal}
-							contentLabel="Registration Modal"
-							style={{
-								overlay: {
-									backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-								},
-								content: {
-									width: '800px',
-									height: '500px',
-									margin: 'auto',
-									display: 'flex',
-									flexDirection: 'column',
-									alignItems: 'center', // Center the content horizontally
-									justifyContent: 'center', // Center the content vertically
-									borderRadius: '10px', // Add this line to round the edges
-								},
-							}}
-						>
-							<FindGame
-								showToast={showToast}
-								closeModal={closefindGameModal}
-							/>
-						</Modal>
-						<p style={{textAlign: 'center'}}>-or-</p>
-						<a style={{display: 'flex', justifyContent: 'flex-end', marginRight: '35rem'}} className='menu-button' onClick={openCreateGameModal}>
-							Create Game
-						</a>
-						<Modal //create game modal popup
-							isOpen={createGameModalIsOpen}
-							onRequestClose={closeCreateGameModal}
-							contentLabel="Registration Modal"
-							style={{
-								overlay: {
-									backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-								},
-								content: {
-									width: '800px',
-									height: '500px',
-									margin: 'auto', 
-									display: 'flex',
-									flexDirection: 'column',
-									alignItems: 'center', // Center the content horizontally
-									justifyContent: 'center', // Center the content vertically
-									borderRadius: '10px', // Add this line to round the edges
-								},
-							}}
-						>
-							<CreateGame
-								showToast={showToast}
-								closeModal={closeCreateGameModal}
-							/>
-						</Modal>
-					</div>
-				</>
+				<GameMenu
+					openfindGameModal={openfindGameModal}
+					closefindGameModal={closefindGameModal}
+					findGameModalIsOpen={findGameModalIsOpen}
+					openCreateGameModal={openCreateGameModal}
+					closeCreateGameModal={closeCreateGameModal}
+					createGameModalIsOpen={createGameModalIsOpen}
+					showToast={showToast}
+				/>
 			) 
 			: 
 			( //User not logged in yet, prompt with login and option to register
