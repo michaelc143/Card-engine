@@ -28,7 +28,7 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
                                 backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
                             },
                             content: {
-                                width: '1000px',
+                                width: '900px',
                                 height: '700px',
                                 margin: 'auto',
                                 borderRadius: '10px', // Add this line to round the edges
