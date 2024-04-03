@@ -132,14 +132,13 @@ function App() {
 			limit={5}
 			stacked={true}
 		/>
-		<h1 style={{textAlign: 'center', margin: '2rem'}}>Eucre</h1>
 		{
 			loggedIn 
 			?
 			
 			( // Once we have components for the game/lobby, they go in this area
 				<>
-					<p>Welcome {username}!</p>
+					<h2>Welcome {username}!</h2>
 					<button onClick={openfindGameModal}>
 						Find Game
 					</button>
@@ -201,6 +200,7 @@ function App() {
 			: 
 			( //User not logged in yet, prompt with login and option to register
 			<>
+				<h1 style={{textAlign: 'center', margin: '2rem'}}>Eucre</h1>
 				<Login
 					onLogin={handleLogin}
 					openModal={openRegModal}
