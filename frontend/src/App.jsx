@@ -215,8 +215,8 @@ function App() {
 							backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
 						},
 						content: {
-							width: '400px', // Set the desired width
-							height: '300px', // Set the desired height
+							width: '800px',
+							height: '350px',
 							margin: 'auto', // Center the modal vertically and horizontally
 							display: 'flex',
 							flexDirection: 'column',
