@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Registration.css';
-import arrowRightSvg from '../../assets/close.svg';
+import closeModalBtn from '../../assets/close.svg';
 
 function Registration({ onRegister, showToast, closeModal }) {
     const [username, setUsername] = useState('');
@@ -27,7 +27,7 @@ function Registration({ onRegister, showToast, closeModal }) {
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <h2 className='home'>Register:</h2>
                 <button style={{height: '4rem'}} onClick={closeModal}>
-                    <img src={arrowRightSvg} alt="Arrow Right" />
+                    <img src={closeModalBtn} alt="Arrow Right" />
                 </button>
             </div>
             <div style={{display: 'flex'}}>
