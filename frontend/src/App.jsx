@@ -132,7 +132,7 @@ function App() {
 			limit={5}
 			stacked={true}
 		/>
-		<h1>Eucre</h1>
+		<h1 style={{textAlign: 'center', margin: '2rem'}}>Eucre</h1>
 		{
 			loggedIn 
 			?

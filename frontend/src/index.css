@@ -24,7 +24,7 @@ h2.home {
     font-family: Garamond;
     font-style: italic;
     font-weight: 400;
-    text-decoration: underline;        
+    text-decoration: underline;
 }
 
 
@@ -50,6 +50,11 @@ h2.home {
     font-family: Garamond;
     font-style: italic;
     font-weight: 600;
+}
+
+/* Style for the text the user is entering into the login box */
+.textfield:focus {
+    font-size: 45px;
 }
 
 
