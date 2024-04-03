@@ -202,6 +202,10 @@ p.game {
     text-decoration: underline;    
 }
 
+.menu-button:hover {
+    cursor: pointer;
+}
+
 /* Style for bigger text */
 /* Only used on the main menu screen, so could be removed if desired */
 .big-text {
@@ -226,7 +230,10 @@ p.game {
 /* Box for the upper bar present in every menu */
 /* By default the color is set to that of the main menu */
 .upper-bar {
-    width: 688px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 99.5%;
     height: 124px;
     background: #679289; 
     border-bottom: 4px #FFFAFB dotted;
