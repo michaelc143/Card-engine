@@ -12,8 +12,8 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
                     <div className='upper-bar'>
                         <h2 className='menu-header'>Menu.</h2>
                         <div>
-                            <img src={accountSVG} />
-                            <img src={settingsSVG} />
+                            <img src={accountSVG} alt='account'/>
+                            <img src={settingsSVG} alt='settings'/>
                         </div>
                     </div>
                     <a className='menu-button' style={{marginLeft: '35rem'}} onClick={openfindGameModal}>
