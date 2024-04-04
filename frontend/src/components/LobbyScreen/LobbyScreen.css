@@ -1,0 +1,19 @@
+.notif-box {
+    background-color: white;
+    color: black;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 40px;
+}
+
+.notif-box button {
+    background-color: transparent;
+    color: black;
+    text-decoration: underline;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 24px;
+}

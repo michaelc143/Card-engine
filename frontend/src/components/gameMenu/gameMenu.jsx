@@ -7,7 +7,7 @@ import FindGame from '../FindGame/FindGame';
 import CreateGame from '../CreateGame/CreateGame';
 import LobbyScreen from '../LobbyScreen/LobbyScreen';
 
-function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast} ) {
+function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, username} ) {
 
 	const [gameCreated, setGameCreated] = useState(false);
 	const [lobbyScreenModalIsOpen, setLobbyScreenModalIsOpen] = useState(false);
@@ -101,7 +101,7 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							},
 						}}
 					>
-						<LobbyScreen closeModal={closeLobbyScreenModal} />
+						<LobbyScreen closeModal={closeLobbyScreenModal} username={username} />
 					</Modal>
 				</div>
 			</>
