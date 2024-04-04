@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import './CreateGame.css';
+import closeModalBtn from '../../assets/close.svg';
 
 function CreateGame({ closeModal }) {
 	return (
 		<>
-			<h1>Create Game.</h1>
-			<button onClick={closeModal}>X</button>
+			<div className='create-game'>
+				<div className='upper-bar'>
+					<h2 className='menu-header'>Create Game.</h2>
+					<img className='closeModalX' src={closeModalBtn} onClick={closeModal} alt='close'/>
+				</div>
+			</div>
 		</>
 	);
 }

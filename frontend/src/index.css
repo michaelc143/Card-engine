@@ -261,6 +261,8 @@ p.game {
 
 /* Color change for the upper bar in the "Create game" menu */
 .create-game .upper-bar {
+    color: white;
+    width: 100%;
     background: #BC4749;    
 }
 

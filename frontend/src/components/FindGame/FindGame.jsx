@@ -9,7 +9,7 @@ function FindGame({ closeModal }) {
 			<div className='find-game'>
 				<div className='upper-bar'>
 					<h2 className='menu-header'>Find Game.</h2>
-					<img className='closeModalX' src={closeModalBtn} onClick={closeModal} />
+					<img className='closeModalX' src={closeModalBtn} onClick={closeModal} alt='close'/>
 				</div>
 				<h3 style={{marginLeft: '1rem'}}>Available Games:</h3>
 				<div className='available-games'>

@@ -53,13 +53,9 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
                                 backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
                             },
                             content: {
-                                width: '800px',
-                                height: '500px',
-                                margin: 'auto', 
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center', // Center the content horizontally
-                                justifyContent: 'center', // Center the content vertically
+                                width: '900px',
+                                height: '700px',
+                                margin: 'auto',
                                 borderRadius: '10px', // Add this line to round the edges
                             },
                         }}

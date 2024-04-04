@@ -8,4 +8,9 @@ describe('FindGame', () => {
         const title = screen.getByText(/Find Game./i);
 		expect(title).toBeInTheDocument();
 	});
+
+	it('should have the close svg', () => {
+        render(<FindGame />);
+        const closeSVG = screen.getByAltText('close');
+    });
 });
