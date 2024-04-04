@@ -1,11 +1,25 @@
 import React from 'react';
+import { useState } from 'react';
 import Modal from 'react-modal';
 import accountSVG from '../../assets/account.svg'
 import settingsSVG from '../../assets/settings.svg';
 import FindGame from '../FindGame/FindGame';
 import CreateGame from '../CreateGame/CreateGame';
+import LobbyScreen from '../LobbyScreen/LobbyScreen';
 
 function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast} ) {
+
+	const [gameCreated, setGameCreated] = useState(false);
+	const [lobbyScreenModalIsOpen, setLobbyScreenModalIsOpen] = useState(false);
+
+
+	const openLobbyScreenModal = () => {
+		setLobbyScreenModalIsOpen(true);
+	};
+	
+	const closeLobbyScreenModal = () => {
+		setLobbyScreenModalIsOpen(false);
+	};
 
 	return(
 			<>
@@ -64,7 +78,30 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 						<CreateGame
 							showToast={showToast}
 							closeModal={closeCreateGameModal}
+							setGameCreated={() => {
+								setGameCreated(true);
+								openLobbyScreenModal(); // Open the lobby screen modal when game is created
+							}}
+							openLobbyScreenModal={openLobbyScreenModal}
 						/>
+					</Modal>
+					<Modal
+					isOpen={lobbyScreenModalIsOpen}
+					onRequestClose={closeLobbyScreenModal}
+					contentLabel="Lobby Screen Modal"
+					style={{
+						overlay: {
+						backgroundColor: 'rgba(0, 0, 0, 0.5)',
+						},
+						content: {
+						width: '900px',
+						height: '700px',
+						margin: 'auto',
+						borderRadius: '10px',
+						},
+					}}
+					>
+						<LobbyScreen closeModal={closeLobbyScreenModal} />
 					</Modal>
 				</div>
 			</>

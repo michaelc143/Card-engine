@@ -4,7 +4,7 @@ import closeModalBtn from '../../assets/close.svg';
 import arrowSVG from '../../assets/return-arrow.svg';
 import notifSVG from '../../assets/notif-icon.svg';
 
-function CreateGame({ closeModal }) {
+function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal }) {
 
 	const [gameName, setGameName] = useState('');
 	const [isPrivate, setIsPrivate] = useState(false);
@@ -15,6 +15,12 @@ function CreateGame({ closeModal }) {
 	const handlePrivateToggle = () => setIsPrivate(!isPrivate);
 	const handlePasswordChange = (e) => setPassword(e.target.value);
 	const handleMaxPlayersChange = (e) => setMaxPlayers(parseInt(e.target.value));
+
+	const closeModalAndCreateGame = () => {
+		setGameCreated(true);
+		closeModal();
+		openLobbyScreenModal();
+	}
 
 	return (
 		<>
@@ -52,7 +58,7 @@ function CreateGame({ closeModal }) {
 							<img src={notifSVG} />
 							Your game will start filled with bots.
 						</div>
-						<button>Create new game &gt;</button>
+						<button onClick={closeModalAndCreateGame}>Create new game &gt;</button>
 					</div>
 				</div>
 			</div>
