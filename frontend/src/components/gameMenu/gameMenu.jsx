@@ -86,20 +86,20 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 						/>
 					</Modal>
 					<Modal
-					isOpen={lobbyScreenModalIsOpen}
-					onRequestClose={closeLobbyScreenModal}
-					contentLabel="Lobby Screen Modal"
-					style={{
-						overlay: {
-						backgroundColor: 'rgba(0, 0, 0, 0.5)',
-						},
-						content: {
-						width: '900px',
-						height: '700px',
-						margin: 'auto',
-						borderRadius: '10px',
-						},
-					}}
+						isOpen={lobbyScreenModalIsOpen}
+						onRequestClose={closeLobbyScreenModal}
+						contentLabel="Lobby Screen Modal"
+						style={{
+							overlay: {
+							backgroundColor: 'rgba(0, 0, 0, 0.5)',
+							},
+							content: {
+							width: '900px',
+							height: '700px',
+							margin: 'auto',
+							borderRadius: '10px',
+							},
+						}}
 					>
 						<LobbyScreen closeModal={closeLobbyScreenModal} />
 					</Modal>
