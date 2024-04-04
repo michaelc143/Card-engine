@@ -27,7 +27,7 @@ function Registration({ onRegister, showToast, closeModal }) {
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <h2 className='home'>Register:</h2>
                 <button style={{height: '4rem'}} onClick={closeModal}>
-                    <img src={closeModalBtn} alt="Arrow Right" />
+                    <img src={closeModalBtn} alt="Close" />
                 </button>
             </div>
             <div style={{display: 'flex'}}>

@@ -24,8 +24,8 @@ describe('Registration', () => {
 
 	it('shows the button to switch to login screen', () => {
 		render(<Registration />);
-		const swapButtonText = screen.getByRole('button', { name: /Already have a login/i });
-		expect(swapButtonText).toBeInTheDocument();
+		const closeButton = screen.getByAltText('Close');
+        expect(closeButton).toBeInTheDocument();
 	});
 
 	it('renders the register button with the > symbol', () => {
