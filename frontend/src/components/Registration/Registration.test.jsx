@@ -25,7 +25,7 @@ describe('Registration', () => {
 	it('shows the button to switch to login screen', () => {
 		render(<Registration />);
 		const closeButton = screen.getByAltText('Close');
-        expect(closeButton).toBeInTheDocument();
+		expect(closeButton).toBeInTheDocument();
 	});
 
 	it('renders the register button with the > symbol', () => {
@@ -33,7 +33,7 @@ describe('Registration', () => {
 		const loginButton = screen.getByRole('button', { name: />/i });
 		expect(loginButton).toHaveTextContent('>');
 	});
-    
+	
 	it('calls the onRegister callback with the correct username when login button is clicked', () => {
 		const onRegisterMock = vi.fn();
 		render(<Registration onRegister={onRegisterMock} />);
