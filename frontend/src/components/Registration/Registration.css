@@ -1,27 +1,53 @@
 .registration-box {
-	display: flex;
 	border: 2px solid black;
-	padding: 20px;
-	border-radius: 8px;
-	width: 300px;
-	margin: 0 auto;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    height: 100%;
 }
 
 .register-btn {
-	margin-top: 2rem;
-	padding: 0.5rem 1rem;
-	border-radius: 4px;
-	border: none;
-	background-color: #007bff;
-	color: #fff;
-	font-size: 1rem;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
+    margin-left: 0.1rem;
+    padding: 0.25rem 1rem;
+    border-radius: 4px;
+    border: none;
+    background: none;
+    color: #36454F;
+    font-size: 3rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .register-btn:hover {
-	background-color: #0056b3;
+	background-color: #d3d3d3;
+}
+
+.register-input {
+    border: 2px dashed;
+    margin-left: 10rem;
+}
+
+.register-input::placeholder {
+    font-style: italic;
+}
+
+.register-h2 {
+    margin-top: 0.5rem;
+    margin-bottom: 0rem;
+    text-align: left;
+}
+
+.reg-toggle-btn {
+	margin-top:0.5rem;
+    padding: 2.5rem 1rem;
+	border-radius: 4px;
+	background: none;
+	border: none;
+	color: #36454F;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	font-style: italic;
+	text-decoration: underline;
+    margin-left: 5.5rem;
 }

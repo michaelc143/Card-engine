@@ -1,0 +1,45 @@
+image: node:latest
+
+stages:
+  - build
+  - test
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - frontend/node_modules/
+
+build-frontend:
+  stage: build
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+    - frontend/dist
+    expire_in: 1 week
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+
+test-frontend:
+  stage: test
+  script:
+    - cd frontend
+    - npm ci
+    - npm run test
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+
+build-backend:
+  stage: build
+  image: openjdk:18-jdk-alpine
+  script:
+    - cd backend
+    - ./gradlew assemble
+  artifacts:
+    paths:
+      - backend/build/libs/*.jar
+    expire_in: 1 week
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"

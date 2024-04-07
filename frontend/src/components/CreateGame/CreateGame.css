@@ -1,0 +1,44 @@
+.setup {
+    background-color: white;
+    color: black;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 40px;
+}
+
+.setup h3 {
+    margin-top: 0rem;
+    margin-bottom: 0.5rem;
+}
+
+.setup label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.setup input[type="text"],
+.setup input[type="password"] {
+    width: 50%;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 4px dashed black;
+    border-radius: 3px;
+}
+
+.setup select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.setup button {
+    background-color: transparent;
+    color: black;
+    text-decoration: underline;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 24px;
+}

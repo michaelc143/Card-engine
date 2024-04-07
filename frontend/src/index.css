@@ -1,0 +1,304 @@
+
+/* HOME PAGE SPECIFIC STYLING */
+
+/* Style for the "Euchre" on the home page */
+h1 {
+    color: black;
+    font-size: 150px;
+    font-family: Garamond;
+    font-weight: 400;
+}
+
+/* Style for the headings of "Login" "New?" and "Sign up" */
+h2.home {
+    color: black;
+    font-size: 70px;
+    font-family: Garamond;
+    font-weight: 700;
+}
+
+/* Style for the "Sign up." button on the landing page */
+.sign-up {
+    color: black;
+    font-size: 70px;
+    font-family: Garamond;
+    font-style: italic;
+    font-weight: 400;
+    text-decoration: underline;
+}
+
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
+/* INPUT BOX STYLING */
+
+/* Style for the input boxes */
+/* Used throughout, not just on the initial page. */
+.input-box {
+    width: 358px;
+    height: 56px;
+    background: rgba(217, 217, 217, 0);
+    border: 4px black dotted;
+}
+
+/* Style for placeholder input text */
+/* Used throughout, not just on the initial page. */
+.textfield::placeholder {
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 45px;
+    font-family: Garamond;
+    font-style: italic;
+    font-weight: 600;
+}
+
+/* Style for the text the user is entering into the login box */
+.textfield:focus {
+    font-size: 45px;
+}
+
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
+/* POP-UP/MODAL STYLING */
+
+/* Style for the uninteractable text in pop-ups */
+/* e.g. "Sign up successful" */
+.popup-text {
+    color: #FFFAFB;
+    font-size: 70px;
+    font-family: Garamond;
+    font-style: italic;
+    font-weight: 400;    
+}
+
+/* Style for the interactable text in pop-ups */
+/* e.g. "Yes" and "No" */
+.popup-button .popup-text {
+    text-decoration: underline;
+}
+
+/* Style for the "vote to play again" text after games */
+.vote .popup-text {
+    font-size: 40px;
+}
+
+/* Default style for the pop-up/modal */
+/* e.g. The style for the sign up box. */
+.popup-box {
+    width: 688px;
+    height: 532px;
+    background: #FFFAFB; 
+    border: 4px black solid;
+}
+
+/* Style for the successful signup pop-up box */
+.signup-success .popup-box {
+    background: #679289;
+}
+
+/* Style for both of the lobby related pop-ups (confirm seat and leave lobby) */
+.lobby-popups .popup-box {
+    background: #582630;  
+}
+
+/* Style for the pop-up box for the candidate suit */
+.candidate .popup-box {
+    background: #3D405B; 
+    border: 4px #FFFAFB dotted;    
+}
+
+/* Style for the pop-up box after a win */
+.win .popup-box {
+    background: #679289; 
+    border: 4px #FFFAFB dotted;    
+}
+
+/* Style for the pop-up box after a loss */
+.lose .popup-box {
+    background: #582630;  
+    border: 4px #FFFAFB dotted;    
+}
+
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
+/* GENERAL MENU TEXT STYLING */
+
+/* Styling for the main heading of every menu */
+/* e.g. "Menu." "Profile." "Settings." */
+h2.menu-header {
+    color: #FFFAFB;
+    font-size: 70px;
+    font-family: EB Garamond;
+    font-weight: 700;    
+}
+
+/* Styling for sub-headings of every menu */
+/* e.g. "Available games" "Players" "Ready" */
+h3 {
+    color: black;
+    font-size: 48px;
+    font-family: EB Garamond;
+    font-weight: 600;
+    text-decoration: underline;    
+}
+
+/* Styling for more specific headings */
+/* e.g. table headings, denoting what an input field is for, and settings */  
+h4 {
+    color: black;
+    font-size: 36px;
+    font-family: EB Garamond;
+    font-weight: 400;    
+}
+
+/* Italic variant of the h4 style above */
+h4.i {
+    font-style: italic;    
+}
+
+/* Medium-weight variant of the h4 style above */
+h4.medium {
+    font-weight: 500;    
+}
+
+/* Style for generic text throughout the program */
+/* e.g. names of players, table entries,and player count */
+p {
+    color: black;
+    font-size: 36px;
+    font-family: EB Garamond;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* Smaller version of the p style above reserved for notifications */
+p.notif {
+    font-size: 32px;    
+}
+
+/* Smaller, red version of the p style above reserved for required text entires */
+p.required {
+    color: #BC4749;
+    font-size: 32px;    
+}
+
+/* White variation of the p style reserved for the game interface for contrast */
+p.game {
+    color: #FFFAFB;    
+}
+
+/* Style for interactable text throughout the menus */
+/* e.g. "Create game" "Select seat" */
+.menu-button {
+    color: black;
+    font-size: 36px;
+    font-family: EB Garamond;
+    font-style: italic;
+    font-weight: 400;
+    text-decoration: underline;    
+}
+
+.menu-button:hover {
+    cursor: pointer;
+}
+
+/* Style for bigger text */
+/* Only used on the main menu screen, so could be removed if desired */
+.big-text {
+    font-size: 70px; 
+}
+
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
+/* MENU UPPER-BAR STYLING */
+
+/* Outline of the central UI box */
+/* Primarily used for layering purposes if needed*/
+.outline {
+    width: 688px;
+    height: 532px;
+    background: rgba(255, 250, 251, 0); 
+    border: 4px black solid    
+}
+
+/* Box for the upper bar present in every menu */
+/* By default the color is set to that of the main menu */
+.upper-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 99.5%;
+    height: 124px;
+    background: #679289; 
+    border-bottom: 4px #FFFAFB dotted;
+    border-top: 4px black solid;
+    border-left: 4px black solid;
+    border-right: 4px black solid;
+}
+
+/* Color change for the upper bar in the "Profile" menu */
+.profile .upper-bar {
+    background: #684756
+}
+
+/* Color change for the upper bar in the "Settings" menu */
+.settings .upper-bar {
+    background: #3D405B;    
+}
+
+/* Color change for the upper bar in the "Find game" menu */
+.find-game .upper-bar {
+    color: white;
+    width: 100%;
+    background: #FDA26C;    
+}
+
+/* Color change for the upper bar in the "Create game" menu */
+.create-game .upper-bar {
+    color: white;
+    width: 100%;
+    background: #BC4749;    
+}
+
+/* Color change for the upper bar in the "Lobby" and "Select seat" menus */
+.lobby .upper-bar {
+    background: #582630;    
+}
+
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
+/* GAME SCREEN STYLING */
+
+/* Styling for the box that appears at the center of the game interface */
+.center-box {
+    width: 688px;
+    height: 532px;
+    background: #582630; 
+    border: 4px #FFFAFB dotted;
+}
+
+/* Styling for the box that contains the game score in the bottom right */
+.score-box {
+    width: 449px;
+    height: 124px;
+    background: #582630; 
+    border: 4px #FFFAFB dotted;    
+}
+
+/* General styling for a card object */
+/* Currently using a white background as a placeholder */
+.card {
+    width: 166px;
+    height: 226px;
+    background: #FFFAFB; 
+    border-radius: 25px; 
+    border: 4px black solid;    
+}
