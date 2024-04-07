@@ -27,7 +27,7 @@ public class CardEngineController {
     @PostMapping("/login")
     public String login(@RequestParam String username) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
 
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -46,7 +46,7 @@ public class CardEngineController {
     @PostMapping("/register")
     public String register(@RequestParam String username) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
 
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -54,13 +54,13 @@ public class CardEngineController {
                     return "User already exists";
                 }
             }
-            
+
             PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO users (user_name) VALUES (?)");
             insertStatement.setString(1, username);
             int rowsInserted = insertStatement.executeUpdate();
-            if(rowsInserted > 0){
+            if (rowsInserted > 0) {
                 return "User successfully registered";
-            }else{
+            } else {
                 return "Failed to register user";
             }
         } catch (SQLException e) {
@@ -68,4 +68,25 @@ public class CardEngineController {
             return "Error occurred connecting to server.";
         }
     }
+
+    @PostMapping("/create-game")
+    public String createGame() {
+        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+             PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO euchre_game VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)")) {
+
+            int rowsInserted = insertStatement.executeUpdate();
+            if (rowsInserted > 0) {
+                PreparedStatement selectStatement = connection.prepareStatement("SELECT LAST_INSERT_ID()");
+                ResultSet resultSet = selectStatement.executeQuery();
+                resultSet.next();
+                return Integer.toString(resultSet.getInt(1));
+            } else {
+                return "Game could not be created";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error occurred connecting to server.";
+        }
+    }
+
 }
