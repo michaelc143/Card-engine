@@ -1,15 +1,11 @@
 FROM openjdk:17-jdk-slim
-
 WORKDIR /app
-
-COPY target/*.jar app.jar
-
+COPY . /app
 EXPOSE 8080
+ENV MYSQL_HOST=db2 \
+    MYSQL_PORT=3306 \
+    MYSQL_DATABASE=full_house_badger \
+    MYSQL_USER=root \
+    MYSQL_PASSWORD=lucky_badger
 
-ENV MYSQL_HOST=db2
-ENV MYSQL_PORT=3306
-ENV MYSQL_DATABASE=full_house_badger
-ENV MYSQL_USER=root
-ENV MYSQL_PASSWORD=lucky_badger
-
-CMD ["java", "-jar", "app.jar"]
+CMD ["./gradlew", "bootRun"]
