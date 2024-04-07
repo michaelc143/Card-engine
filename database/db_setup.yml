@@ -24,16 +24,15 @@ services:
       - "50080:80"
   backend:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: Dockerfile
-    restart: always
     ports:
       - "8080:8080"
     depends_on:
       - db2
     environment:
       MYSQL_HOST: db2
-      MYSQL_PORT: 3306
+      MYSQL_PORT: 53306
       MYSQL_DATABASE: full_house_badger
       MYSQL_USER: root
       MYSQL_PASSWORD: lucky_badger
