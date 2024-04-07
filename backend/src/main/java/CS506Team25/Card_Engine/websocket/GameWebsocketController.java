@@ -7,6 +7,12 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class GameWebsocketController {
+    /**
+     * TODO: Implement
+     * Endpoint that sends a games status to a specific game
+     * @param message
+     * @return
+     */
     @MessageMapping("/game/{id}/requestState")
     @SendTo("/topic/game/{id}")
     public String getGameData(String message) {
@@ -14,6 +20,12 @@ public class GameWebsocketController {
         return "Hello, " + message + "!";
     }
 
+    /**
+     * TODO Implement
+     * Endpoint that privately sends a player their hand
+     * @param message
+     * @return
+     */
     @MessageMapping("/game/{id}/requestHand")
     @SendToUser("/queue/response")
     public String getHand(String message) {

@@ -9,7 +9,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
+    /**
+     * Creates a public subscription channel with the header topic and a private subscription channel with the header
+     * with the queue
+     * Creates a destination channel with the destination app
+     * Enables private messaging to users with header user
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/queue");
