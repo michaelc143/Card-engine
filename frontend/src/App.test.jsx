@@ -28,10 +28,10 @@ describe('App', () => {
 		const registerText = screen.getByText(/Register:/i);
 		expect(registerText).toBeInTheDocument();
 
-		const updatedButtonText = screen.getByRole('button', { name: /Already have a login/i });
-		expect(updatedButtonText).toBeInTheDocument();
+		const closeButton = screen.getByAltText('Close');
+		expect(closeButton).toBeInTheDocument();
 	
-		fireEvent.click(updatedButtonText);
+		fireEvent.click(closeButton);
 		
 		const originalButtonText = screen.getByRole('button', { name: /Sign up/i });
 		expect(originalButtonText).toBeInTheDocument();

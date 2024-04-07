@@ -24,7 +24,7 @@ h2.home {
     font-family: Garamond;
     font-style: italic;
     font-weight: 400;
-    text-decoration: underline;        
+    text-decoration: underline;
 }
 
 
@@ -50,6 +50,11 @@ h2.home {
     font-family: Garamond;
     font-style: italic;
     font-weight: 600;
+}
+
+/* Style for the text the user is entering into the login box */
+.textfield:focus {
+    font-size: 45px;
 }
 
 
@@ -197,6 +202,10 @@ p.game {
     text-decoration: underline;    
 }
 
+.menu-button:hover {
+    cursor: pointer;
+}
+
 /* Style for bigger text */
 /* Only used on the main menu screen, so could be removed if desired */
 .big-text {
@@ -221,7 +230,10 @@ p.game {
 /* Box for the upper bar present in every menu */
 /* By default the color is set to that of the main menu */
 .upper-bar {
-    width: 688px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 99.5%;
     height: 124px;
     background: #679289; 
     border-bottom: 4px #FFFAFB dotted;
@@ -242,11 +254,15 @@ p.game {
 
 /* Color change for the upper bar in the "Find game" menu */
 .find-game .upper-bar {
+    color: white;
+    width: 100%;
     background: #FDA26C;    
 }
 
 /* Color change for the upper bar in the "Create game" menu */
 .create-game .upper-bar {
+    color: white;
+    width: 100%;
     background: #BC4749;    
 }
 

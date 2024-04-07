@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Registration.css';
+import closeModalBtn from '../../assets/close.svg';
 
 function Registration({ onRegister, showToast, closeModal }) {
     const [username, setUsername] = useState('');
@@ -23,20 +24,24 @@ function Registration({ onRegister, showToast, closeModal }) {
 
     return (
         <div className="registration-box" data-testid="registration-box">
-            <h2 className='register-h2'>Register:</h2>
-            <input
-                className='register-input'
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
-            <button className="register-btn" onClick={handleRegister}>
-                &gt;
-            </button>
-            <button className="reg-toggle-btn" onClick={closeModal}>
-				Already have a login?
-			</button>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                <h2 className='home'>Register:</h2>
+                <button style={{height: '4rem'}} onClick={closeModal}>
+                    <img src={closeModalBtn} alt="Close" />
+                </button>
+            </div>
+            <div style={{display: 'flex'}}>
+                <input
+                    className='input-box textfield'
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
+                <button className="register-btn" onClick={handleRegister}>
+                    &gt;
+                </button>
+            </div>
         </div>
     );
 }

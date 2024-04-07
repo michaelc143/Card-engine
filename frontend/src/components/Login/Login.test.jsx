@@ -39,7 +39,7 @@ describe('Login', () => {
 		const loginButton = screen.getByRole('button', { name: />/i });
 		expect(loginButton).toHaveTextContent('>');
 	});
-    
+
 	it('calls the onLogin callback with the correct username when login button is clicked', () => {
 		const onLoginMock = vi.fn();
 		render(<Login onLogin={onLoginMock} />);

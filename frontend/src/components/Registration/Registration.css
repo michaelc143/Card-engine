@@ -2,20 +2,18 @@
 	border: 2px solid black;
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
     width: 90%;
     height: 100%;
 }
 
 .register-btn {
-	margin-top: 1rem;
     margin-left: 0.1rem;
     padding: 0.25rem 1rem;
     border-radius: 4px;
     border: none;
     background: none;
     color: #36454F;
-    font-size: 1rem;
+    font-size: 3rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
