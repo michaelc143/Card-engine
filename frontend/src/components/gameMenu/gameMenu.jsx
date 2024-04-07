@@ -13,10 +13,12 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 	const [lobbyScreenModalIsOpen, setLobbyScreenModalIsOpen] = useState(false);
 
 
+	// opens lobby screen modal popup
 	const openLobbyScreenModal = () => {
 		setLobbyScreenModalIsOpen(true);
 	};
 	
+	// closes lobby screen modal popup
 	const closeLobbyScreenModal = () => {
 		setLobbyScreenModalIsOpen(false);
 	};
@@ -40,13 +42,13 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 						contentLabel="Registration Modal"
 						style={{
 							overlay: {
-								backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+								backgroundColor: 'rgba(0, 0, 0, 0.5)',
 							},
 							content: {
 								width: '900px',
 								height: '700px',
 								margin: 'auto',
-								borderRadius: '10px', // Add this line to round the edges
+								borderRadius: '10px',
 							},
 						}}
 					>
@@ -65,13 +67,13 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 						contentLabel="Registration Modal"
 						style={{
 							overlay: {
-								backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+								backgroundColor: 'rgba(0, 0, 0, 0.5)',
 							},
 							content: {
 								width: '900px',
 								height: '600px',
 								margin: 'auto',
-								borderRadius: '10px', // Add this line to round the edges
+								borderRadius: '10px',
 							},
 						}}
 					>

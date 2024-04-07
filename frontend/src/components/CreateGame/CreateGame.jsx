@@ -4,7 +4,7 @@ import closeModalBtn from '../../assets/close.svg';
 import arrowSVG from '../../assets/return-arrow.svg';
 import notifSVG from '../../assets/notif-icon.svg';
 
-function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal }) {
+function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToast }) {
 
 	const [gameName, setGameName] = useState('');
 	const [isPrivate, setIsPrivate] = useState(false);
@@ -16,10 +16,20 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal }) {
 	const handlePasswordChange = (e) => setPassword(e.target.value);
 	const handleMaxPlayersChange = (e) => setMaxPlayers(parseInt(e.target.value));
 
+
+	// verifies that there is a game name entered
+	// then opens the lobby modal
 	const closeModalAndCreateGame = () => {
-		setGameCreated(true);
-		closeModal();
-		openLobbyScreenModal();
+
+		if (!gameName) {
+			showToast('Game name is required', 'error');
+		}
+
+		else {
+			setGameCreated(true);
+			closeModal();
+			openLobbyScreenModal();
+		}
 	}
 
 	return (
@@ -32,7 +42,7 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal }) {
 				<div className='setup'>
 					<h3 className='setup-title'>Setup:</h3>
 					<label>
-						Name: <input type="text" className='input-box textfield' placeholder='Name' value={gameName} onChange={handleGameNameChange} /> <text style={{color: 'red', fontStyle: 'italic'}}>required.</text>
+						Name: <input type="text" className='input-box textfield' placeholder='Name' value={gameName} onChange={handleGameNameChange} required /> <text style={{color: 'red', fontStyle: 'italic'}}>required.</text>
 					</label>
 					<div>
 						Private:

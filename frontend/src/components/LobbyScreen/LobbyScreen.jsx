@@ -7,7 +7,7 @@ function LobbyScreen({ closeModal, username }) {
 
     // We'll need a useEffect on component load to check for whos in the game currently, then use websockets for them to communicate with one another
     // RN just using dummy data for people name
-    const playerNames = ['Player2', 'Player3', 'Player4'];
+    const playerNames = ['Player2 (bot)', 'Player3 (bot)', 'Player4 (bot)'];
 
     return(
         <>
@@ -21,7 +21,7 @@ function LobbyScreen({ closeModal, username }) {
                     <h4 style={{ width: '45%', display: 'inline-block', textAlign: 'center' }}>Ready:</h4>
                 </div>
                 <div style={{ marginLeft: '1rem' }}>
-                    <text style={{ width: '45%', display: 'inline-block', fontSize: '32px', marginBottom: '1rem'}}>{username}</text> { /* Display their username as the first one */ }
+                    <div style={{ width: '45%', display: 'inline-block', fontSize: '32px', marginBottom: '1rem'}}>(You)</div>
                     <input style={{ width: '45%', display: 'inline-block' }} type="checkbox" />
                 </div>
                 {playerNames.map((name) => (

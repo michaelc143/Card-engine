@@ -4,6 +4,9 @@ import closeModalBtn from '../../assets/close.svg';
 
 function FindGame({ closeModal }) {
 	const sampleNamesList = ['Michael', 'Quinn', 'Tomas', 'Jeremiah', 'Haiyi', 'Aidan'];
+
+	// once we have the endpoint to grab the open games, we will use a useEffect here to grab the available games on component load
+
 	return (
 		<>
 			<div className='find-game'>
