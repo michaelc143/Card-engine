@@ -3,30 +3,65 @@ import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
+import GameMenu from './components/gameMenu/gameMenu';
 import {ToastContainer, toast} from 'react-toastify';
 import Modal from 'react-modal';
 
-Modal.setAppElement('#root'); // Required for accessibility
+Modal.setAppElement('#root');
 
 function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [username, setUsername] = useState('');
-	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [regModalIsOpen, setRegModalIsOpen] = useState(false);
+	const [findGameModalIsOpen, setfindGameModalIsOpen] = useState(false);
+	const [createGameModalIsOpen, setCreateGameModalIsOpen] = useState(false);
 
 	/**
 	* @function
 	* @description Opens the registration modal.
 	*/
-	const openModal = () => {
-		setModalIsOpen(true);
+	const openRegModal = () => {
+		setRegModalIsOpen(true);
 	};
 	
 	/**
 	* @function
 	* @description Closes the registration modal.
 	*/
-	const closeModal = () => {
-		setModalIsOpen(false);
+	const closeRegModal = () => {
+		setRegModalIsOpen(false);
+	};
+
+	/**
+	* @function
+	* @description Opens the findGame modal.
+	*/
+	const openfindGameModal = () => {
+		setfindGameModalIsOpen(true);
+	};
+	
+	/**
+	* @function
+	* @description Closes the findGame modal.
+	*/
+	const closefindGameModal = () => {
+		setfindGameModalIsOpen(false);
+	};
+
+	/**
+	* @function
+	* @description Opens the createGame modal.
+	*/
+	const openCreateGameModal = () => {
+		setCreateGameModalIsOpen(true);
+	};
+	
+	/**
+	* @function
+	* @description Closes the createGame modal.
+	*/
+	const closeCreateGameModal = () => {
+		setCreateGameModalIsOpen(false);
 	};
 
 	/**
@@ -44,7 +79,7 @@ function App() {
 						setLoggedIn(true);
 					} 
 					else {
-						alert('User does not exist with that name');
+						showToast('User does not exist with that name', 'error');
 					}
 				})
 			.catch(error => {
@@ -64,11 +99,12 @@ function App() {
 					console.log(data); // Used in development to debug
 					if (data === 'User successfully registered') {
 						setUsername(username);
-						alert(`Successfully registered ${username}`);
-						closeModal();
+						showToast(`Successfully registered ${username}`, 'success');
+						closeRegModal();
 						} 
 					else if (data === 'User already exists') {
 						alert('Username already taken');
+						showToast('Username already taken', 'error');
 					}
 					else {
 						throw new Error(data);
@@ -90,38 +126,46 @@ function App() {
 	}
 
 	return (
-		<div className="container">
+		<>
 		<ToastContainer 
 			limit={5}
 			stacked={true}
 		/>
-		<h1>Eucre</h1>
 		{
 			loggedIn 
 			?
 			
 			( // Once we have components for the game/lobby, they go in this area
-				<p>Welcome {username}!</p>
+				<GameMenu
+					openfindGameModal={openfindGameModal}
+					closefindGameModal={closefindGameModal}
+					findGameModalIsOpen={findGameModalIsOpen}
+					openCreateGameModal={openCreateGameModal}
+					closeCreateGameModal={closeCreateGameModal}
+					createGameModalIsOpen={createGameModalIsOpen}
+					showToast={showToast}
+				/>
 			) 
 			: 
 			( //User not logged in yet, prompt with login and option to register
 			<>
+				<h1 style={{textAlign: 'center', margin: '2rem'}}>Eucre</h1>
 				<Login
 					onLogin={handleLogin}
-					openModal={openModal}
+					openModal={openRegModal}
 					showToast={showToast}
 				/>
 				<Modal
-					isOpen={modalIsOpen}
-					onRequestClose={closeModal}
+					isOpen={regModalIsOpen}
+					onRequestClose={closeRegModal}
 					contentLabel="Registration Modal"
 					style={{
 						overlay: {
 							backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
 						},
 						content: {
-							width: '400px', // Set the desired width
-							height: '300px', // Set the desired height
+							width: '800px',
+							height: '350px',
 							margin: 'auto', // Center the modal vertically and horizontally
 							display: 'flex',
 							flexDirection: 'column',
@@ -134,13 +178,13 @@ function App() {
 					<Registration
 						onRegister={handleRegister}
 						showToast={showToast}
-						closeModal={closeModal}
+						closeModal={closeRegModal}
 					/>
 				</Modal>
 			</>
 			)
 		}
-		</div>
+		</>
 	);
 }
 

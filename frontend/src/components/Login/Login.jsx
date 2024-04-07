@@ -23,19 +23,21 @@ function Login({ onLogin, showToast, openModal }) {
 
 	return (
 		<div className="login-box" data-testid="login-box">
-			<h2 className='login-h2'>Login:</h2>
-			<input
-				className='login-input'
-				type="text"
-				placeholder="Username"
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
-			/>
-			<button className="login-btn" onClick={handleLogin}>
-				&gt;
-			</button>
-			<h2 className='new-player-h2'>New?</h2>
-			<button className="toggle-btn" onClick={openModal}>
+			<h2 className='home'>Login:</h2>
+			<div style={{display: 'flex'}}>
+				<input
+					className='input-box textfield'
+					type="text"
+					placeholder="Username"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
+				/>
+				<button className="login-btn" onClick={handleLogin}>
+					&gt;
+				</button>
+			</div>
+			<h2 className='home'>New?</h2>
+			<button className="sign-up" onClick={openModal}>
 				Sign up
 			</button>
 		</div>
