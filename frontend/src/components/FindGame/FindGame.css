@@ -1,0 +1,9 @@
+.closeModalX:hover {
+    cursor: pointer;
+}
+
+.available-games {
+    border: dashed 4px;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}

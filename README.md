@@ -14,6 +14,9 @@ ssh -L 8080:localhost:8080 -L 3000:localhost:3000 username@cs506-team-25.cs.wisc
 * Run the following to startup services
 
 ```bash
+cd ./frontend
+docker build . -t eucrefrontend
+cd ../
 docker compose up
 ```
 
