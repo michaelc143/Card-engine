@@ -77,6 +77,7 @@ public class CardEngineController {
      * @param gameName Name that will be displayed in lobby
      * @return Newly created game's ID
      */
+    // TODO: Add the game_name part in DB schema, currently can hit the endpoint from frontend but get errors due to no game_name in db schema
     @PostMapping("games/euchre/create-game")
     public String createGame(@RequestParam String gameName) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
