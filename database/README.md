@@ -7,3 +7,9 @@ docker compose -f db_setup.yml up -d
 ```
 
 Running this command will spin up the frontend, backend, and database as well as PHPMyAdmin to view/edit the db.
+
+To get into the mysql DB from your terminal, run the following command:
+
+```bash
+docker exec -it database-db2-1 mysql -u root -p
+```
