@@ -1,5 +1,6 @@
 package CS506Team25.Card_Engine;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Connection;
@@ -158,7 +159,7 @@ public class CardEngineController {
     /**
      * Get information about a game
      * @param id game's id
-     * @return JSON of all of a games attributes
+     * @return JSON of all of a games attributes, note that player1 is seat 1 and so on
      */
     @GetMapping("/games/euchre/{id}")
     public ObjectNode getGameInfo(@PathVariable String id){
@@ -176,6 +177,10 @@ public class CardEngineController {
                 json.put("player2_id", resultSet.getInt(4));
                 json.put("player3_id", resultSet.getInt(5));
                 json.put("player4_id", resultSet.getInt(6));
+                json.set("player1_name", userIDToUsername(resultSet.getInt(3)));
+                json.set("player2_name", userIDToUsername(resultSet.getInt(4)));
+                json.set("player3_name", userIDToUsername(resultSet.getInt(5)));
+                json.set("player4_name", userIDToUsername(resultSet.getInt(6)));
                 json.put("game_status", resultSet.getString(7));
                 json.put("winner_1", resultSet.getInt(8));
                 json.put("winner_2", resultSet.getInt(9));
@@ -210,6 +215,14 @@ public class CardEngineController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    private JsonNode userIDToUsername(int userID){
+        if (userID != 0) {
+            return getPlayerInfo(Integer.toString(userID)).get("user_name");
+        } else {
             return null;
         }
     }
