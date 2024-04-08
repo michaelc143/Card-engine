@@ -105,19 +105,19 @@ public class CardEngineController {
 
     /**
      * Allows a player to select their seat, is functionally how a player joins a game
-     * @param gameID ID of game you're trying ot join
+     * @param id ID of game you're trying ot join
      * @param playerID your player ID
      * @param seatNumber which seat at the table you want to join 1-4
      * @return Response message
      */
-    @PostMapping("games/euchre/select-seat")
-    public String assignSeat(@RequestParam int gameID, int playerID, int seatNumber) {
+    @PostMapping("games/euchre/{id}/select-seat")
+    public String assignSeat(@PathVariable String id, int playerID, int seatNumber) {
         String playerSeat = "player" + seatNumber + "_id";
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET " + playerSeat + " = ? WHERE game_id = ?")) {
 
             insertStatement.setInt(1, playerID);
-            insertStatement.setInt(2, gameID);
+            insertStatement.setInt(2, Integer.valueOf(id));
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted > 0) {
                 return "Successfully assigned to seat " + seatNumber;
