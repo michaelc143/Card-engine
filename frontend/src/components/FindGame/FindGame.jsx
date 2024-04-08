@@ -3,12 +3,11 @@ import './FindGame.css';
 import closeModalBtn from '../../assets/close.svg';
 
 function FindGame({ closeModal }) {
-	const sampleNamesList = ['Michael', 'Quinn', 'Tomas', 'Jeremiah', 'Haiyi', 'Aidan'];
 
-	// once we have the endpoint to grab the open games, we will use a useEffect here to grab the available games on component load
+	const [openGames, setOpenGames] = useState({});
 
-	const [openGames, setOpenGames] = useState(null);
-
+	// Runs on component load
+	// Fetches all open games from the backend/db
 	useEffect(() => {
 		const fetchOpenGames = async () => {
 			try {
@@ -17,8 +16,8 @@ function FindGame({ closeModal }) {
 					throw new Error('Failed to fetch open games');
 				}
 				const data = await response.json();
-				// setOpenGames(data);
-				console.log(data);
+				setOpenGames(data);
+				console.log(data + "data"); // dev debugging purposes
 			} catch (error) {
 				console.error('Error fetching open games:', error);
 			}
@@ -41,17 +40,17 @@ function FindGame({ closeModal }) {
 						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>Players:</p>
 						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}></p>
 					</div>
-					{/* {(openGames).map((gameName) => (
-						<div key={gameName}>
-							<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block', marginLeft: '0.5rem'}}>
-								{gameName}: {openGames[gameName].game_id}
-							</p>
-							<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>
-								{openGames[gameName].number_players}/4
-							</p>
-							<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>&gt;</p>
-						</div>
-					))} */}
+					{Object.entries(openGames).map(([gameName, gameData]) => (
+					<div key={gameName}>
+						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block', marginLeft: '0.5rem'}}>
+						{gameName}: ID {gameData.game_id}
+						</p>
+						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>
+						{gameData.number_players}/4
+						</p>
+						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>&gt;</p>
+					</div>
+					))}
 				</div>
 			</div>
 		</>
