@@ -71,10 +71,10 @@ public class CardEngineController {
 
     /**
      * Creates a game that players can join
-     * @param gameName Name that will be displayed in lobby
+     * @param gameName name that will be displayed in lobby
+     * @param gamePassword optional argument, creates a password for the game
      * @return Newly created game's ID
      */
-    // TODO: Add the game_name part in DB schema, currently can hit the endpoint from frontend but get errors due to no game_name in db schema
     @PostMapping("games/euchre/create-game")
     public String createGame(@RequestParam String gameName, @RequestParam(required = false) String gamePassword) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
