@@ -1,3 +1,6 @@
+/* Import EB Garamond and Inknut Antiqua from Google Fonts */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inknut+Antiqua:wght@300;400;500;600;700;800;900&display=swap');
 
 /* HOME PAGE SPECIFIC STYLING */
 
@@ -5,7 +8,7 @@
 h1 {
     color: black;
     font-size: 150px;
-    font-family: Garamond;
+    font-family: 'Inknut Antiqua', Garamond;
     font-weight: 400;
 }
 
@@ -13,7 +16,7 @@ h1 {
 h2.home {
     color: black;
     font-size: 70px;
-    font-family: Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-weight: 700;
 }
 
@@ -21,7 +24,7 @@ h2.home {
 .sign-up {
     color: black;
     font-size: 70px;
-    font-family: Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-style: italic;
     font-weight: 400;
     text-decoration: underline;
@@ -47,7 +50,7 @@ h2.home {
 .textfield::placeholder {
     color: rgba(0, 0, 0, 0.25);
     font-size: 45px;
-    font-family: Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-style: italic;
     font-weight: 600;
 }
@@ -68,7 +71,7 @@ h2.home {
 .popup-text {
     color: #FFFAFB;
     font-size: 70px;
-    font-family: Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-style: italic;
     font-weight: 400;    
 }
@@ -132,7 +135,7 @@ h2.home {
 h2.menu-header {
     color: #FFFAFB;
     font-size: 70px;
-    font-family: EB Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-weight: 700;    
 }
 
@@ -141,7 +144,7 @@ h2.menu-header {
 h3 {
     color: black;
     font-size: 48px;
-    font-family: EB Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-weight: 600;
     text-decoration: underline;    
 }
@@ -151,7 +154,7 @@ h3 {
 h4 {
     color: black;
     font-size: 36px;
-    font-family: EB Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-weight: 400;    
 }
 
@@ -170,7 +173,7 @@ h4.medium {
 p {
     color: black;
     font-size: 36px;
-    font-family: EB Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-style: italic;
     font-weight: 400;
 }
@@ -196,7 +199,7 @@ p.game {
 .menu-button {
     color: black;
     font-size: 36px;
-    font-family: EB Garamond;
+    font-family: 'EB Garamond', Garamond;
     font-style: italic;
     font-weight: 400;
     text-decoration: underline;    
