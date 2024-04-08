@@ -76,7 +76,7 @@ public class CardEngineController {
      * @param gameName Name that will be displayed in lobby
      * @return Newly created game's ID
      */
-    @PostMapping("/create-game")
+    @PostMapping("games/euchre/create-game")
     public String createGame(@RequestParam String gameName) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
              PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO euchre_game VALUES (DEFAULT, ?, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)")) {
@@ -104,7 +104,7 @@ public class CardEngineController {
      * @param seatNumber which seat at the table you want to join 1-4
      * @return Response message
      */
-    @PostMapping("/select-seat")
+    @PostMapping("games/euchre/select-seat")
     public String assignSeat(@RequestParam int gameID, int playerID, int seatNumber) {
         String playerSeat = "player" + seatNumber + "_id";
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
@@ -127,7 +127,7 @@ public class CardEngineController {
     /**
      * @return A JSON of all games that can be joined with key game name and values game id and number of players, null if an error occurs
      */
-    @GetMapping("/open-games")
+    @GetMapping("games/euchre/open-games")
     public ObjectNode getOpenGames() {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
             PreparedStatement statement = connection.prepareStatement("SELECT game_id, game_name, player1_id, player2_id, player3_id, player4_id FROM euchre_game WHERE game_status = 'waiting_for_players'")) {
@@ -149,6 +149,65 @@ public class CardEngineController {
                 json.set(resultSet.getString(2), game);
             }
             return json;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Get information about a game
+     * @param id game's id
+     * @return JSON of all of a games attributes
+     */
+    @GetMapping("/games/euchre/{id}")
+    public ObjectNode getGameInfo(@PathVariable String id){
+        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM euchre_game WHERE game_id = ?")) {
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode json = objectMapper.createObjectNode();
+            statement.setInt(1, Integer.parseInt(id));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                json.put("game_id", resultSet.getInt(1));
+                json.put("game_name", resultSet.getString(2));
+                json.put("player1_id", resultSet.getInt(3));
+                json.put("player2_id", resultSet.getInt(4));
+                json.put("player3_id", resultSet.getInt(5));
+                json.put("player4_id", resultSet.getInt(6));
+                json.put("game_status", resultSet.getString(7));
+                json.put("winner_1", resultSet.getInt(8));
+                json.put("winner_2", resultSet.getInt(9));
+                json.put("creation_date", String.valueOf(resultSet.getDate(10)));
+                return json;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Get information about a player
+     * @param id player's id
+     * @return JSON of player's id, username, and date joined
+     */
+    @GetMapping("/player/{id}")
+    public ObjectNode getPlayerInfo(@PathVariable String id){
+        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?")) {
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode json = objectMapper.createObjectNode();
+            statement.setInt(1, Integer.parseInt(id));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                json.put("user_id", resultSet.getInt(1));
+                json.put("user_name", resultSet.getString(2));
+                json.put("date_joined", String.valueOf(resultSet.getDate(3)));
+                return json;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
