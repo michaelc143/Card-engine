@@ -1,6 +1,8 @@
 CREATE TABLE `full_house_badger`.`euchre_game` (
         `game_id` INT NOT NULL AUTO_INCREMENT ,
         `game_name` VARCHAR(75) NOT NULL ,
+        `private` BOOLEAN NOT NULL DEFAULT FALSE ,
+        `password` VARCHAR(75) ,
         `player1_id` INT ,
         `player2_id` INT ,
         `player3_id` INT ,

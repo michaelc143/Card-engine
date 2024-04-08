@@ -3,11 +3,8 @@ package CS506Team25.Card_Engine;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -78,11 +75,18 @@ public class CardEngineController {
      * @return Newly created game's ID
      */
     @PostMapping("games/euchre/create-game")
-    public String createGame(@RequestParam String gameName) {
+    public String createGame(@RequestParam String gameName, @RequestParam(required = false) String gamePassword) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
-             PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO euchre_game VALUES (DEFAULT, ?, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)")) {
+             PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO euchre_game VALUES (DEFAULT, ?, ?, ?, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT , DEFAULT )")) {
 
             insertStatement.setString(1, gameName);
+            if (gamePassword != null){
+                insertStatement.setBoolean(2, true);
+                insertStatement.setString(3, gameName);
+            } else {
+                insertStatement.setBoolean(2, false);
+                insertStatement.setNull(3, Types.VARCHAR);
+            }
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted > 0) {
                 PreparedStatement selectStatement = connection.prepareStatement("SELECT LAST_INSERT_ID()");
