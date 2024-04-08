@@ -26,6 +26,21 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToas
 		}
 
 		else {
+			// send newly created game to the backend using gameName
+			fetch(`http://localhost:8080/games/euchre/create-game?gameName=${gameName}`, {method: 'POST',})
+			.then(response => response.text())
+				.then(data => {
+					console.log(data); // Used in development to debug
+					if (data === 'Game could not be created') {
+						showToast("Couldn't create game", 'error');
+					}
+					else {
+						showToast("Created game", 'success');
+					}
+				})
+			.catch(error => {
+				console.error('Error:', error);
+			});
 			setGameCreated(true);
 			closeModal();
 			openLobbyScreenModal();
@@ -44,6 +59,7 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToas
 					<label>
 						Name: <input type="text" className='input-box textfield' placeholder='Name' value={gameName} onChange={handleGameNameChange} required /> <text style={{color: 'red', fontStyle: 'italic'}}>required.</text>
 					</label>
+					{/* TODO: add this to req to backend to make game private in db */}
 					<div>
 						Private:
 						<input type="checkbox" checked={isPrivate} onChange={handlePrivateToggle} />
@@ -55,6 +71,7 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToas
 						</label>
 					)}
 					<label>
+						{/* TODO: Add this to req to backend so that the num bots can be used in db */}
 						Max human players:
 						<select value={maxPlayers} onChange={handleMaxPlayersChange}>
 						<option value={1}>1</option>

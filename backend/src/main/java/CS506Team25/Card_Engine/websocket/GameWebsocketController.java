@@ -13,20 +13,26 @@ public class GameWebsocketController {
      * @param message
      * @return
      */
-    @MessageMapping("/game/{id}/requestState")
-    @SendTo("/topic/game/{id}")
+    @MessageMapping("/games/euchre/{gameID}/requestState")
+    @SendTo("/topic/games/euchre/{gameID}")
     public String getGameData(String message) {
         System.out.println("TEST");
         return "Hello, " + message + "!";
     }
 
+    @MessageMapping("/games/euchre/{gameID}")
+    @SendTo("/topic/games/euchre/{gameID}")
+    public String queueUp(){
+        return "Successfully voted to start";
+    }
+
     /**
-     * TODO Implement
+     * TODO: Implement
      * Endpoint that privately sends a player their hand
      * @param message
      * @return
      */
-    @MessageMapping("/game/{id}/requestHand")
+    @MessageMapping("/game/{gameID}/requestHand")
     @SendToUser("/queue/response")
     public String getHand(String message) {
         return "Hello, " + message + ", this is a private message!";
