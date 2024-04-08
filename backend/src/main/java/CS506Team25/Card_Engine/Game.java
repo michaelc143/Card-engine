@@ -364,7 +364,7 @@ public class Game {
     }
 
     /**
-     * Scores the round based on the values stored in callingTeam and trickCount
+     * Scores the round based on the values stored in callingTeam and trickCount, and updates the score array
      */
     public void scoreRound() {
         if (trickCount[callingTeam] < 3) {
