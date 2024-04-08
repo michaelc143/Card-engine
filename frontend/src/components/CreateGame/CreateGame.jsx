@@ -26,6 +26,20 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToas
 		}
 
 		else {
+			fetch(`http://localhost:8080/games/euchre/create-game?gameName=${gameName}`, {method: 'POST',})
+			.then(response => response.text())
+				.then(data => {
+					console.log(data); // Used in development to debug
+					if (data === 'Game could not be created') {
+						showToast("Couldn't create game", 'error');
+					}
+					else {
+						showToast("Created game", 'success');
+					}
+				})
+			.catch(error => {
+				console.error('Error:', error);
+			});
 			setGameCreated(true);
 			closeModal();
 			openLobbyScreenModal();
