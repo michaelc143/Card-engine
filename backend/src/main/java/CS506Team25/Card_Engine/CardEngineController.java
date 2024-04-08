@@ -10,6 +10,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.function.Consumer;
 
 @RestController
 @CrossOrigin
@@ -18,6 +21,11 @@ public class CardEngineController {
     private final String url = "jdbc:mysql://localhost:53306/full_house_badger";
     private final String databaseUsername = "root";
     private final String password = "lucky_badger";
+    private GameManager gameManager;
+
+    public CardEngineController (){
+        getLiveLobbies();
+    }
 
     @GetMapping("/")
     public String hello() {
@@ -93,7 +101,9 @@ public class CardEngineController {
                 PreparedStatement selectStatement = connection.prepareStatement("SELECT LAST_INSERT_ID()");
                 ResultSet resultSet = selectStatement.executeQuery();
                 resultSet.next();
-                return Integer.toString(resultSet.getInt(1));
+                int gameID = resultSet.getInt(1);
+                GameManager.putLobby(gameID);
+                return Integer.toString(gameID);
             } else {
                 return "Game could not be created";
             }
@@ -117,7 +127,7 @@ public class CardEngineController {
             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET " + playerSeat + " = ? WHERE game_id = ?")) {
 
             insertStatement.setInt(1, playerID);
-            insertStatement.setInt(2, Integer.valueOf(id));
+            insertStatement.setInt(2, Integer.parseInt(id));
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted > 0) {
                 return "Successfully assigned to seat " + seatNumber;
@@ -232,4 +242,9 @@ public class CardEngineController {
         }
     }
 
+    private void getLiveLobbies(){
+        ObjectNode json = getOpenGames();
+        Consumer<JsonNode> data = (JsonNode node) -> GameManager.putLobby(node.get("game_id").asInt());
+        json.forEach(data);
+    }
 }
