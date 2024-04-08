@@ -21,7 +21,7 @@ public class GameWebsocketController {
     }
 
     /**
-     * TODO Implement
+     * TODO: Implement
      * Endpoint that privately sends a player their hand
      * @param message
      * @return

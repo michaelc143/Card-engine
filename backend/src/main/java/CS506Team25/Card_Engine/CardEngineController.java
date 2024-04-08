@@ -71,6 +71,11 @@ public class CardEngineController {
         }
     }
 
+    /**
+     * Creates a game that players can join
+     * @param gameName Name that will be displayed in lobby
+     * @return Newly created game's ID
+     */
     @PostMapping("/create-game")
     public String createGame(@RequestParam String gameName) {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
@@ -92,6 +97,13 @@ public class CardEngineController {
         }
     }
 
+    /**
+     * Allows a player to select their seat, is functionally how a player joins a game
+     * @param gameID ID of game you're trying ot join
+     * @param playerID your player ID
+     * @param seatNumber which seat at the table you want to join 1-4
+     * @return Response message
+     */
     @PostMapping("/select-seat")
     public String assignSeat(@RequestParam int gameID, int playerID, int seatNumber) {
         String playerSeat = "player" + seatNumber + "_id";
@@ -112,6 +124,9 @@ public class CardEngineController {
         }
     }
 
+    /**
+     * @return A JSON of all games that can be joined with key game name and values game id and number of players, null if an error occurs
+     */
     @GetMapping("/open-games")
     public ObjectNode getOpenGames() {
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
