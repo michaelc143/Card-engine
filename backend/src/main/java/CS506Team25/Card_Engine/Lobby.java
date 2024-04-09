@@ -1,10 +1,10 @@
 package CS506Team25.Card_Engine;
 
+import java.util.Arrays;
+
 public class Lobby {
     int gameID;
-    int votes = 0; //Total number of votes to start
-    int[] scores;
-    int[] playerArr = new int[4];
+    Player[] playerArr = new Player[4]; //Position in array represents position at table, if null then there's no player
 
     /**
      * Creates a new lobby on the backend
@@ -31,12 +31,12 @@ public class Lobby {
     /**
      * Assign player seat in lobby
      * @param playerID the ID of the player to join
-     * @param seat the number of the seat they will be at 1-4
+     * @param seat the number of the seat they will be at 1-4 inclusive
      * @return 0 if successful
      */
     public int joinLobby(int playerID, int seat){
-        if (playerArr[seat] == 0){
-            playerArr[seat] = playerID;
+        if (playerArr[seat] == null){
+            playerArr[seat].playerID  = playerID;
         } else {
             throw new IllegalArgumentException("Player could not be assigned to seat " + seat);
         }
@@ -47,37 +47,59 @@ public class Lobby {
     }
 
     /**
-     * Handles logic for voting to start a game
+     * Sets a player in the lobbies status as ready to start
+     * @param playerID id of the player voting to start the game
+     * @return true if successful, false if player couldn't be found
      */
-    public void voteToStart(int playerID){
+    public boolean voteToStart(int playerID){
         for (int i = 0; i < 4; i++){
-            if (playerArr[i] == playerID){
-                votes++;
-                break;
+            if (playerArr[i] != null && playerArr[i].playerID == playerID){
+                playerArr[i].readyToStart = true;
+                if (getPlayerCount() <= getVotesToStart()){
+                    createGame();
+                }
+                return true;
             }
         }
-        if (getPlayerCount() <= votes){
-            createGame();
-        }
+        return false;
     }
 
     /**
-     * @return Amount of players in lobby
+     * @return An array with each player in the lobby. If an index is null then there's no player at that seat.
+     */
+    public Player[] getPlayers(){
+        return playerArr;
+    }
+
+    /**
+     * @return Number of players in lobby 0-4 inclusive
      */
     private int getPlayerCount(){
         int playerCount = 0;
         for (int i = 0; i < 4; i++){
-            if (playerArr[i] > 0)
+            if (playerArr[i] != null)
                 playerCount++;
         }
         return playerCount;
     }
 
     /**
+     * @return Number of players in lobby who have voted to start
+     */
+    private int getVotesToStart(){
+        int votesToStart = 0;
+        for (int i = 0; i < 4; i++){
+            if (playerArr[i].readyToStart)
+                votesToStart++;
+        }
+        return votesToStart;
+    }
+
+    /**
      * Deletes lobby and creates new game with current players
      */
     private void createGame(){
-        GameManager.startGame(gameID, playerArr);
+        GameManager.startGame(gameID, Arrays.stream(playerArr).mapToInt(player -> player.playerID).toArray());
     }
 
     /**
