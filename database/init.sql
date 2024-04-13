@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS
-    `users`, `euchre_game`;
-
 CREATE TABLE `users` (
     `user_id` INT NOT NULL AUTO_INCREMENT ,
     `user_name` VARCHAR(75) NOT NULL UNIQUE ,
