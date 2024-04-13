@@ -7,8 +7,10 @@ services:
       MYSQL_ROOT_PASSWORD: lucky_badger
       MYSQL_DATABASE: full_house_badger
       MYSQL_ROOT_HOST: '%'
+    command: --init-file /docker-entrypoint-initdb.d/init.sql
     volumes:
       - fullhousedat:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "53306:3306"
   phpmyadmin3:
