@@ -30,6 +30,8 @@ public class Game {
     Card.Suit ledSuit;
     // Input for command-line interface which will be replaced with websockets
     Scanner input = new Scanner(System.in);
+    // The index of the player going alone, or -1 if nobody is going alone
+    int lonerIndex;
 
     /**
      * Creates a new game object
@@ -152,6 +154,9 @@ public class Game {
 
                 // Parse whether response is Yes or No
                 if (response.equals("Yes")) {
+
+                    chooseGoingAlone(playerIndex);
+
                     trump = upCard.getSuit();
 
                     // Alert players that the trump has been named
@@ -162,17 +167,18 @@ public class Game {
 
                     // Dealer must pick up the card and choose a card to discard
                     playerHands.get(dealerIndex).add(upCard);
-                    System.out.println("Player " + dealerIndex + ", discard one of your cards (respond with the index): "
-                            + playerHands.get(dealerIndex).toString());
+                    System.out
+                            .println("Player " + dealerIndex + ", discard one of your cards (respond with the index): "
+                                    + playerHands.get(dealerIndex).toString());
                     int discard = Integer.parseInt(input.nextLine());
                     playerHands.get(dealerIndex).remove(discard);
                     System.out.println("Your new hand: " + playerHands.get(dealerIndex));
                     break;
                 }
-            }else{
-                System.out.println("Player " + playerIndex + ", you cannot pick up this card");
+            } else {
+                System.out.println("Player " + playerIndex + ", you cannot pick up/order up this card");
             }
-            
+
         }
     }
 
@@ -181,21 +187,23 @@ public class Game {
      * for the rejected up card's suit as trump
      */
     public void secondBiddingRound() {
-        
+
         for (int i = 1; i < 5; i++) {
             int playerIndex = (dealerIndex + i) % 4;
-            
-            // The player can name any suit they have in their hand except for the suit of the rejected up card
+
+            // The player can name any suit they have in their hand except for the suit of
+            // the rejected up card
             ArrayList<Card.Suit> options = new ArrayList<>();
             for (Card card : playerHands.get(playerIndex)) {
-                if(!options.contains(card.getSuit())){
+                if (!options.contains(card.getSuit())) {
                     options.add(card.getSuit());
                 }
             }
             options.remove(upCard.getSuit());
             // Use websocket to ask playerIndex if they would like to name trump
-            System.out.println("Player " + playerIndex + ", would you name trump? Options are \"Pass\" or one of:"
-                    + options.toString());
+            System.out
+                    .println("Player " + playerIndex + ", would you like to name trump? Options are \"Pass\" or one of:"
+                            + options.toString());
 
             // Wait for response
             String response = input.nextLine();
@@ -206,6 +214,8 @@ public class Game {
             } else {
                 // Set trump to what the player named, then end the loop
                 try {
+                    chooseGoingAlone(playerIndex);
+
                     trump = Card.Suit.valueOf(response);
                     // Alert players that trump has been named
                     System.out.println("Player " + playerIndex + " has named " + trump + " as trump");
@@ -222,15 +232,31 @@ public class Game {
     }
 
     /**
+     * Allows the player to choose whether they wish to go alone
+     * @param playerIndex, the id of the player going alone
+     */
+    public void chooseGoingAlone(int playerIndex) {
+        System.out.println("Player " + playerIndex + ", would you like to go alone? Options are 'Yes' or 'No'");
+        String response = input.nextLine();
+        if (response.equals("Yes")) {
+            lonerIndex = playerIndex;
+        }
+        
+        //This will probably need some way to be handled visually on the frontend
+        System.out.println("Player " + (playerIndex+2)%4 + ", your partner has chosen to go alone, you cannot play this hand");
+    }
+    /**
      * Shuffles the deck, randomizing it and assigning cards to each player's hand
      * and the up card
      */
     public void shuffle() {
         Collections.shuffle(deck);
 
-        // initalize hand-level data structures
+        // initalize hand-level data structures and variables
         playerHands = new ArrayList<>(4);
         trickCount = new int[2];
+        lonerIndex = -1;
+        trump = null;
 
         // Each of the 4 players gets 5 cards
         for (int i = 0; i < 4; i++) {
@@ -244,8 +270,7 @@ public class Game {
 
         // The 21st card (index 20) gets turned upwards
         upCard = deck.get(20);
-        // Remove the old trump
-        trump = null;
+
     }
 
     /**
@@ -256,6 +281,8 @@ public class Game {
      */
     public int playTrick() {
         currentTrick = new ArrayList<Card>(4);
+        //Clear the ledSuit
+        ledSuit = null;
         for (int i = 0; i < 4; i++) {
             // give each player the chance to play their cards
             playCard((i + startingPlayerIndex) % 4);
@@ -278,6 +305,12 @@ public class Game {
      * @param playerIndex the player who will play the card
      */
     public void playCard(int playerIndex) {
+        if (playerIndex == (lonerIndex + 2) % 4) {
+            // This player's partner is going alone, so the player cannot play any cards
+            // this hand
+            currentTrick.add(null);
+            return;
+        }
         ArrayList<Card> validCards;
         ArrayList<Card> hand = playerHands.get(playerIndex);
         // The first player can play any card
@@ -295,7 +328,7 @@ public class Game {
         Card playedCard = validCards.get(Integer.parseInt(input.nextLine()));
 
         // If the player led, update the ledSuit to enforce following suit
-        if (playerIndex == startingPlayerIndex) {
+        if (ledSuit == null) {
             ledSuit = playedCard.getSuit(trump);
         }
         // remove played card from hand
@@ -343,7 +376,13 @@ public class Game {
      */
     public int scoreHand() {
         // using the trump and card ranks, determine who played the highest-ranking card
-        int winningCardIndex = 0;
+        int winningCardIndex;
+        //If the first card 'played' was null, skip it
+        if(currentTrick.get(0) == null){
+            winningCardIndex = 1;
+        }else{
+            winningCardIndex = 0;
+        }
         // The winner of the hand is:
         // a) the person who played the highest trump
         // Or b) the person who played the highest card of the led suit if no trump were
@@ -351,9 +390,17 @@ public class Game {
 
         // Check to see if any of the 3 other players can beat the leader
         for (int i = 1; i < 4; i++) {
+            if(winningCardIndex == i){
+                //Only happens if the first card 'played' was null
+                continue;
+            }
             // The only cards that can beat a card are a higher card of the led suit or a
             // trump
             Card card = currentTrick.get(i);
+            if(card == null){
+                //this 'card' was added as a result of a player being skipped due to their partner going alone, skip it
+                continue;
+            }
             if (card.getSuit(trump).equals(ledSuit) || card.isTrump(trump)) {
                 if (card.getRanking(trump) > currentTrick.get(winningCardIndex).getRanking(trump)) {
                     winningCardIndex = i;
@@ -369,12 +416,16 @@ public class Game {
     public void scoreRound() {
         if (trickCount[callingTeam] < 3) {
             // Calling team got euchred, add 2 points to the other team
-            scores[(callingTeam + 1)] += 2;
+            scores[(callingTeam + 1)%2] += 2;
             System.out.println("Team " + callingTeam + " got euchred, opposing team gets 2 points");
         } else if (trickCount[callingTeam] < 5) {
             // Calling team took 3-4 tricks, and get 1 point
             scores[callingTeam] += 1;
             System.out.println("Team " + callingTeam + " took " + trickCount[callingTeam] + " tricks, and get 1 point");
+        } else if(lonerIndex != -1){
+            //Calling team took all tricks and went alone, and get 4 points
+            scores[callingTeam] += 4;
+            System.out.println("Team " + callingTeam + " went alone and took all tricks, and get 4 points");
         } else {
             // Calling team took all tricks, and get 2 points
             scores[callingTeam] += 2;
