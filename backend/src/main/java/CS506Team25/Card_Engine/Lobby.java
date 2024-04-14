@@ -1,5 +1,8 @@
 package CS506Team25.Card_Engine;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.Arrays;
 
 public class Lobby {
@@ -93,6 +96,24 @@ public class Lobby {
                 votesToStart++;
         }
         return votesToStart;
+    }
+
+    /**
+     * @return A JSON with the lobbies attributes
+     */
+    public ObjectNode getLobbyInformation(){
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode json = objectMapper.createObjectNode();
+        json.put("game_id", gameID);
+        for (int i = 0; i < playerArr.length; i++) {
+            ObjectNode player = objectMapper.createObjectNode();
+            if (playerArr[i] != null) {
+                player.put("player_id", playerArr[i].playerID);
+                player.put("ready_to_start", playerArr[i].readyToStart);
+            }
+            json.set("seat_" + i + 1, player);
+        }
+        return json;
     }
 
     /**

@@ -161,10 +161,10 @@ public class CardEngineController {
      * @param id ID of game you're trying ot join
      * @param playerID your player ID
      * @param seatNumber which seat at the table you want to join 1-4
-     * @return Response message
+     * @return of all of a games attributes, note that player1 is seat 1 and so on. GameID also included. Return null if couldn't join game.
      */
     @PostMapping("games/euchre/{id}/select-seat")
-    public String assignSeat(@PathVariable String id, int playerID, int seatNumber) {
+    public ObjectNode assignSeat(@PathVariable String id, int playerID, int seatNumber) {
         String playerSeat = "player" + seatNumber + "_id";
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET " + playerSeat + " = ? WHERE game_id = ?")) {
@@ -174,13 +174,14 @@ public class CardEngineController {
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted > 0) {
                 //TODO: add player to lobby and get them connected to websocket
-                return "Successfully assigned to seat " + seatNumber;
+                GameManager.getLobby(Integer.parseInt(id)).joinLobby(Integer.parseInt(id), seatNumber);
+                return getGameInfo(id);
             } else {
-                return "Could not assign seat";
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return "Error occurred connecting to server.";
+            return null;
         }
     }
 
