@@ -1,5 +1,6 @@
 package CS506Team25.Card_Engine;
 
+import CS506Team25.Card_Engine.websocket.GameWebsocketController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -103,7 +104,7 @@ public class Lobby {
     private int getVotesToStart(){
         int votesToStart = 0;
         for (int i = 0; i < 4; i++){
-            if (playerArr[i].readyToStart)
+            if (playerArr[i] != null && playerArr[i].readyToStart)
                 votesToStart++;
         }
         return votesToStart;
@@ -139,7 +140,10 @@ public class Lobby {
      * Deletes lobby and creates new game with current players
      */
     private void createGame(){
-        GameManager.startGame(gameID, Arrays.stream(playerArr).mapToInt(player -> player.playerID).toArray());
+        GameManager.startGame(gameID, Arrays.stream(playerArr)
+                .mapToInt(player -> player != null ? player.playerID : 0)
+                .toArray());
+        GameWebsocketController.startGame(gameID);
     }
 
     /**
