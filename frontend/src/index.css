@@ -2,13 +2,17 @@
 
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inknut+Antiqua:wght@300;400;500;600;700;800;900&display=swap');
 
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
 /* HOME PAGE SPECIFIC STYLING */
 
 /* Style for the "Euchre" on the home page */
 h1 {
     color: black;
     font-size: 150px;
-    font-family: 'Inknut Antiqua', Garamond;
+    font-family: 'Inknut Antiqua', Garamond, serif;
     font-weight: 400;
 }
 
@@ -16,7 +20,7 @@ h1 {
 h2.home {
     color: black;
     font-size: 70px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-weight: 700;
 }
 
@@ -24,7 +28,7 @@ h2.home {
 .sign-up {
     color: black;
     font-size: 70px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-style: italic;
     font-weight: 400;
     text-decoration: underline;
@@ -50,7 +54,7 @@ h2.home {
 .textfield::placeholder {
     color: rgba(0, 0, 0, 0.25);
     font-size: 45px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-style: italic;
     font-weight: 600;
 }
@@ -71,7 +75,7 @@ h2.home {
 .popup-text {
     color: #FFFAFB;
     font-size: 70px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-style: italic;
     font-weight: 400;    
 }
@@ -109,19 +113,19 @@ h2.home {
 /* Style for the pop-up box for the candidate suit */
 .candidate .popup-box {
     background: #3D405B; 
-    border: 4px #FFFAFB dotted;    
+    border: 4px #FFFAFB dashed;    
 }
 
 /* Style for the pop-up box after a win */
 .win .popup-box {
     background: #679289; 
-    border: 4px #FFFAFB dotted;    
+    border: 4px #FFFAFB dashed;    
 }
 
 /* Style for the pop-up box after a loss */
 .lose .popup-box {
     background: #582630;  
-    border: 4px #FFFAFB dotted;    
+    border: 4px #FFFAFB dashed;    
 }
 
 
@@ -135,7 +139,7 @@ h2.home {
 h2.menu-header {
     color: #FFFAFB;
     font-size: 70px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-weight: 700;    
 }
 
@@ -144,7 +148,7 @@ h2.menu-header {
 h3 {
     color: black;
     font-size: 48px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-weight: 600;
     text-decoration: underline;    
 }
@@ -154,7 +158,7 @@ h3 {
 h4 {
     color: black;
     font-size: 36px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-weight: 400;    
 }
 
@@ -173,7 +177,7 @@ h4.medium {
 p {
     color: black;
     font-size: 36px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-style: italic;
     font-weight: 400;
 }
@@ -199,7 +203,7 @@ p.game {
 .menu-button {
     color: black;
     font-size: 36px;
-    font-family: 'EB Garamond', Garamond;
+    font-family: 'EB Garamond', Garamond, serif;
     font-style: italic;
     font-weight: 400;
     text-decoration: underline;    
@@ -239,7 +243,7 @@ p.game {
     width: 99.5%;
     height: 124px;
     background: #679289; 
-    border-bottom: 4px #FFFAFB dotted;
+    border-bottom: 4px #FFFAFB dashed;
     border-top: 4px black solid;
     border-left: 4px black solid;
     border-right: 4px black solid;
@@ -285,7 +289,7 @@ p.game {
     width: 688px;
     height: 532px;
     background: #582630; 
-    border: 4px #FFFAFB dotted;
+    border: 4px #FFFAFB dashed;
 }
 
 /* Styling for the box that contains the game score in the bottom right */
@@ -293,7 +297,7 @@ p.game {
     width: 449px;
     height: 124px;
     background: #582630; 
-    border: 4px #FFFAFB dotted;    
+    border: 4px #FFFAFB dashed;    
 }
 
 /* General styling for a card object */
