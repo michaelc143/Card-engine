@@ -22,10 +22,6 @@ import java.util.Map;
 @Controller
 public class GameWebsocketController {
 
-    private static final String url = "jdbc:mysql://localhost:53306/full_house_badger";
-    private final String databaseUsername = "root";
-    private final String password = "lucky_badger";
-
     private static Logger logger = LoggerFactory.getLogger(GameWebsocketController.class);
 
     /**
@@ -88,6 +84,7 @@ public class GameWebsocketController {
         }
         return null;
     }
+
     /**
      * @param gameID ID of current lobby
      * @param userID Voting user's ID
@@ -117,10 +114,9 @@ public class GameWebsocketController {
      * @return JSON describing table arrangement
      */
     @SendTo("/topic/games/euchre/{gameID}/game-started")
-    public static String startGame(@DestinationVariable int gameID){
+    public String startGame(@DestinationVariable int gameID){
         try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
-
             insertStatement.setString(1, "in_progress");
             insertStatement.setInt(2, gameID);
             int rowsInserted = insertStatement.executeUpdate();
@@ -141,7 +137,7 @@ public class GameWebsocketController {
      * @param message
      * @return
      */
-    @MessageMapping("/games/{gameID}/request-hand")
+    @MessageMapping("/games/euchre/{gameID}/request-hand")
     @SendToUser("/queue/{gameID}/hand")
     public String getHand(String message) {
         return "Hello, " + message + ", this is a private message!";
@@ -151,7 +147,7 @@ public class GameWebsocketController {
      * Handles any exceptions occurring here; sends the error message to the originating client
      */
     @MessageExceptionHandler
-    @SendToUser(value = "/queue/game/errors", broadcast = false)
+    @SendToUser(value = "/queue/games/euchre/errors", broadcast = false)
     public Map<String, String> handleException(Throwable exception) {
         logger.error("Error in game socket controller", exception);
         var response = new HashMap<String, String>();

@@ -22,8 +22,11 @@ import java.util.function.Consumer;
 @CrossOrigin
 public class CardEngineController {
 
+    /**
+     * On start up make sure backend and database are synced
+     */
     public CardEngineController (){
-        getLiveLobbies();
+        addLiveLobbies();
         removeOnGoingGames();
     }
 
@@ -424,7 +427,7 @@ public class CardEngineController {
     /**
      * Helper method to create JSON with info about joinable lobbies
      */
-    private void getLiveLobbies(){
+    private void addLiveLobbies(){
         ObjectNode json = getOpenGames();
         ArrayList<Integer> games = new ArrayList<>();
         Consumer<JsonNode> data = (JsonNode node) -> games.add(node.get("game_id").asInt());

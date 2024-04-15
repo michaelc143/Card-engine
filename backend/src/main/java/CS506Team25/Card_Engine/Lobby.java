@@ -49,8 +49,8 @@ public class Lobby {
      * @return 0 if successful
      */
     public int joinLobby(int playerID, String username, int seat){
-        if (playerArr[seat] == null){
-            playerArr[seat] = new Player(playerID, username);
+        if (playerArr[seat-1] == null){
+            playerArr[seat-1] = new Player(playerID, username);
         } else {
             throw new IllegalArgumentException("Player could not be assigned to seat " + seat);
         }
@@ -143,7 +143,8 @@ public class Lobby {
         GameManager.startGame(gameID, Arrays.stream(playerArr)
                 .mapToInt(player -> player != null ? player.playerID : 0)
                 .toArray());
-        GameWebsocketController.startGame(gameID);
+        GameWebsocketController gameWebsocketController = new GameWebsocketController();
+        System.out.println(gameWebsocketController.startGame(gameID));
     }
 
     /**
