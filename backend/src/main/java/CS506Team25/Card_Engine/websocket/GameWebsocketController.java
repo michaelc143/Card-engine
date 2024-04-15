@@ -14,7 +14,21 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class GameWebsocketController {
 
-    @SubscribeMapping("/games/euchre/{gameID}")
+
+
+    /**
+     * @param gameID gameID you're joining
+     * @return A JSON with information about the lobby
+     * {
+     *     "seat_{seat-number}": JSON
+     *     {
+     *         "player_id": Integer,
+     *         "username": String,
+     *         "ready_to_start": Boolean
+     *     }
+     * }
+     */
+    @SubscribeMapping("/topic/games/euchre/{gameID}")
     public ObjectNode handleSubscribingToEuchreGame(@DestinationVariable int gameID){
         Lobby lobby = GameManager.getLobby(gameID);
         Game game = GameManager.getGame(gameID);
@@ -33,20 +47,55 @@ public class GameWebsocketController {
      * @param message
      * @return
      */
-    @MessageMapping("/games/euchre/{gameID}/requestState")
+    @MessageMapping("/games/euchre/{gameID}/request-state")
     @SendTo("/topic/games/euchre/{gameID}")
     public String getGameData(String message) {
-        System.out.println("TEST");
         return "Hello, " + message + "!";
     }
 
-    @MessageMapping("/games/euchre/{gameID}")
+    /**
+     * @param gameID ID of current lobby
+     * @param userID Voting user's ID
+     * @return A JSON with information about the lobby
+     * {
+     *     "seat_{seat-number}": JSON
+     *     {
+     *         "player_id": Integer,
+     *         "username": String,
+     *         "ready_to_start": Boolean
+     *     }
+     * }
+     */
+    @MessageMapping("/games/euchre/{gameID}/vote-start")
     @SendTo("/topic/games/euchre/{gameID}")
-    public String queueUp(@DestinationVariable int gameID, int userID){
-        if (GameManager.getLobby(gameID).voteToStart(userID)){
-            return "Successfully voted to start";
+    public ObjectNode voteStart(@DestinationVariable int gameID, int userID){
+        Lobby lobby = GameManager.getLobby(gameID);
+        if (lobby.changeVote(userID, true)){
+            return lobby.getLobbyInformation();
         }
-        return "Failed to vote to start for game:" + gameID + " and player: " + userID;
+        return null;
+    }
+    /**
+     * @param gameID ID of current lobby
+     * @param userID Voting user's ID
+     * @return A JSON with information about the lobby
+     * {
+     *     "seat_{seat-number}": JSON
+     *     {
+     *         "player_id": Integer,
+     *         "username": String,
+     *         "ready_to_start": Boolean
+     *     }
+     * }
+     */
+    @MessageMapping("/games/euchre/{gameID}/vote-not-to-start")
+    @SendTo("/topic/games/euchre/{gameID}")
+    public ObjectNode voteNotToStart(@DestinationVariable int gameID, int userID){
+        Lobby lobby = GameManager.getLobby(gameID);
+        if (lobby.changeVote(userID, false)){
+            return lobby.getLobbyInformation();
+        }
+        return null;
     }
 
     /**
@@ -55,7 +104,7 @@ public class GameWebsocketController {
      * @param message
      * @return
      */
-    @MessageMapping("/game/{gameID}/requestHand")
+    @MessageMapping("/games/{gameID}/request-hand")
     @SendToUser("/queue/response")
     public String getHand(String message) {
         return "Hello, " + message + ", this is a private message!";

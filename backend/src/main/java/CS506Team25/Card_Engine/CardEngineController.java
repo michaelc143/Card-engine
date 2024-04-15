@@ -1,6 +1,7 @@
 package CS506Team25.Card_Engine;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.*;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.function.Consumer;
@@ -43,6 +45,7 @@ public class CardEngineController {
     @GetMapping("/")
     public String hello() {
         return "Hello World";
+
     }
 
     /**
@@ -52,6 +55,11 @@ public class CardEngineController {
      * 
      * @param username username of player attempting to log in
      * @return JSON of player's id, username, and date joined. Returns null if not found for login failed
+     * {
+     *     "user_id": Integer,
+     *     "user_name": String,
+     *     "date_joined": String
+     * }
      */
     @PostMapping("/login")
     public ObjectNode login(@RequestParam String username) {
@@ -174,7 +182,8 @@ public class CardEngineController {
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted > 0) {
                 //TODO: add player to lobby and get them connected to websocket
-                GameManager.getLobby(Integer.parseInt(id)).joinLobby(Integer.parseInt(id), seatNumber);
+                int id_int = Integer.parseInt(id);
+                GameManager.getLobby(id_int).joinLobby(id_int, userIDToUsername(id_int).asText(), seatNumber);
                 return getGameInfo(id);
             } else {
                 return null;
@@ -187,6 +196,13 @@ public class CardEngineController {
 
     /**
      * @return A JSON of all games that can be joined with key game name and values game id and number of players, null if an error occurs
+     * {
+     *   "{game-name}": JSON
+     *   {
+     *       "game_id": Integer,
+     *       "number_players": Integer
+     *   }
+     * }
      */
     @GetMapping("games/euchre/open-games")
     public ObjectNode getOpenGames() {
@@ -222,6 +238,22 @@ public class CardEngineController {
      * Get information about a game
      * @param id game's id
      * @return JSON of all of a games attributes, note that player1 is seat 1 and so on
+     * {
+     *     "game_id": Integer,
+     *     "game_name": String,
+     *     "player1_id": Integer,
+     *     "player2_id": Integer,
+     *     "player3_id": Integer,
+     *     "player4_id": Integer,
+     *     "player1_name": String,
+     *     "player2_name": String,
+     *     "player3_name": String,
+     *     "player4_name": String,
+     *     "game_status": String,
+     *     "winner_1": Integer,
+     *     "winner_2": Integer,
+     *     "creation_date": String
+     * }
      */
     @GetMapping("/games/euchre/{id}")
     public ObjectNode getGameInfo(@PathVariable String id){
@@ -255,6 +287,11 @@ public class CardEngineController {
         }
     }
 
+    @GetMapping("/games/euchre/lobbies")
+    public ObjectNode getAllLobbies(){
+        return GameManager.getAllLobbies();
+    }
+
     /**
      * Get information about a game
      * @param id game's id
@@ -281,6 +318,11 @@ public class CardEngineController {
      * Get information about a player
      * @param id player's id
      * @return JSON of player's id, username, and date joined
+     * {
+     *     "user_id": Integer,
+     *     "user_name": String,
+     *     "date_joined": String
+     * }
      */
     @GetMapping("/player/{id}")
     public ObjectNode getPlayerInfo(@PathVariable String id){
@@ -325,6 +367,16 @@ public class CardEngineController {
         return -1;
     }
 
+    /**
+     * @return A JSON of current users
+     * {
+     *     "{user-name}": JSON
+     *     {
+     *         "user_id": Integer,
+     *         "date_joined": String
+     *     }
+     * }
+     */
     @GetMapping("/player")
     public ObjectNode getAllUsers(){
         try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
@@ -357,9 +409,22 @@ public class CardEngineController {
 
     private void getLiveLobbies(){
         ObjectNode json = getOpenGames();
-        Consumer<JsonNode> data = (JsonNode node) -> GameManager.putLobby(node.get("game_id").asInt());
-        if (data != null){
+        ArrayList<Integer> games = new ArrayList<>();
+        Consumer<JsonNode> data = (JsonNode node) -> games.add(node.get("game_id").asInt());
+        if (json != null){
             json.forEach(data);
+        }
+        for (Integer gameID:
+             games) {
+            ObjectNode gameJson = getGameInfo(Integer.toString(gameID));
+            Player[] players = new Player[4];
+            for (int i = 0; i < 4; i++) {
+                String keyShortCut = "player" + (i+1);
+                if (gameJson.get(keyShortCut + "_id").asInt() != 0){
+                    players[i] = new Player(gameJson.get(keyShortCut + "_id").asInt(), gameJson.get(keyShortCut + "_name").asText());
+                }
+            }
+            GameManager.putLobby(gameID, players);
         }
     }
 }

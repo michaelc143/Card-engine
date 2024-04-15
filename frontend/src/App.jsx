@@ -15,6 +15,9 @@ function App() {
 	const [regModalIsOpen, setRegModalIsOpen] = useState(false);
 	const [findGameModalIsOpen, setfindGameModalIsOpen] = useState(false);
 	const [createGameModalIsOpen, setCreateGameModalIsOpen] = useState(false);
+	const stompClient = new StompJs.Client({
+		brokerURL: 'ws://localhost:8080/full-house-bucky-websocket'
+	});
 
 	/**
 	* @function
@@ -63,6 +66,21 @@ function App() {
 	const closeCreateGameModal = () => {
 		setCreateGameModalIsOpen(false);
 	};
+
+	/**
+	 * @function
+	 * @description Handles subscribing to a Euchre games websocket when joining a lobby
+	 * @param {int} gameID - The ID of the game to join
+	 */
+	const handleSubscribeLobby = (gameID) => {
+		stompClient.subscribe('/topic/games/euchre/' + gameID, (message) => {
+			handleGameStatus(JSON.parse(message.body).content);
+		});
+	}
+
+	function handleGameStatus(message){
+		console.log(message)
+	}
 
 	/**
 	* @function
