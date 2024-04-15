@@ -16,8 +16,8 @@ function FindGame({ closeModal }) {
 					throw new Error('Failed to fetch open games');
 				}
 				const data = await response.json();
+				console.log(data);
 				setOpenGames(data);
-				console.log(data + "data"); // dev debugging purposes
 			} catch (error) {
 				console.error('Error fetching open games:', error);
 			}
@@ -41,15 +41,15 @@ function FindGame({ closeModal }) {
 						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}></p>
 					</div>
 					{Object.entries(openGames).map(([gameName, gameData]) => (
-					<div key={gameName}>
-						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block', marginLeft: '0.5rem'}}>
-						{gameName}: ID {gameData.game_id}
-						</p>
-						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>
-						{gameData.number_players}/4
-						</p>
-						<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>&gt;</p>
-					</div>
+						<div key={gameName}>
+							<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block', marginLeft: '0.5rem'}}>
+							{gameName}
+							</p>
+							<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>
+							{gameData.number_players}/4
+							</p>
+							<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>&gt;</p>
+						</div>
 					))}
 				</div>
 			</div>

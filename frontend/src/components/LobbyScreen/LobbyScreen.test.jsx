@@ -5,7 +5,7 @@ import LobbyScreen from './LobbyScreen';
 describe('LobbyScreen', () => {
   it('should render username and player names correctly', () => {
 	const username = 'TestUser';
-	const playerNames = ['Me.', 'Player2 (bot)', 'Player3 (bot)', 'Player4 (bot)'];
+	const playerNames = [username, 'Player2 (bot)', 'Player3 (bot)', 'Player4 (bot)'];
 
 	render(<LobbyScreen username={username} />);
 
