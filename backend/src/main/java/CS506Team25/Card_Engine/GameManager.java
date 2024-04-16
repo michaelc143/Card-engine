@@ -39,10 +39,9 @@ public class GameManager extends LinkedHashMap<Integer, Game> {
     }
     return json;
   }
-  //TODO: This should accept an array of Players rather then their ids
-  public static void startGame(int gameID, int[] players){
+  public static void startGame(int gameID, Player[] players){
     liveLobbies.remove(gameID);
-    liveGames.put(gameID, new Game(players));
+    liveGames.put(gameID, new Game(gameID, players));
     liveGames.get(gameID).runGame();
 
   }

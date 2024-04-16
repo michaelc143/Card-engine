@@ -6,14 +6,14 @@ import CS506Team25.Card_Engine.GameManager;
 import CS506Team25.Card_Engine.Lobby;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -38,28 +38,17 @@ public class GameWebsocketController {
      * }
      */
     @SubscribeMapping("/topic/games/euchre/{gameID}")
-    public ObjectNode handleSubscribingToEuchreGame(@DestinationVariable int gameID){
+    public GameMessage handleSubscribingToEuchreGame(@DestinationVariable int gameID){
         Lobby lobby = GameManager.getLobby(gameID);
         Game game = GameManager.getGame(gameID);
         if (lobby != null){
-            return lobby.getLobbyInformation();
+            return new GameMessage(lobby);
         } else if (game != null){
+            updateLobbyToGameInDB(gameID);
             //TODO return a JSON of game info
-            return null;
+            return new GameMessage(game);
         }
         return null;
-    }
-
-    /**
-     * TODO: Implement
-     * Endpoint that sends a games status to a specific game
-     * @param message
-     * @return
-     */
-    @MessageMapping("/games/euchre/{gameID}/request-state")
-    @SendTo("/topic/games/euchre/{gameID}")
-    public String getGameData(String message) {
-        return "Hello, " + message + "!";
     }
 
     /**
@@ -77,10 +66,15 @@ public class GameWebsocketController {
      */
     @MessageMapping("/games/euchre/{gameID}/vote-start")
     @SendTo("/topic/games/euchre/{gameID}")
-    public ObjectNode voteStart(@DestinationVariable int gameID, @Payload int userID){
+    public GameMessage voteStart(@DestinationVariable int gameID, @Payload int userID){
         Lobby lobby = GameManager.getLobby(gameID);
-        if (lobby.changeVote(userID, true)){
-            return lobby.getLobbyInformation();
+        int result = lobby.changeVote(userID, true);
+        if (result == 0){
+            return new GameMessage(lobby);
+        }
+        else if (result == 1){
+            updateLobbyToGameInDB(gameID);
+            return new GameMessage(GameManager.getGame(lobby.gameID));
         }
         return null;
     }
@@ -100,35 +94,12 @@ public class GameWebsocketController {
      */
     @MessageMapping("/games/euchre/{gameID}/vote-not-to-start")
     @SendTo("/topic/games/euchre/{gameID}")
-    public ObjectNode voteNotToStart(@DestinationVariable int gameID, int userID){
+    public GameMessage voteNotToStart(@DestinationVariable int gameID, int userID){
         Lobby lobby = GameManager.getLobby(gameID);
-        if (lobby.changeVote(userID, false)){
-            return lobby.getLobbyInformation();
+        if (lobby.changeVote(userID, false) >= 0){
+            return new GameMessage(lobby);
         }
         return null;
-    }
-
-    /**
-     * Endpoint to subscribe to get notified when a lobby starts game
-     * @param gameID
-     * @return JSON describing table arrangement
-     */
-    @SendTo("/topic/games/euchre/{gameID}/game-started")
-    public String startGame(@DestinationVariable int gameID){
-        try (Connection connection = ConnectToDataBase.connect();
-             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
-            insertStatement.setString(1, "in_progress");
-            insertStatement.setInt(2, gameID);
-            int rowsInserted = insertStatement.executeUpdate();
-            if (rowsInserted > 0) {
-                return "Game has started";
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**
@@ -154,5 +125,25 @@ public class GameWebsocketController {
         response.put("error", exception.getMessage());
         return response;
     }
+
+    /**
+     * Helper method to deal with the transition form lobby to game
+     * @param gameID
+     */
+    private void updateLobbyToGameInDB(int gameID){
+        try (Connection connection = ConnectToDataBase.connect();
+             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
+            insertStatement.setString(1, "in_progress");
+            insertStatement.setInt(2, gameID);
+            int rowsInserted = insertStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Helper method to structure the JSON which will be returned by endpoints
+     * @param message
+     */
 
 }

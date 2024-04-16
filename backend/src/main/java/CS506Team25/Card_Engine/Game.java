@@ -3,21 +3,20 @@ package CS506Team25.Card_Engine;
 import java.util.*;
 
 public class Game {
-
-    // The 2d array containing the 4 players' hands of 5 cards each
-    ArrayList<ArrayList<Card>> playerHands;
+    // This game's ID in the database
+    public int gameID;
     // The card that is turned up in the first round of bidding
     Card upCard;
-    // An array of playerIDs that will be used to manage websockets
-    int[] players;
+    // An array players that holds info about hands
+    public Player[] players;
     // The number of tricks each player has taken in the current round
     int[] trickCount;
     // The running score for each team, once someone reaches 10, they win the game
-    int[] scores;
+    public int[] scores;
     // The team who called trump for the current round
-    int callingTeam;
+    public int callingTeam;
     // The player who leads for the current trick
-    int startingPlayerIndex;
+    public int startingPlayerIndex;
     // The player who dealt the current round
     int dealerIndex;
     // The cards that have been played in the current trick
@@ -40,8 +39,14 @@ public class Game {
      *                for the game ID)
      * 
      */
-    public Game(int[] players) {
+    public Game(int gameID, Player[] players) {
+        this.gameID = gameID;
         this.players = players;
+        //TODO: Implement bots instead of making fake players
+        for (int seat = 0; seat < players.length; seat++) {
+            if (players[seat] == null)
+                players[seat] = new Player(-1, "BOT");
+        }
     }
 
     /**
@@ -138,7 +143,7 @@ public class Game {
             // A player can only pick up or order up the card if they have one of that suit
             // in their hand
             boolean canPickUp = false;
-            for (Card card : playerHands.get(playerIndex)) {
+            for (Card card : players[playerIndex].hand) {
                 if (card.getSuit().equals(upCard.getSuit())) {
                     canPickUp = true;
                     break;
@@ -166,13 +171,13 @@ public class Game {
                     callingTeam = playerIndex % 2;
 
                     // Dealer must pick up the card and choose a card to discard
-                    playerHands.get(dealerIndex).add(upCard);
+                    players[dealerIndex].hand.add(upCard);
                     System.out
                             .println("Player " + dealerIndex + ", discard one of your cards (respond with the index): "
-                                    + playerHands.get(dealerIndex).toString());
+                                    + players[dealerIndex].hand.toString());
                     int discard = Integer.parseInt(input.nextLine());
-                    playerHands.get(dealerIndex).remove(discard);
-                    System.out.println("Your new hand: " + playerHands.get(dealerIndex));
+                    players[dealerIndex].hand.remove(discard);
+                    System.out.println("Your new hand: " + players[dealerIndex].hand);
                     break;
                 }
             } else {
@@ -194,7 +199,7 @@ public class Game {
             // The player can name any suit they have in their hand except for the suit of
             // the rejected up card
             ArrayList<Card.Suit> options = new ArrayList<>();
-            for (Card card : playerHands.get(playerIndex)) {
+            for (Card card : players[dealerIndex].hand) {
                 if (!options.contains(card.getSuit())) {
                     options.add(card.getSuit());
                 }
@@ -253,7 +258,6 @@ public class Game {
         Collections.shuffle(deck);
 
         // initalize hand-level data structures and variables
-        playerHands = new ArrayList<>(4);
         trickCount = new int[2];
         lonerIndex = -1;
         trump = null;
@@ -261,11 +265,13 @@ public class Game {
         // Each of the 4 players gets 5 cards
         for (int i = 0; i < 4; i++) {
             ArrayList<Card> hand = new ArrayList<>(deck.subList(5 * i, 5 * (i + 1)));
-            playerHands.add(hand);
+            for (int seat = 0; seat < players.length; seat++) {
+                players[seat].hand = hand;
+            }
 
             // Use the websocket to send each player their hand
             System.out.print("Player " + i + "'s hand:");
-            System.out.print(playerHands.get(i).toString() + "\n");
+            System.out.print(players[dealerIndex].hand.toString() + "\n");
         }
 
         // The 21st card (index 20) gets turned upwards
@@ -312,7 +318,7 @@ public class Game {
             return;
         }
         ArrayList<Card> validCards;
-        ArrayList<Card> hand = playerHands.get(playerIndex);
+        ArrayList<Card> hand = players[dealerIndex].hand;
         // The first player can play any card
         if (playerIndex == startingPlayerIndex) {
             validCards = hand;

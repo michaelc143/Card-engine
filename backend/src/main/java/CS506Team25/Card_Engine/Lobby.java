@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Arrays;
 
 public class Lobby {
-    int gameID;
-    Player[] playerArr = new Player[4]; //Position in array represents position at table, if null then there's no player
+    public int gameID;
+    public Player[] playerArr = new Player[4]; //Position in array represents position at table, if null then there's no player
 
     /**
      * Creates a new lobby on the backend
@@ -32,11 +32,11 @@ public class Lobby {
      * Creates a new game of Euchre with the 4 players specified.
      * @param players: The array of player IDs (indexes 0 and 2 are in a team against indexes 1 and 3)
      */
-    public int startGame(int[] players){
+    public int startGame(Player[] players){
         System.out.println("Starting game");
 
         //Use the constructor to pass in websocket information
-        Game game = new Game(players);
+        Game game = new Game(gameID, players);
         int winningTeam = game.runGame();
         //handle game ending and updating database with winners and losers
         return 0;
@@ -46,7 +46,7 @@ public class Lobby {
      * Assign player seat in lobby
      * @param playerID the ID of the player to join
      * @param seat the number of the seat they will be at 1-4 inclusive
-     * @return 0 if successful
+     * @return 0 if successfully assigned seat, 1 if seat successfully assigned seat and game started
      */
     public int joinLobby(int playerID, String username, int seat){
         if (playerArr[seat-1] == null){
@@ -55,8 +55,10 @@ public class Lobby {
             throw new IllegalArgumentException("Player could not be assigned to seat " + seat);
         }
 
-        if (getPlayerCount() >= 4)
+        if (getPlayerCount() >= 4) {
             createGame();
+            return 1;
+        }
         return 0;
     }
 
@@ -64,19 +66,20 @@ public class Lobby {
      * Sets a player in the lobbies status as ready to start
      * @param playerID id of the player voting to start the game
      * @param vote true when player wants to start the game, false otherwise
-     * @return true if successful, false if player couldn't be found
+     * @return 0 if successfully changed vote, 1 if seat successfully assigned seat and game started
      */
-    public boolean changeVote(int playerID, boolean vote){
+    public int changeVote(int playerID, boolean vote){
         for (int i = 0; i < 4; i++){
             if (playerArr[i] != null && playerArr[i].playerID == playerID){
                 playerArr[i].readyToStart = vote;
                 if (getPlayerCount() <= getVotesToStart()){
                     createGame();
+                    return 1;
                 }
-                return true;
+                return 0;
             }
         }
-        return false;
+        return -1;
     }
 
     /**
@@ -116,7 +119,6 @@ public class Lobby {
      *     "seat_{seat-number}": JSON
      *     {
      *         "player_id": Integer,
-     *         "username": String,
      *         "ready_to_start": Boolean
      *     }
      * }
@@ -140,21 +142,7 @@ public class Lobby {
      * Deletes lobby and creates new game with current players
      */
     private void createGame(){
-        GameManager.startGame(gameID, Arrays.stream(playerArr)
-                .mapToInt(player -> player != null ? player.playerID : 0)
-                .toArray());
+        GameManager.startGame(gameID, playerArr);
         GameWebsocketController gameWebsocketController = new GameWebsocketController();
-        System.out.println(gameWebsocketController.startGame(gameID));
-    }
-
-    /**
-     * Main method for the command-line version of Euchre to test the game logic, will be replaced with websockets.
-     * @param args no arguments should be given
-     */
-    public static void main(String[] args){
-        Lobby lobby = new Lobby(0);
-        int[] players = {1,2,3,4}; 
-        lobby.startGame(players);
-        
     }
 }

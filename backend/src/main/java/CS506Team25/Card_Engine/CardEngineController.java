@@ -127,7 +127,7 @@ public class CardEngineController {
      * @return Newly created game's ID
      */
     @PostMapping("games/euchre/create-game")
-    public String createGame(@RequestParam String gameName, @RequestParam(required = false) String gamePassword) {
+    public String createGame(int playerID, String gameName, @RequestParam(required = false) String gamePassword) {
         try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO euchre_game VALUES (DEFAULT, ?, ?, ?, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT , DEFAULT )", Statement.RETURN_GENERATED_KEYS)) {
 
@@ -145,6 +145,7 @@ public class CardEngineController {
                     if (resultSet.next()) {
                         int gameID = resultSet.getInt(1);
                         GameManager.putLobby(gameID);
+                        assignSeat(String.valueOf(gameID), playerID, 1);
                         return Integer.toString(gameID);
                     }
                 }
