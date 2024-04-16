@@ -12,7 +12,6 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 	const [gameCreated, setGameCreated] = useState(false);
 	const [lobbyScreenModalIsOpen, setLobbyScreenModalIsOpen] = useState(false);
 
-
 	// opens lobby screen modal popup
 	const openLobbyScreenModal = () => {
 		setLobbyScreenModalIsOpen(true);

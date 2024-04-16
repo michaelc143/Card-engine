@@ -21,7 +21,7 @@ function LobbyScreen({ closeModal, username }) {
                     <h4 style={{ width: '45%', display: 'inline-block', textAlign: 'center' }}>Ready:</h4>
                 </div>
                 <div style={{ marginLeft: '1rem' }}>
-                    <div style={{ width: '45%', display: 'inline-block', fontSize: '32px', marginBottom: '1rem'}}>Me.</div>
+                    <div style={{ width: '45%', display: 'inline-block', fontSize: '32px', marginBottom: '1rem'}}>{username}</div>
                     <input style={{ width: '45%', display: 'inline-block' }} type="checkbox" />
                 </div>
                 {playerNames.map((name) => (
