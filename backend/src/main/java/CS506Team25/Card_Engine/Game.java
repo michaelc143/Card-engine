@@ -199,7 +199,7 @@ public class Game {
             // The player can name any suit they have in their hand except for the suit of
             // the rejected up card
             ArrayList<Card.Suit> options = new ArrayList<>();
-            for (Card card : players[dealerIndex].hand) {
+            for (Card card : players[playerIndex].hand) {
                 if (!options.contains(card.getSuit())) {
                     options.add(card.getSuit());
                 }
@@ -265,13 +265,13 @@ public class Game {
         // Each of the 4 players gets 5 cards
         for (int i = 0; i < 4; i++) {
             ArrayList<Card> hand = new ArrayList<>(deck.subList(5 * i, 5 * (i + 1)));
-            for (int seat = 0; seat < players.length; seat++) {
-                players[seat].hand = hand;
+            for (Player player : players) {
+                player.hand = hand;
             }
 
             // Use the websocket to send each player their hand
             System.out.print("Player " + i + "'s hand:");
-            System.out.print(players[dealerIndex].hand.toString() + "\n");
+            System.out.print(players[i].hand.toString() + "\n");
         }
 
         // The 21st card (index 20) gets turned upwards
@@ -318,7 +318,7 @@ public class Game {
             return;
         }
         ArrayList<Card> validCards;
-        ArrayList<Card> hand = players[dealerIndex].hand;
+        ArrayList<Card> hand = players[playerIndex].hand;
         // The first player can play any card
         if (playerIndex == startingPlayerIndex) {
             validCards = hand;

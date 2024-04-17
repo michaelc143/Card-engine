@@ -138,6 +138,12 @@ public class Lobby {
         return json;
     }
 
+    public static void main(String[] args) {
+        Lobby lobby = new Lobby(0);
+        Player[] players = new Player[4];
+        lobby.startGame(players);
+    }
+
     /**
      * Deletes lobby and creates new game with current players
      */

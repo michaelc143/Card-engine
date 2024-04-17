@@ -6,7 +6,7 @@ import Registration from './components/Registration/Registration';
 import GameMenu from './components/gameMenu/gameMenu';
 import {ToastContainer, toast} from 'react-toastify';
 import Modal from 'react-modal';
-
+import { Client } from '@stomp/stompjs';
 Modal.setAppElement('#root');
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
 	const [regModalIsOpen, setRegModalIsOpen] = useState(false);
 	const [findGameModalIsOpen, setfindGameModalIsOpen] = useState(false);
 	const [createGameModalIsOpen, setCreateGameModalIsOpen] = useState(false);
-	const stompClient = new StompJs.Client({
+	const stompClient = new Client({
 		brokerURL: 'ws://localhost:8080/full-house-bucky-websocket'
 	});
 
