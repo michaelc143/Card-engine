@@ -26,6 +26,7 @@ class JoinGameWorkFlowTest {
 	private TestRestTemplate restTemplate;
 
 	private static int gameID = 0;
+	private static int userID;
 	private static final String testUsername = "Automated Testing User";
 	private static final String testGameName = "_testgame_";
 	private static final String localHost = "http://localhost:";
@@ -33,13 +34,15 @@ class JoinGameWorkFlowTest {
 	@BeforeAll
 	public static void createUsers(@Autowired TestRestTemplate restTemplate, @LocalServerPort int port){
 		restTemplate.postForEntity(localHost + port + "/register?username=" + testUsername, createHeaders(), String.class);
+		ResponseEntity<ObjectNode> result = restTemplate.postForEntity(localHost + port + "/login?username=" + testUsername, createHeaders(), ObjectNode.class);
+		userID = result.getBody().get("user_id").asInt();
 	}
 
 	@AfterAll
 	public static void cleanUpCreatedUsersAndGames(@Autowired TestRestTemplate restTemplate, @LocalServerPort int port){
 		ObjectNode json = restTemplate.getForObject(localHost + port + "/player", ObjectNode.class);
 		if (json.has(testUsername)){
-			int userID = json.get(testUsername).get("user_id").asInt();
+			userID = json.get(testUsername).get("user_id").asInt();
 			restTemplate.delete(localHost + port + "/player/" + userID);
 		}
 
@@ -50,15 +53,15 @@ class JoinGameWorkFlowTest {
 
 	@Test
 	void createGame() {
-		ResponseEntity<String> result = restTemplate.postForEntity(localHost + port + "/games/euchre/create-game?gameName=" + testGameName, createHeaders(), String.class);
+		ResponseEntity<String> result = restTemplate.postForEntity(localHost + port + "/games/euchre/create-game?"  + "playerID=" + userID + "&gameName=" + testGameName, createHeaders(), String.class);
 		assertNotNull(result.getBody());
 		gameID = Integer.parseInt(result.getBody());
 		assert(gameID > 0);
 
 		ObjectNode response = restTemplate.getForObject(localHost + port + "/games/euchre/" + gameID, ObjectNode.class);
 		assertEquals("waiting_for_players", response.get("game_status").asText());
-
-		for (int i =1; i < 5; i++) {
+		assertEquals(userID, response.get("player1_id").asInt());
+		for (int i =2; i < 5; i++) {
 			String curPlayer = "player" + i + "_id";
 			assertEquals(0, response.get(curPlayer).asInt());
 		}

@@ -8,10 +8,7 @@ import java.sql.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.io.StringWriter;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 
@@ -25,13 +22,12 @@ import java.util.function.Consumer;
 @CrossOrigin
 public class CardEngineController {
 
-    private final String url = "jdbc:mysql://db2:3306/full_house_badger";
-    private final String databaseUsername = "root";
-    private final String password = "lucky_badger";
-    private GameManager gameManager;
-
+    /**
+     * On start up make sure backend and database are synced
+     */
     public CardEngineController (){
-        getLiveLobbies();
+        addLiveLobbies();
+        removeOnGoingGames();
     }
 
 
@@ -43,6 +39,7 @@ public class CardEngineController {
     @GetMapping("/")
     public String hello() {
         return "Hello World";
+
     }
 
     /**
@@ -52,10 +49,15 @@ public class CardEngineController {
      * 
      * @param username username of player attempting to log in
      * @return JSON of player's id, username, and date joined. Returns null if not found for login failed
+     * {
+     *     "user_id": Integer,
+     *     "user_name": String,
+     *     "date_joined": String
+     * }
      */
     @PostMapping("/login")
     public ObjectNode login(@RequestParam String username) {
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+        try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
 
             statement.setString(1, username);
@@ -86,7 +88,7 @@ public class CardEngineController {
      */
     @PostMapping("/register")
     public String register(@RequestParam String username) {
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+        try (Connection connection = ConnectToDataBase.connect();
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_name = ?")) {
 
             statement.setString(1, username);
@@ -125,8 +127,8 @@ public class CardEngineController {
      * @return Newly created game's ID
      */
     @PostMapping("games/euchre/create-game")
-    public String createGame(@RequestParam String gameName, @RequestParam(required = false) String gamePassword) {
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+    public String createGame(int playerID, String gameName, @RequestParam(required = false) String gamePassword) {
+        try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO euchre_game VALUES (DEFAULT, ?, ?, ?, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT , DEFAULT )", Statement.RETURN_GENERATED_KEYS)) {
 
             insertStatement.setString(1, gameName);
@@ -143,6 +145,7 @@ public class CardEngineController {
                     if (resultSet.next()) {
                         int gameID = resultSet.getInt(1);
                         GameManager.putLobby(gameID);
+                        assignSeat(String.valueOf(gameID), playerID, 1);
                         return Integer.toString(gameID);
                     }
                 }
@@ -158,59 +161,27 @@ public class CardEngineController {
 
     /**
      * Allows a player to select their seat, is functionally how a player joins a game
-     * @param id ID of game you're trying ot join
+     * @param gameID ID of game you're trying ot join
      * @param playerID your player ID
      * @param seatNumber which seat at the table you want to join 1-4
-     * @return Response message
+     * @return of all of a games attributes, note that player1 is seat 1 and so on. GameID also included. Return null if couldn't join game.
      */
-    @PostMapping("games/euchre/{id}/select-seat")
-    public String assignSeat(@PathVariable String id, int playerID, int seatNumber) {
+    @PostMapping("games/euchre/{gameID}/select-seat")
+    public ObjectNode assignSeat(@PathVariable String gameID, int playerID, int seatNumber) {
         String playerSeat = "player" + seatNumber + "_id";
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+        try (Connection connection = ConnectToDataBase.connect();
             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET " + playerSeat + " = ? WHERE game_id = ?")) {
 
             insertStatement.setInt(1, playerID);
-            insertStatement.setInt(2, Integer.parseInt(id));
+            insertStatement.setInt(2, Integer.parseInt(gameID));
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted > 0) {
-                //TODO: add player to lobby and get them connected to websocket
-                return "Successfully assigned to seat " + seatNumber;
+                int gameIDInt = Integer.parseInt(gameID);
+                GameManager.getLobby(gameIDInt).joinLobby(playerID, userIDToUsername(playerID), seatNumber);
+                return getGameInfo(gameID);
             } else {
-                return "Could not assign seat";
+                return null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "Error occurred connecting to server.";
-        }
-    }
-
-    /**
-     * @return A JSON of all games that can be joined with key game name and values game id and number of players, null if an error occurs
-     */
-    @GetMapping("games/euchre/open-games")
-    public ObjectNode getOpenGames() {
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
-            PreparedStatement statement = connection.prepareStatement("SELECT game_id, game_name, player1_id, player2_id, player3_id, player4_id FROM euchre_game WHERE game_status = 'waiting_for_players'")) {
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            ObjectNode json = objectMapper.createObjectNode();
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                ObjectNode game = objectMapper.createObjectNode();
-                int players = 0;
-                /*
-                 *  Count number of player in lobby
-                 */
-                for (int x = 3; x < 7; x++){
-                    if (resultSet.getInt(x) != 0){
-                        players++;
-                    }
-                }
-                game.put("game_id",resultSet.getInt(1));
-                game.put("number_players", players);
-                json.set(resultSet.getString(2), game);
-            }
-            return json;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -218,18 +189,98 @@ public class CardEngineController {
     }
 
     /**
-     * Get information about a game
-     * @param id game's id
-     * @return JSON of all of a games attributes, note that player1 is seat 1 and so on
+     * @return A JSON of all games that can be joined with key game name and values game id and number of players, null if an error occurs
+     * {
+     *   "{game-name}": JSON
+     *   {
+     *       "game_id": Integer,
+     *       "number_players": Integer
+     *   }
+     * }
      */
-    @GetMapping("/games/euchre/{id}")
-    public ObjectNode getGameInfo(@PathVariable String id){
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+    @GetMapping("games/euchre/open-games")
+    public ObjectNode getOpenGames() {
+        try (Connection connection = ConnectToDataBase.connect();
+            PreparedStatement statement = connection.prepareStatement("SELECT game_id, game_name, player1_id, player2_id, player3_id, player4_id FROM euchre_game WHERE game_status = 'waiting_for_players'")) {
+            return describeGame(statement);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * @return A JSON of all games that are currently ongoing, null if an error occurs
+     * {
+     *   "{game-name}": JSON
+     *   {
+     *       "game_id": Integer,
+     *       "number_players": Integer
+     *   }
+     * }
+     */
+    @GetMapping("games/euchre/current-games")
+    public ObjectNode getCurrentGames() {
+        try (Connection connection = ConnectToDataBase.connect();
+             PreparedStatement statement = connection.prepareStatement("SELECT game_id, game_name, player1_id, player2_id, player3_id, player4_id FROM euchre_game WHERE game_status = 'in_progress'")) {
+            return describeGame(statement);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private ObjectNode describeGame(PreparedStatement statement) throws SQLException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode json = objectMapper.createObjectNode();
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            ObjectNode game = objectMapper.createObjectNode();
+            int players = 0;
+            /*
+             *  Count number of player in lobby
+             */
+            for (int x = 3; x < 7; x++){
+                if (resultSet.getInt(x) != 0){
+                    players++;
+                }
+            }
+            game.put("game_id",resultSet.getInt(1));
+            game.put("number_players", players);
+            json.set(resultSet.getString(2), game);
+        }
+        return json;
+    }
+
+    /**
+     * Get information about a game
+     * @param gameID game's id
+     * @return JSON of all of a games attributes, note that player1 is seat 1 and so on
+     * {
+     *     "game_id": Integer,
+     *     "game_name": String,
+     *     "player1_id": Integer,
+     *     "player2_id": Integer,
+     *     "player3_id": Integer,
+     *     "player4_id": Integer,
+     *     "player1_name": String,
+     *     "player2_name": String,
+     *     "player3_name": String,
+     *     "player4_name": String,
+     *     "game_status": String,
+     *     "winner_1": Integer,
+     *     "winner_2": Integer,
+     *     "creation_date": String
+     * }
+     */
+    @GetMapping("/games/euchre/{gameID}")
+    public ObjectNode getGameInfo(@PathVariable String gameID){
+        try (Connection connection = ConnectToDataBase.connect();
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM euchre_game WHERE game_id = ?")) {
 
             ObjectMapper objectMapper = new ObjectMapper();
             ObjectNode json = objectMapper.createObjectNode();
-            statement.setInt(1, Integer.parseInt(id));
+            statement.setInt(1, Integer.parseInt(gameID));
             try (ResultSet resultSet = statement.executeQuery()) {
                 resultSet.next();
                 json.put("game_id", resultSet.getInt("game_id"));
@@ -238,10 +289,10 @@ public class CardEngineController {
                 json.put("player2_id", resultSet.getInt("player2_id"));
                 json.put("player3_id", resultSet.getInt("player3_id"));
                 json.put("player4_id", resultSet.getInt("player4_id"));
-                json.set("player1_name", userIDToUsername(resultSet.getInt("player1_id")));
-                json.set("player2_name", userIDToUsername(resultSet.getInt("player2_id")));
-                json.set("player3_name", userIDToUsername(resultSet.getInt("player3_id")));
-                json.set("player4_name", userIDToUsername(resultSet.getInt("player4_id")));
+                json.put("player1_name", userIDToUsername(resultSet.getInt("player1_id")));
+                json.put("player2_name", userIDToUsername(resultSet.getInt("player2_id")));
+                json.put("player3_name", userIDToUsername(resultSet.getInt("player3_id")));
+                json.put("player4_name", userIDToUsername(resultSet.getInt("player4_id")));
                 json.put("game_status", resultSet.getString("game_status"));
                 json.put("winner_1", resultSet.getInt("winner_1"));
                 json.put("winner_2", resultSet.getInt("winner_2"));
@@ -254,20 +305,25 @@ public class CardEngineController {
         }
     }
 
+    @GetMapping("/games/euchre/lobbies")
+    public ObjectNode getAllLobbies(){
+        return GameManager.getAllLobbies();
+    }
+
     /**
      * Get information about a game
-     * @param id game's id
+     * @param gameID game's id
      * @return id of deleted game if game is successfully deleted. -1 if game could not be deleted
      */
-    @DeleteMapping("/games/euchre/{id}")
-    public int deleteGame(@PathVariable String id){
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+    @DeleteMapping("/games/euchre/{gameID}")
+    public int deleteGame(@PathVariable String gameID){
+        try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM euchre_game WHERE game_id = ?")) {
 
-            deleteStatement.setInt(1, Integer.parseInt(id));
+            deleteStatement.setInt(1, Integer.parseInt(gameID));
             int deletedRows = deleteStatement.executeUpdate();
             if (deletedRows > 0){
-                return Integer.parseInt(id);
+                return Integer.parseInt(gameID);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -278,17 +334,22 @@ public class CardEngineController {
 
     /**
      * Get information about a player
-     * @param id player's id
+     * @param playerID player's id
      * @return JSON of player's id, username, and date joined
+     * {
+     *     "user_id": Integer,
+     *     "user_name": String,
+     *     "date_joined": String
+     * }
      */
-    @GetMapping("/player/{id}")
-    public ObjectNode getPlayerInfo(@PathVariable String id){
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+    @GetMapping("/player/{playerID}")
+    public ObjectNode getPlayerInfo(@PathVariable String playerID){
+        try (Connection connection = ConnectToDataBase.connect();
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?")) {
 
             ObjectMapper objectMapper = new ObjectMapper();
             ObjectNode json = objectMapper.createObjectNode();
-            statement.setInt(1, Integer.parseInt(id));
+            statement.setInt(1, Integer.parseInt(playerID));
             try (ResultSet resultSet = statement.executeQuery()) {
                 resultSet.next();
                 json.put("user_id", resultSet.getInt(1));
@@ -304,18 +365,18 @@ public class CardEngineController {
 
     /**
      * Delete player with specified id
-     * @param id player's id
+     * @param playerID player's id
      * @return id of deleted player, -1 if failed
      */
-    @DeleteMapping("/player/{id}")
-    public int deletePlayer(@PathVariable String id){
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+    @DeleteMapping("/player/{playerID}")
+    public int deletePlayer(@PathVariable String playerID){
+        try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM users WHERE user_id = ?")) {
 
-            deleteStatement.setInt(1, Integer.parseInt(id));
+            deleteStatement.setInt(1, Integer.parseInt(playerID));
             int deletedRows = deleteStatement.executeUpdate();
             if (deletedRows > 0){
-                return Integer.parseInt(id);
+                return Integer.parseInt(playerID);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -324,9 +385,19 @@ public class CardEngineController {
         return -1;
     }
 
+    /**
+     * @return A JSON of current users
+     * {
+     *     "{user-name}": JSON
+     *     {
+     *         "user_id": Integer,
+     *         "date_joined": String
+     *     }
+     * }
+     */
     @GetMapping("/player")
     public ObjectNode getAllUsers(){
-        try (Connection connection = DriverManager.getConnection(url, databaseUsername, password);
+        try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement statement = connection.prepareStatement("SELECT user_id, user_name, date_joined FROM users")) {
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -346,19 +417,48 @@ public class CardEngineController {
         }
     }
 
-    private JsonNode userIDToUsername(int userID){
+    private String userIDToUsername(int userID){
         if (userID != 0) {
-            return getPlayerInfo(Integer.toString(userID)).get("user_name");
+            return getPlayerInfo(Integer.toString(userID)).get("user_name").asText();
         } else {
             return null;
         }
     }
 
-    private void getLiveLobbies(){
+    /**
+     * Helper method to create JSON with info about joinable lobbies
+     */
+    private void addLiveLobbies(){
         ObjectNode json = getOpenGames();
-        Consumer<JsonNode> data = (JsonNode node) -> GameManager.putLobby(node.get("game_id").asInt());
-        if (data != null){
+        ArrayList<Integer> games = new ArrayList<>();
+        Consumer<JsonNode> data = (JsonNode node) -> games.add(node.get("game_id").asInt());
+        if (json != null){
             json.forEach(data);
+        }
+        for (Integer gameID:
+             games) {
+            ObjectNode gameJson = getGameInfo(Integer.toString(gameID));
+            Player[] players = new Player[4];
+            for (int i = 0; i < 4; i++) {
+                String keyShortCut = "player" + (i+1);
+                if (gameJson.get(keyShortCut + "_id").asInt() != 0){
+                    players[i] = new Player(gameJson.get(keyShortCut + "_id").asInt(), gameJson.get(keyShortCut + "_name").asText());
+                }
+            }
+            GameManager.putLobby(gameID, players);
+        }
+    }
+
+    /**
+     * Deletes all games that are currently marked as in_progress from DB.
+     * Needed to keep backend and DB synced, recovering state of a in progress game is too difficult.
+     */
+    private void removeOnGoingGames(){
+        try (Connection connection = ConnectToDataBase.connect();
+             PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM euchre_game WHERE game_status = 'in_progress'")) {
+            int deletedRows = deleteStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
