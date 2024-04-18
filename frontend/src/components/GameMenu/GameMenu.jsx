@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState } from 'react';
 import Modal from 'react-modal';
 import accountSVG from '../../assets/account.svg'
@@ -6,11 +5,25 @@ import settingsSVG from '../../assets/settings.svg';
 import FindGame from '../FindGame/FindGame';
 import CreateGame from '../CreateGame/CreateGame';
 import LobbyScreen from '../LobbyScreen/LobbyScreen';
+import SelectSeat from '../SelectSeat/SelectSeat';
 
-function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, username} ) {
+function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, userID} ) {
 
-	const [gameCreated, setGameCreated] = useState(false);
 	const [lobbyScreenModalIsOpen, setLobbyScreenModalIsOpen] = useState(false);
+	const [showSelectSeatModal, setShowSelectSeatModal] = useState(false);
+	const [selectedGameId, setSelectedGameId] = useState(null);
+
+	const openSelectSeatModal = (gameId) => {
+		closefindGameModal();
+		console.log("GameID:" + gameId);
+		setSelectedGameId(gameId);
+		console.log("Selected game ID: " + selectedGameId);
+		setShowSelectSeatModal(true);
+	};
+
+	const closeSelectSeatModal = () => {
+		setShowSelectSeatModal(false);
+	};
 
 	// opens lobby screen modal popup
 	const openLobbyScreenModal = () => {
@@ -54,6 +67,7 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 						<FindGame
 							showToast={showToast}
 							closeModal={closefindGameModal}
+							openSelectSeatModal={openSelectSeatModal}
 						/>
 					</Modal>
 					<p style={{textAlign: 'center'}}>-or-</p>
@@ -79,11 +93,9 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 						<CreateGame
 							showToast={showToast}
 							closeModal={closeCreateGameModal}
-							setGameCreated={() => {
-								setGameCreated(true);
-								openLobbyScreenModal(); // Open the lobby screen modal when game is created
-							}}
 							openLobbyScreenModal={openLobbyScreenModal}
+							userID={userID}
+							setSelectedGameId={setSelectedGameId}
 						/>
 					</Modal>
 					<Modal
@@ -102,11 +114,28 @@ function gameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							},
 						}}
 					>
-						<LobbyScreen closeModal={closeLobbyScreenModal} username={username} />
+						{selectedGameId !== null && <LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} />}
+					</Modal>
+					<Modal
+						isOpen={showSelectSeatModal}
+						onRequestClose={closeSelectSeatModal}
+						contentLabel="SelectSeat Modal"
+						style={{
+							overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+							content: { width: '900px', height: '700px', margin: 'auto', borderRadius: '10px' },
+						}}
+						>
+						<SelectSeat
+							showToast={showToast}
+							selectedGameId={selectedGameId}
+							closeModal={closeSelectSeatModal}
+							openLobbyScreenModal={openLobbyScreenModal}
+							userID={userID}
+						/>
 					</Modal>
 				</div>
 			</>
 	);
 }
 
-export default gameMenu;
+export default GameMenu;

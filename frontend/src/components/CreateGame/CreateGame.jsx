@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './CreateGame.css';
 import closeModalBtn from '../../assets/close.svg';
 import arrowSVG from '../../assets/return-arrow.svg';
 import notifSVG from '../../assets/notif-icon.svg';
 
-function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToast }) {
+function CreateGame({ closeModal, openLobbyScreenModal, showToast, userID, setSelectedGameId }) {
 
 	const [gameName, setGameName] = useState('');
 	const [isPrivate, setIsPrivate] = useState(false);
@@ -27,7 +27,7 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToas
 
 		else {
 			// send newly created game to the backend using gameName
-			fetch(`http://localhost:8080/games/euchre/create-game?gameName=${gameName}`, {method: 'POST',})
+			fetch(`http://localhost:8080/games/euchre/create-game?playerID=${userID}&gameName=${gameName}`, {method: 'POST',})
 			.then(response => response.text())
 				.then(data => {
 					console.log(data); // Used in development to debug
@@ -35,18 +35,33 @@ function CreateGame({ closeModal, setGameCreated, openLobbyScreenModal, showToas
 						showToast("Couldn't create game", 'error');
 					}
 					else {
+						setSelectedGameId(data);
 						showToast("Created game", 'success');
 					}
 				})
 			.catch(error => {
 				console.error('Error:', error);
 			});
-			setGameCreated(true);
 			closeModal();
 			openLobbyScreenModal();
 		}
 	}
 
+	/**
+	* CreateGame representing the UI for creating a new game.
+	* 
+	* @prop {string} closeModalBtn - The image source for the close button.
+	* @prop {function} closeModal - A function to close the "Create Game" modal.
+	* @prop {string} gameName - The current game name.
+	* @prop {function} handleGameNameChange - Function to handle changes in the game name input.
+	* @prop {boolean} isPrivate - A state variable indicating if the game is private.
+	* @prop {function} handlePrivateToggle - Function to handle toggling the private game checkbox.
+	* @prop {string} password - The password for a private game.
+	* @prop {function} handlePasswordChange - Function to handle changes in the password input.
+	* @prop {number} maxPlayers - The selected maximum number of human players.
+	* @prop {function} handleMaxPlayersChange - Function to handle changes in the max players dropdown.
+	* @prop {function} closeModalAndCreateGame - Function to close the modal and create the new game.
+	*/
 	return (
 		<>
 			<div className='create-game'>

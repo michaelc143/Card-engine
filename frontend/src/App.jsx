@@ -3,10 +3,10 @@ import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
-import GameMenu from './components/gameMenu/gameMenu';
+import GameMenu from './components/GameMenu/GameMenu';
 import {ToastContainer, toast} from 'react-toastify';
 import Modal from 'react-modal';
-import { Client } from '@stomp/stompjs';
+// import { Client } from '@stomp/stompjs'; TODO: Uncomment when this is being implemented for websockets
 Modal.setAppElement('#root');
 
 function App() {
@@ -15,9 +15,11 @@ function App() {
 	const [regModalIsOpen, setRegModalIsOpen] = useState(false);
 	const [findGameModalIsOpen, setfindGameModalIsOpen] = useState(false);
 	const [createGameModalIsOpen, setCreateGameModalIsOpen] = useState(false);
+	/*
 	const stompClient = new Client({
 		brokerURL: 'ws://localhost:8080/full-house-bucky-websocket'
 	});
+	*/
 
 	/**
 	* @function
@@ -71,7 +73,6 @@ function App() {
 	 * @function
 	 * @description Handles subscribing to a Euchre games websocket when joining a lobby
 	 * @param {int} gameID - The ID of the game to join
-	 */
 	const handleSubscribeLobby = (gameID) => {
 		stompClient.subscribe('/topic/games/euchre/' + gameID, (message) => {
 			handleGameStatus(JSON.parse(message.body).content);
@@ -81,6 +82,7 @@ function App() {
 	function handleGameStatus(message){
 		console.log(message)
 	}
+	*/
 
 	/**
 	* @function
@@ -116,7 +118,6 @@ function App() {
 				.then(data => {
 					console.log(data); // Used in development to debug
 					if (data === 'User successfully registered') {
-						setUsername(username);
 						showToast(`Successfully registered ${username}`, 'success');
 						closeRegModal();
 						} 
@@ -143,6 +144,24 @@ function App() {
 		toast[type](message);
 	}
 
+	/**
+	* Renders the main application UI based on the user's login status.
+	* 
+	* @prop {boolean} loggedIn - Indicates if the user is logged in.
+	* @prop {function} openfindGameModal - Function to open the "Find Game" modal.
+	* @prop {function} closefindGameModal - Function to close the "Find Game" modal.
+	* @prop {boolean} findGameModalIsOpen - Flag indicating if the "Find Game" modal is open.
+	* @prop {function} openCreateGameModal - Function to open the "Create Game" modal.
+	* @prop {function} closeCreateGameModal - Function to close the "Create Game" modal.
+	* @prop {boolean} createGameModalIsOpen - Flag indicating if the "Create Game" modal is open.
+	* @prop {function} showToast - Function to display a toast notification.
+	* @prop {object} user - User object containing username and user ID (assumed).
+	* @prop {function} handleLogin - Function to handle user login.
+	* @prop {function} openRegModal - Function to open the registration modal.
+	* @prop {boolean} regModalIsOpen - Flag indicating if the registration modal is open.
+	* @prop {function} handleRegister - Function to handle user registration.
+	* @prop {function} closeRegModal - Function to close the registration modal.
+	*/
 	return (
 		<>
 		<ToastContainer 
@@ -162,7 +181,7 @@ function App() {
 					closeCreateGameModal={closeCreateGameModal}
 					createGameModalIsOpen={createGameModalIsOpen}
 					showToast={showToast}
-					username={user.user_name}
+					userID={user.user_id}
 				/>
 			) 
 			: 

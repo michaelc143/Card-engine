@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, vi } from 'vitest';
+import { describe, it, vi, expect, beforeEach } from 'vitest';
 import CreateGame from './CreateGame';
 
 describe('CreateGame', () => { 
