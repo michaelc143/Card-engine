@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Login.css';
 
 function Login({ onLogin, showToast, openModal }) {
+
 	const [username, setUsername] = useState('');
 
 	/**
@@ -21,6 +22,14 @@ function Login({ onLogin, showToast, openModal }) {
 		}
 	};
 
+	/**
+	* Renders the login form for user authentication.
+	* 
+	* @prop {string} username - The current username entered in the form.
+	* @prop {function} setUsername - Function to update the username state.
+	* @prop {function} handleLogin - Function to handle user login attempt.
+	* @prop {function} openModal - Function to open the registration modal as passed down as a prop from App.jsx.
+	*/
 	return (
 		<div className="login-box" data-testid="login-box">
 			<h2 className='home'>Login:</h2>

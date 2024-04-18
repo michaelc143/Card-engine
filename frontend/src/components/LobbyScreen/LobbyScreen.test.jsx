@@ -1,24 +1,36 @@
-import React from "react";
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import LobbyScreen from './LobbyScreen';
 
 describe('LobbyScreen', () => {
-  it('should render username and player names correctly', () => {
-	const username = 'TestUser';
-	const playerNames = [username, 'Player2 (bot)', 'Player3 (bot)', 'Player4 (bot)'];
+	it('should render Lobby title player names correctly', async () => {
+		const mockedData = {
+			player1_name: "Player 1",
+			player2_name: "Player 2",
+			player3_name: null,
+			player4_name: "Player 4",
+		};
 
-	render(<LobbyScreen username={username} />);
+		const originalFetch = window.fetch;  // Store original fetch function
 
-	const lobbyTitle = screen.getByText(/Lobby./i);
-	expect(lobbyTitle).toBeInTheDocument();
+		window.fetch = async () => { // Mock fetch
+			return {
+				ok: true,
+				json: () => mockedData,
+			};
+		};
 
+		render(<LobbyScreen selectedGameId="123" />); // Provide selectedGameId
 
-	playerNames.forEach(name => {
-		const playerNameElement = screen.getByText(name);
-		expect(playerNameElement).toBeInTheDocument();
+		await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for rendering
+
+		const lobbyTitle = screen.getByText(/Lobby\./i); // Lobby Title
+		expect(lobbyTitle).toBeInTheDocument();
+
+		const playerNames = screen.getAllByText(/Player /i); // Find all player names, need the space because of Players title
+		console.log(playerNames);
+		expect(playerNames.length).toBe(3); // Expect 3 players (excluding null)
+
+		window.fetch = originalFetch; // Restore original fetch function
 	});
-
-	const startButton = screen.getByText(/Start game/i);
-	expect(startButton).toBeInTheDocument();
-  });
 });

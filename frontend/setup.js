@@ -10,7 +10,7 @@ root.setAttribute('id', 'root');
 document.body.appendChild(root);
 
 // Create a root renderer
-global.root = createRoot(root);
+window.root = createRoot(root);
 
 
 afterEach(() => {
