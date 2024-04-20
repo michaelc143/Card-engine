@@ -2,11 +2,12 @@ package CS506Team25.Card_Engine;
 
 import java.util.*;
 
-public class Game {
+public class Game extends Thread{
+    private volatile String response;
     // This game's ID in the database
     public int gameID;
     // The card that is turned up in the first round of bidding
-    Card upCard;
+    public Card upCard;
     // An array players that holds info about hands
     public Player[] players;
     // The number of tricks each player has taken in the current round
@@ -27,8 +28,6 @@ public class Game {
     Card.Suit trump;
     // The suit led with in the current trick
     Card.Suit ledSuit;
-    // Input for command-line interface which will be replaced with websockets
-    Scanner input = new Scanner(System.in);
     // The index of the player going alone, or -1 if nobody is going alone
     int lonerIndex;
 
@@ -55,7 +54,7 @@ public class Game {
      * @return the winning team (0 for players with indexes 0 and 2, 1 for players 1
      *         and 3)
      */
-    public int runGame() {
+    public void run() {
         createDeck();
         // Set a random player to start
         startingPlayerIndex = (int) (Math.random() * 4);
@@ -68,10 +67,8 @@ public class Game {
         // Return the winning team
         if (scores[0] >= 10) {
             System.out.println("Team 0 wins");
-            return 0;
         } else {
             System.out.println("Team 1 wins");
-            return 1;
         }
     }
 
@@ -155,7 +152,7 @@ public class Game {
                         "Player " + playerIndex + ", would you like player " + dealerIndex + " to pick up "
                                 + upCard.toString() + "? 'Yes' or 'No'");
                 // Wait for response
-                String response = input.nextLine();
+                String response = getPlayerInput();
 
                 // Parse whether response is Yes or No
                 if (response.equals("Yes")) {
@@ -175,7 +172,7 @@ public class Game {
                     System.out
                             .println("Player " + dealerIndex + ", discard one of your cards (respond with the index): "
                                     + players[dealerIndex].hand.toString());
-                    int discard = Integer.parseInt(input.nextLine());
+                    int discard = Integer.parseInt(getPlayerInput());
                     players[dealerIndex].hand.remove(discard);
                     System.out.println("Your new hand: " + players[dealerIndex].hand);
                     break;
@@ -205,13 +202,14 @@ public class Game {
                 }
             }
             options.remove(upCard.getSuit());
+
             // Use websocket to ask playerIndex if they would like to name trump
             System.out
                     .println("Player " + playerIndex + ", would you like to name trump? Options are \"Pass\" or one of:"
                             + options.toString());
 
             // Wait for response
-            String response = input.nextLine();
+            String response = getPlayerInput();
 
             // Parse response
             if (response.equals("Pass")) {
@@ -242,7 +240,7 @@ public class Game {
      */
     public void chooseGoingAlone(int playerIndex) {
         System.out.println("Player " + playerIndex + ", would you like to go alone? Options are 'Yes' or 'No'");
-        String response = input.nextLine();
+        String response = getPlayerInput();
         if (response.equals("Yes")) {
             lonerIndex = playerIndex;
         }
@@ -331,7 +329,7 @@ public class Game {
                 "Player " + playerIndex + ", play one of these cards (respond with index): " + validCards.toString());
 
         // Let the player choose their card
-        Card playedCard = validCards.get(Integer.parseInt(input.nextLine()));
+        Card playedCard = validCards.get(Integer.parseInt(getPlayerInput()));
 
         // If the player led, update the ledSuit to enforce following suit
         if (ledSuit == null) {
@@ -349,7 +347,7 @@ public class Game {
      * @param hand the hand of cards to select from
      * @return the subset of cards which are eligible to be played
      */
-    private ArrayList<Card> getValidCards(ArrayList<Card> hand) {
+    public ArrayList<Card> getValidCards(ArrayList<Card> hand) {
 
         // Check to see if the player can follow suit
         boolean canFollowSuit = false;
@@ -437,5 +435,18 @@ public class Game {
             scores[callingTeam] += 2;
             System.out.println("Team " + callingTeam + " took all tricks, and get 2 points");
         }
+    }
+
+    public void makeMove(String move){
+        response = move;
+    }
+
+    private String getPlayerInput(){
+        while (response == null) {
+            Thread.onSpinWait();
+        }
+        String result = response;
+        response = null;
+        return result;
     }
 }

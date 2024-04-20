@@ -32,15 +32,15 @@ public class Lobby {
      * Creates a new game of Euchre with the 4 players specified.
      * @param players: The array of player IDs (indexes 0 and 2 are in a team against indexes 1 and 3)
      */
-    public int startGame(Player[] players){
-        System.out.println("Starting game");
-
-        //Use the constructor to pass in websocket information
-        Game game = new Game(gameID, players);
-        int winningTeam = game.runGame();
-        //handle game ending and updating database with winners and losers
-        return 0;
-    }
+//    public int startGame(Player[] players){
+//        System.out.println("Starting game");
+//
+//        //Use the constructor to pass in websocket information
+//        Game game = new Game(gameID, players);
+//        int winningTeam = game.runGame();
+//        //handle game ending and updating database with winners and losers
+//        return 0;
+//    }
 
     /**
      * Assign player seat in lobby
@@ -138,17 +138,16 @@ public class Lobby {
         return json;
     }
 
-    public static void main(String[] args) {
-        Lobby lobby = new Lobby(0);
-        Player[] players = new Player[4];
-        lobby.startGame(players);
-    }
+//    public static void main(String[] args) {
+//        Lobby lobby = new Lobby(0);
+//        Player[] players = new Player[4];
+//        lobby.startGame(players);
+//    }
 
     /**
      * Deletes lobby and creates new game with current players
      */
     private void createGame(){
         GameManager.startGame(gameID, playerArr);
-        GameWebsocketController gameWebsocketController = new GameWebsocketController();
     }
 }
