@@ -37,7 +37,8 @@ public class GameWebsocketController {
      *     }
      * }
      */
-    @SubscribeMapping("/topic/games/euchre/{gameID}")
+    @SubscribeMapping("/games/euchre/{gameID}")
+    @SendTo("/topic/games/euchre/{gameID}")
     public LobbyMessage handleSubscribingToEuchreGame(@DestinationVariable int gameID){
         Lobby lobby = GameManager.getLobby(gameID);
         Game game = GameManager.getGame(gameID);
