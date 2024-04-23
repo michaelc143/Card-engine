@@ -1,13 +1,9 @@
 package CS506Team25.Card_Engine.websocket;
 
 import CS506Team25.Card_Engine.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
@@ -102,9 +98,9 @@ public class GameWebsocketController {
         return null;
     }
 
-    @MessageMapping("/games/euchre/{gameID}/make-move")
+    @MessageMapping("/games/euchre/{gameID}/{userID}/make-move")
     @SendTo("/topic/games/euchre/{gameID}")
-    public GameMessage makeMove(@DestinationVariable int gameID, int userID, String move){
+    public GameMessage makeMove(@DestinationVariable int gameID, @DestinationVariable int userID, String move){
         Game game = GameManager.getGame(gameID);
         if (game == null){
             return null;
@@ -113,8 +109,9 @@ public class GameWebsocketController {
         if (!game.makeMove(move, userID)){
             return null;
         }
-
-        return new GameMessage(game);
+        GameMessage output = new GameMessage(game);
+        game.isWaitingForInput = false;
+        return output;
     }
 
     /**
@@ -196,15 +193,10 @@ public class GameWebsocketController {
              PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
             insertStatement.setString(1, "in_progress");
             insertStatement.setInt(2, gameID);
-            int rowsInserted = insertStatement.executeUpdate();
+            insertStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Helper method to structure the JSON which will be returned by endpoints
-     * @param message
-     */
 
 }

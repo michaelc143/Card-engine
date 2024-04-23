@@ -12,7 +12,7 @@ public class LobbyMessage {
     //id of the game
     public int id;
     //at what point in its lifecycle a game is at
-    public Status status = Status.Lobby;
+    public String status = Status.Lobby.name();
     //an array of players where position in array is seat #, null means a bot
     public Player[] players;
 

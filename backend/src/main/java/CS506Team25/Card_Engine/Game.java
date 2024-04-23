@@ -1,9 +1,14 @@
 package CS506Team25.Card_Engine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class Game extends Thread{
-    private volatile String response;
+    // Response from the user, game waits for this to be set when and then resets it to null
+    private volatile String user_response;
     // This game's ID in the database
     public int gameID;
     // The card that is turned up in the first round of bidding
@@ -14,6 +19,8 @@ public class Game extends Thread{
     public Player currentPlayer;
     // Used to build the outputs to players for debugging purposes
     public StringBuilder message_to_output;
+    // A list of inputs user can respond with
+    public ArrayList<String> options;
     // The number of tricks each player has taken in the current round
     int[] trickCount;
     // The running score for each team, once someone reaches 10, they win the game
@@ -34,6 +41,11 @@ public class Game extends Thread{
     Card.Suit ledSuit;
     // The player going alone, or null if nobody is going alone
     Player lonerPlayer;
+    // Used to handle race conditions with threading, program should be waiting when true
+    public volatile boolean isWaitingForInput;
+
+    private final Logger logger = LoggerFactory.getLogger(Game.class);
+
 
     /**
      * Creates a new game object
@@ -48,7 +60,7 @@ public class Game extends Thread{
         //TODO: Implement bots instead of making fake players
         for (int seat = 0; seat < players.length; seat++) {
             if (players[seat] == null)
-                players[seat] = new Player(-1, "BOT_" + seat);
+                players[seat] = new Player(-seat, "BOT_" + seat);
         }
     }
 
@@ -59,7 +71,10 @@ public class Game extends Thread{
      *         and 3)
      */
     public void run() {
+        System.out.println("Game started");
+        options = new ArrayList<>();
         message_to_output = new StringBuilder();
+        isWaitingForInput = true;
         createDeck();
         // Set a random player to start
         startingPlayerIndex = (int) (Math.random() * 4);
@@ -154,8 +169,11 @@ public class Game extends Thread{
             if (canPickUp) {
                 // Use websocket to ask playerIndex if they wish to pick up the card
                 message_to_output.append("Player ").append(currentPlayer.username).append(", would you like player ").append(players[dealerIndex].username).append(" to pick up ").append(upCard.toString()).append("? 'Yes' or 'No'\n");
+                options.add("Yes");
+                options.add("No");
                 // Wait for response
                 String response = getPlayerInput();
+                options = new ArrayList<>();
 
                 // Parse whether response is Yes or No
                 if (response.equals("Yes")) {
@@ -173,7 +191,11 @@ public class Game extends Thread{
                     // Dealer must pick up the card and choose a card to discard
                     players[dealerIndex].hand.add(upCard);
                     message_to_output.append("Player ").append(players[dealerIndex].username).append(", discard one of your cards (respond with the index): ").append(players[dealerIndex].hand.toString()).append("\n");
+                    for (int cardIndex = 0; cardIndex < currentPlayer.hand.size(); cardIndex++) {
+                        options.add(String.valueOf(cardIndex));
+                    }
                     int discard = Integer.parseInt(getPlayerInput());
+                    options = new ArrayList<>();
                     players[dealerIndex].hand.remove(discard);
                     break;
                 }
@@ -195,19 +217,20 @@ public class Game extends Thread{
 
             // The player can name any suit they have in their hand except for the suit of
             // the rejected up card
-            ArrayList<Card.Suit> options = new ArrayList<>();
             for (Card card : currentPlayer.hand) {
-                if (!options.contains(card.getSuit())) {
-                    options.add(card.getSuit());
+                if (!options.contains(card.getSuit().name())) {
+                    options.add(card.getSuit().name());
                 }
             }
-            options.remove(upCard.getSuit());
+            options.remove(upCard.getSuit().name());
+            options.add("Pass");
 
             // Use websocket to ask playerIndex if they would like to name trump
-            message_to_output.append("Player ").append(currentPlayer.username).append(", would you like to name trump? Options are \"Pass\" or one of:").append(options.toString()).append("\n");
+            message_to_output.append("Player ").append(currentPlayer.username).append(", would you like to name trump? Options are \"Pass\" or one of:").append(options).append("\n");
 
             // Wait for response
             String response = getPlayerInput();
+            options = new ArrayList<>();
 
             // Parse response
             if (response.equals("Pass")) {
@@ -238,7 +261,10 @@ public class Game extends Thread{
      */
     public void chooseGoingAlone(Player player) {
         message_to_output.append("Player ").append(player.username).append(", would you like to go alone? Options are 'Yes' or 'No'\n");
+        options.add("Yes");
+        options.add("No");
         String response = getPlayerInput();
+        options = new ArrayList<>();
         if (response.equals("Yes")) {
             lonerPlayer = player;
         }
@@ -320,9 +346,10 @@ public class Game extends Thread{
         }
         // send valid cards to frontend
         message_to_output.append("Player ").append(player.username).append(", play one of these cards (respond with index): ").append(validCards.toString()).append("\n");
-
+        options.add(IntStream.range(0, currentPlayer.cardsInHand).toString());
         // Let the player choose their card
         Card playedCard = validCards.get(Integer.parseInt(getPlayerInput()));
+        options = new ArrayList<>();
 
         // If the player led, update the ledSuit to enforce following suit
         if (ledSuit == null) {
@@ -341,6 +368,10 @@ public class Game extends Thread{
      * @return the subset of cards which are eligible to be played
      */
     public ArrayList<Card> getValidCards(ArrayList<Card> hand) {
+        if (trump == null){
+            logger.debug("Can't get playable cards due to trump not being set yet");
+            return null;
+        }
 
         // Check to see if the player can follow suit
         boolean canFollowSuit = false;
@@ -431,16 +462,16 @@ public class Game extends Thread{
     }
 
     /**
-     * @param move
-     * @param userID
-     * @return
+     * @param move The move to be made represented as a string
+     * @param userID ID of the user making the move
+     * @return true if successful, false otherwise
      */
     public boolean makeMove(String move, int userID){
         if (userID != currentPlayer.playerID){
+            logger.debug("Player other then current player trying ot make a move");
             return false;
         }
-        response = move;
-        message_to_output = new StringBuilder();
+        user_response = move;
         return true;
     }
 
@@ -449,11 +480,15 @@ public class Game extends Thread{
     }
 
     private String getPlayerInput(){
-        while (response == null) {
+        System.out.println("Waiting for input, isWaitingForInput="+isWaitingForInput + " and response=" + user_response);
+        while (isWaitingForInput || user_response == null) {
             Thread.onSpinWait();
         }
-        String result = response;
-        response = null;
+        String result = user_response;
+        user_response = null;
+        message_to_output = new StringBuilder();
+        isWaitingForInput = true;
+        System.out.println("Got input, isWaitingForInput="+isWaitingForInput + " and result=" + result);
         return result;
     }
 }
