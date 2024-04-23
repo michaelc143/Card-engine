@@ -10,6 +10,10 @@ public class Game extends Thread{
     public Card upCard;
     // An array players that holds info about hands
     public Player[] players;
+    // The player whose turn we're currently on
+    public Player currentPlayer;
+    // Used to build the outputs to players for debugging purposes
+    public StringBuilder message_to_output;
     // The number of tricks each player has taken in the current round
     int[] trickCount;
     // The running score for each team, once someone reaches 10, they win the game
@@ -21,15 +25,15 @@ public class Game extends Thread{
     // The player who dealt the current round
     int dealerIndex;
     // The cards that have been played in the current trick
-    ArrayList<Card> currentTrick;
+    public ArrayList<Card> currentTrick;
     // The whole Euchre deck of 28 cards
     ArrayList<Card> deck;
     // The suit named trump in the current round
-    Card.Suit trump;
+    public Card.Suit trump;
     // The suit led with in the current trick
     Card.Suit ledSuit;
-    // The index of the player going alone, or -1 if nobody is going alone
-    int lonerIndex;
+    // The player going alone, or null if nobody is going alone
+    Player lonerPlayer;
 
     /**
      * Creates a new game object
@@ -44,7 +48,7 @@ public class Game extends Thread{
         //TODO: Implement bots instead of making fake players
         for (int seat = 0; seat < players.length; seat++) {
             if (players[seat] == null)
-                players[seat] = new Player(-1, "BOT");
+                players[seat] = new Player(-1, "BOT_" + seat);
         }
     }
 
@@ -55,6 +59,7 @@ public class Game extends Thread{
      *         and 3)
      */
     public void run() {
+        message_to_output = new StringBuilder();
         createDeck();
         // Set a random player to start
         startingPlayerIndex = (int) (Math.random() * 4);
@@ -66,9 +71,9 @@ public class Game extends Thread{
         }
         // Return the winning team
         if (scores[0] >= 10) {
-            System.out.println("Team 0 wins");
+            message_to_output.append("Team 0 wins\n");
         } else {
-            System.out.println("Team 1 wins");
+            message_to_output.append("Team 1 wins\n");
         }
     }
 
@@ -93,7 +98,7 @@ public class Game extends Thread{
         shuffle();
 
         // display up card
-        System.out.println(upCard.toString() + " is turned up");
+        message_to_output.append(upCard.toString()).append(" is turned up\n");
 
         firstBiddingRound();
 
@@ -105,7 +110,7 @@ public class Game extends Thread{
 
         // No trump was named, redeal
         if (trump == null) {
-            System.out.println("No trump named, redealing");
+            message_to_output.append("No trump named, redealing\n");
             return;
         }
 
@@ -120,7 +125,7 @@ public class Game extends Thread{
         }
 
         scoreRound();
-        System.out.println("New scores: [" + scores[0] + ", " + scores[1] + "]");
+        message_to_output.append("New scores: [").append(scores[0]).append(", ").append(scores[1]).append("]\n");
 
         // Rotate the dealer to the left
         dealerIndex = (dealerIndex + 1) % 4;
@@ -135,12 +140,12 @@ public class Game extends Thread{
         // and moving clockwise
 
         for (int i = 1; i < 5; i++) {
-            int playerIndex = (dealerIndex + i) % 4;
+            currentPlayer = players[(dealerIndex + i) % 4];
 
             // A player can only pick up or order up the card if they have one of that suit
             // in their hand
             boolean canPickUp = false;
-            for (Card card : players[playerIndex].hand) {
+            for (Card card : currentPlayer.hand) {
                 if (card.getSuit().equals(upCard.getSuit())) {
                     canPickUp = true;
                     break;
@@ -148,37 +153,32 @@ public class Game extends Thread{
             }
             if (canPickUp) {
                 // Use websocket to ask playerIndex if they wish to pick up the card
-                System.out.println(
-                        "Player " + playerIndex + ", would you like player " + dealerIndex + " to pick up "
-                                + upCard.toString() + "? 'Yes' or 'No'");
+                message_to_output.append("Player ").append(currentPlayer.username).append(", would you like player ").append(players[dealerIndex].username).append(" to pick up ").append(upCard.toString()).append("? 'Yes' or 'No'\n");
                 // Wait for response
                 String response = getPlayerInput();
 
                 // Parse whether response is Yes or No
                 if (response.equals("Yes")) {
 
-                    chooseGoingAlone(playerIndex);
+                    chooseGoingAlone(currentPlayer);
 
                     trump = upCard.getSuit();
 
                     // Alert players that the trump has been named
-                    System.out.println("Player " + playerIndex + " has named " + trump + " as trump");
+                    message_to_output.append("Player ").append(currentPlayer.username).append(" has named ").append(trump).append(" as trump\n");
 
                     // Set the calling team
-                    callingTeam = playerIndex % 2;
+                    callingTeam = ((dealerIndex + i) % 4) % 2;
 
                     // Dealer must pick up the card and choose a card to discard
                     players[dealerIndex].hand.add(upCard);
-                    System.out
-                            .println("Player " + dealerIndex + ", discard one of your cards (respond with the index): "
-                                    + players[dealerIndex].hand.toString());
+                    message_to_output.append("Player ").append(players[dealerIndex].username).append(", discard one of your cards (respond with the index): ").append(players[dealerIndex].hand.toString()).append("\n");
                     int discard = Integer.parseInt(getPlayerInput());
                     players[dealerIndex].hand.remove(discard);
-                    System.out.println("Your new hand: " + players[dealerIndex].hand);
                     break;
                 }
             } else {
-                System.out.println("Player " + playerIndex + ", you cannot pick up/order up this card");
+                message_to_output.append("Player ").append(currentPlayer.username).append(", you cannot pick up/order up this card\n");
             }
 
         }
@@ -191,12 +191,12 @@ public class Game extends Thread{
     public void secondBiddingRound() {
 
         for (int i = 1; i < 5; i++) {
-            int playerIndex = (dealerIndex + i) % 4;
+            currentPlayer = players[(dealerIndex + i) % 4];
 
             // The player can name any suit they have in their hand except for the suit of
             // the rejected up card
             ArrayList<Card.Suit> options = new ArrayList<>();
-            for (Card card : players[playerIndex].hand) {
+            for (Card card : currentPlayer.hand) {
                 if (!options.contains(card.getSuit())) {
                     options.add(card.getSuit());
                 }
@@ -204,9 +204,7 @@ public class Game extends Thread{
             options.remove(upCard.getSuit());
 
             // Use websocket to ask playerIndex if they would like to name trump
-            System.out
-                    .println("Player " + playerIndex + ", would you like to name trump? Options are \"Pass\" or one of:"
-                            + options.toString());
+            message_to_output.append("Player ").append(currentPlayer.username).append(", would you like to name trump? Options are \"Pass\" or one of:").append(options.toString()).append("\n");
 
             // Wait for response
             String response = getPlayerInput();
@@ -217,18 +215,18 @@ public class Game extends Thread{
             } else {
                 // Set trump to what the player named, then end the loop
                 try {
-                    chooseGoingAlone(playerIndex);
+                    chooseGoingAlone(currentPlayer);
 
                     trump = Card.Suit.valueOf(response);
                     // Alert players that trump has been named
-                    System.out.println("Player " + playerIndex + " has named " + trump + " as trump");
+                    message_to_output.append("Player ").append(currentPlayer.username).append(" has named ").append(trump).append(" as trump\n");
 
                     // Set the calling team
-                    callingTeam = playerIndex % 2;
+                    callingTeam = ((dealerIndex + i) % 4) % 2;
 
                     break;
                 } catch (IllegalArgumentException e) { // This should not be needed after moving to websockets
-                    System.out.println("Invalid suit, passing");
+                    message_to_output.append("Invalid suit, passing\n");
                 }
             }
         }
@@ -236,17 +234,17 @@ public class Game extends Thread{
 
     /**
      * Allows the player to choose whether they wish to go alone
-     * @param playerIndex, the id of the player going alone
+     * @param player, the player going alone
      */
-    public void chooseGoingAlone(int playerIndex) {
-        System.out.println("Player " + playerIndex + ", would you like to go alone? Options are 'Yes' or 'No'");
+    public void chooseGoingAlone(Player player) {
+        message_to_output.append("Player ").append(player.username).append(", would you like to go alone? Options are 'Yes' or 'No'\n");
         String response = getPlayerInput();
         if (response.equals("Yes")) {
-            lonerIndex = playerIndex;
+            lonerPlayer = player;
         }
         
         //This will probably need some way to be handled visually on the frontend
-        System.out.println("Player " + (playerIndex+2)%4 + ", your partner has chosen to go alone, you cannot play this hand");
+        message_to_output.append("Player ").append(players[(Arrays.asList(players).indexOf(currentPlayer) + 2) % 4].username).append(", your partner has chosen to go alone, you cannot play this hand\n");
     }
     /**
      * Shuffles the deck, randomizing it and assigning cards to each player's hand
@@ -257,7 +255,7 @@ public class Game extends Thread{
 
         // initalize hand-level data structures and variables
         trickCount = new int[2];
-        lonerIndex = -1;
+        lonerPlayer = null;
         trump = null;
 
         // Each of the 4 players gets 5 cards
@@ -267,9 +265,6 @@ public class Game extends Thread{
                 player.hand = hand;
             }
 
-            // Use the websocket to send each player their hand
-            System.out.print("Player " + i + "'s hand:");
-            System.out.print(players[i].hand.toString() + "\n");
         }
 
         // The 21st card (index 20) gets turned upwards
@@ -289,7 +284,7 @@ public class Game extends Thread{
         ledSuit = null;
         for (int i = 0; i < 4; i++) {
             // give each player the chance to play their cards
-            playCard((i + startingPlayerIndex) % 4);
+            playCard(players[(i + startingPlayerIndex) % 4]);
         }
         // determine who wins the trick
         int winnerIndex = (startingPlayerIndex + scoreHand()) % 4;
@@ -298,35 +293,33 @@ public class Game extends Thread{
         trickCount[winnerIndex % 2]++;
 
         // Alert users who won the trick
-        System.out.println(
-                "Player " + winnerIndex + " won with " + currentTrick.get((4 + winnerIndex - startingPlayerIndex) % 4));
+        message_to_output.append("Player ").append(players[winnerIndex].username).append(" won with ").append(currentTrick.get((4 + winnerIndex - startingPlayerIndex) % 4)).append("\n");
         return winnerIndex; // return the index of the player who won the trick
     }
 
     /**
      * Allows a player to play a valid card
      * 
-     * @param playerIndex the player who will play the card
+     * @param player the player who will play the card
      */
-    public void playCard(int playerIndex) {
-        if (playerIndex == (lonerIndex + 2) % 4) {
+    public void playCard(Player player) {
+        if (player == players[(Arrays.asList(players).indexOf(lonerPlayer) + 2) % 4]) {
             // This player's partner is going alone, so the player cannot play any cards
             // this hand
             currentTrick.add(null);
             return;
         }
         ArrayList<Card> validCards;
-        ArrayList<Card> hand = players[playerIndex].hand;
+        ArrayList<Card> hand = player.hand;
         // The first player can play any card
-        if (playerIndex == startingPlayerIndex) {
+        if (player == players[startingPlayerIndex]) {
             validCards = hand;
         } else {
             // Players after the first must follow suit if possible
             validCards = getValidCards(hand);
         }
         // send valid cards to frontend
-        System.out.println(
-                "Player " + playerIndex + ", play one of these cards (respond with index): " + validCards.toString());
+        message_to_output.append("Player ").append(player.username).append(", play one of these cards (respond with index): ").append(validCards.toString()).append("\n");
 
         // Let the player choose their card
         Card playedCard = validCards.get(Integer.parseInt(getPlayerInput()));
@@ -337,7 +330,7 @@ public class Game extends Thread{
         }
         // remove played card from hand
         hand.remove(playedCard);
-        System.out.println("You played " + playedCard.toString() + ". Your new hand is: " + hand.toString());
+        message_to_output.append("You played ").append(playedCard.toString()).append(". Your new hand is: ").append(hand.toString()).append("\n");
         currentTrick.add(playedCard);
     }
 
@@ -421,24 +414,38 @@ public class Game extends Thread{
         if (trickCount[callingTeam] < 3) {
             // Calling team got euchred, add 2 points to the other team
             scores[(callingTeam + 1)%2] += 2;
-            System.out.println("Team " + callingTeam + " got euchred, opposing team gets 2 points");
+            message_to_output.append("Team ").append(callingTeam).append(" got euchred, opposing team gets 2 points\n");
         } else if (trickCount[callingTeam] < 5) {
             // Calling team took 3-4 tricks, and get 1 point
             scores[callingTeam] += 1;
-            System.out.println("Team " + callingTeam + " took " + trickCount[callingTeam] + " tricks, and get 1 point");
-        } else if(lonerIndex != -1){
+            message_to_output.append("Team ").append(callingTeam).append(" took ").append(trickCount[callingTeam]).append(" tricks, and get 1 point\n");
+        } else if(lonerPlayer != null){
             //Calling team took all tricks and went alone, and get 4 points
             scores[callingTeam] += 4;
-            System.out.println("Team " + callingTeam + " went alone and took all tricks, and get 4 points");
+            message_to_output.append("Team ").append(callingTeam).append(" went alone and took all tricks, and get 4 points\n");
         } else {
             // Calling team took all tricks, and get 2 points
             scores[callingTeam] += 2;
-            System.out.println("Team " + callingTeam + " took all tricks, and get 2 points");
+            message_to_output.append("Team ").append(callingTeam).append(" took all tricks, and get 2 points\n");
         }
     }
 
-    public void makeMove(String move){
+    /**
+     * @param move
+     * @param userID
+     * @return
+     */
+    public boolean makeMove(String move, int userID){
+        if (userID != currentPlayer.playerID){
+            return false;
+        }
         response = move;
+        message_to_output = new StringBuilder();
+        return true;
+    }
+
+    public int getCardsInDeck(){
+        return deck.size();
     }
 
     private String getPlayerInput(){

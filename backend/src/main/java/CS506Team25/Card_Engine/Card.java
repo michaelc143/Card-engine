@@ -8,7 +8,7 @@ public class Card {
         BLACK
     }
 
-    enum Suit {
+    public enum Suit {
         DIAMONDS(Color.RED),
         SPADES(Color.BLACK),
         HEARTS(Color.RED),

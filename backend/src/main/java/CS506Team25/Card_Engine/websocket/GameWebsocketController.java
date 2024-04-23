@@ -104,13 +104,15 @@ public class GameWebsocketController {
 
     @MessageMapping("/games/euchre/{gameID}/make-move")
     @SendTo("/topic/games/euchre/{gameID}")
-    public GameMessage makeMove(@DestinationVariable int gameID, String move){
+    public GameMessage makeMove(@DestinationVariable int gameID, int userID, String move){
         Game game = GameManager.getGame(gameID);
         if (game == null){
             return null;
         }
 
-        game.makeMove(move);
+        if (!game.makeMove(move, userID)){
+            return null;
+        }
 
         return new GameMessage(game);
     }

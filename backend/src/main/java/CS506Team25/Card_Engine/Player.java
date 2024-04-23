@@ -12,8 +12,6 @@ public class Player {
     public String username;
     //whether the player has voted to start the game for lobby purposes
     public boolean readyToStart = false;
-    //players current score
-    public int score = 0;
     //Cards in player's hand
     public ArrayList<Card> hand;
 
