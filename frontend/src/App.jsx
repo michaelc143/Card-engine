@@ -69,6 +69,11 @@ function App() {
 		setCreateGameModalIsOpen(false);
 	};
 
+	const backToLogin = (value) => {
+		setUser(null);
+		setLoggedIn(false);
+	}
+
 	/**
 	 * @function
 	 * @description Handles subscribing to a Euchre games websocket when joining a lobby
@@ -105,6 +110,14 @@ function App() {
 			.catch(error => {
 				console.error('Error:', error);
 		});
+
+		//setUser(testData);
+		/* setUser({
+			user_id: "user_id", 
+			user_name: username,
+			date_joined: "today"
+		  });
+		setLoggedIn(true); */
 	};
 
 	/**
@@ -182,6 +195,8 @@ function App() {
 					createGameModalIsOpen={createGameModalIsOpen}
 					showToast={showToast}
 					userID={user.user_id}
+					username={user.user_name}
+					reloadLogin={backToLogin}
 				/>
 			) 
 			: 
