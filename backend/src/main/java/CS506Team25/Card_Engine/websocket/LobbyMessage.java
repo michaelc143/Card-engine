@@ -7,6 +7,29 @@ import CS506Team25.Card_Engine.Player;
 
 /**
  * Used to represent a lobbies data for API purposes
+ *         The JSON object has the following structure:
+ *         {
+ *             "id": Integer <game_id>,
+ *             "status": String <game_status>,
+ *             "players": [
+ *                 {
+ {
+ *                     "playerID": Integer <player_id_1>,
+ *                     "username": String "<username_1>",
+ *                     "readyToStart": Boolean <ready_to_start_1>,
+ *                     "cardsInHand": Integer <cards_in_hand_1>,
+ *                     "hand": null
+ *                 },
+ *                 {
+ *                     "playerID": Integer <player_id_2>,
+ *                     "username": String "<username_2>",
+ *                     "readyToStart": Boolean <ready_to_start_2>,
+ *                     "cardsInHand": Integer <cards_in_hand_2>,
+ *                     "hand": NULL
+ *                 },
+ *                 ...
+ *             ]
+ *         }
  */
 public class LobbyMessage {
     //id of the game
