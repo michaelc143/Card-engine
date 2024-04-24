@@ -95,7 +95,7 @@ function App() {
 	* @param {string} username - The username entered by the user.
 	*/
 	const handleLogin = (username) => {
-		/* fetch(`http://localhost:8080/login?username=${username}`, {method: 'POST',})
+		fetch(`http://localhost:8080/login?username=${username}`, {method: 'POST',})
 			.then(response => response.json())
 				.then(data => {
 					console.log(data); // Used in development to debug
@@ -109,15 +109,15 @@ function App() {
 				})
 			.catch(error => {
 				console.error('Error:', error);
-		}); */
+		});
 
 		//setUser(testData);
-		setUser({
+		/* setUser({
 			user_id: "user_id", 
 			user_name: username,
 			date_joined: "today"
 		  });
-		setLoggedIn(true);
+		setLoggedIn(true); */
 	};
 
 	/**

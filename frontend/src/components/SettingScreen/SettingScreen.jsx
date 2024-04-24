@@ -10,7 +10,7 @@ function SettingScreen({ closeModal, userid, username }) {
     const [presentUsername, setPresentUsername] = useState(username);
 
     const deleteAccount = () => {
-            /* fetch(`http://localhost:8080//player/${userid}`, {method: 'DELETE',})
+            fetch(`http://localhost:8080//player/${userid}`, {method: 'DELETE',})
                 .then(response => response.json())
                     .then(data => {
                         console.log(data); // Used in development to debug
@@ -25,10 +25,10 @@ function SettingScreen({ closeModal, userid, username }) {
                     })
                 .catch(error => {
                     console.error('Error:', error);
-            }); */
-            alert("Account has been deleted. This will return to Login screen.");
+            });
+            /* alert("Account has been deleted. This will return to Login screen.");
             setPresentUsername('*Cleared*');
-            closeModal('*Cleared*');           
+            closeModal('*Cleared*');   */         
             
         }
     const resetStats = () => {
