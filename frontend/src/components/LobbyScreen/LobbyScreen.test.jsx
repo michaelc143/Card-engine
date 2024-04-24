@@ -1,36 +1,44 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import LobbyScreen from './LobbyScreen';
 
+// Mock the WebSocket connection
+vi.mock('@stomp/stompjs', () => ({
+	Client: vi.fn().mockImplementation(() => ({
+		activate: vi.fn(),
+		subscribe: vi.fn((topic, callback) => {
+		// Simulate the WebSocket message
+		const mockMessage = {
+			body: JSON.stringify({
+			status: 'LOBBY',
+			players: [
+				{ playerID: 1, username: 'Player 1', readyToStart: true, score: 0, hand: [] },
+				{ playerID: 2, username: 'Player 2', readyToStart: false, score: 0, hand: [] },
+				null,
+				{ playerID: 4, username: 'Player 4', readyToStart: true, score: 0, hand: [] },
+			],
+			}),
+		};
+		callback(mockMessage);
+	}),
+	publish: vi.fn(),
+  })),
+}));
+
 describe('LobbyScreen', () => {
-	it('should render Lobby title player names correctly', async () => {
-		const mockedData = {
-			player1_name: "Player 1",
-			player2_name: "Player 2",
-			player3_name: null,
-			player4_name: "Player 4",
-		};
+	it('should render Lobby title, player names, and static text correctly', async () => {
+		render(<LobbyScreen selectedGameId="123" username="Player 1" userID={1} />);
 
-		const originalFetch = window.fetch;  // Store original fetch function
+		// Wait for the WebSocket message to be processed
+		await waitFor(() => expect(screen.getByText('Lobby.')).toBeInTheDocument());
 
-		window.fetch = async () => { // Mock fetch
-			return {
-				ok: true,
-				json: () => mockedData,
-			};
-		};
+		const playersText = screen.getByText('Players:');
+		expect(playersText).toBeInTheDocument();
 
-		render(<LobbyScreen selectedGameId="123" />); // Provide selectedGameId
+		const readyText = screen.getByText('Ready:');
+		expect(readyText).toBeInTheDocument();
 
-		await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for rendering
-
-		const lobbyTitle = screen.getByText(/Lobby\./i); // Lobby Title
-		expect(lobbyTitle).toBeInTheDocument();
-
-		const playerNames = screen.getAllByText(/Player /i); // Find all player names, need the space because of Players title
-		console.log(playerNames);
-		expect(playerNames.length).toBe(3); // Expect 3 players (excluding null)
-
-		window.fetch = originalFetch; // Restore original fetch function
+		const startWithBotsText = screen.getByText('Your game will start filled with bots.');
+		expect(startWithBotsText).toBeInTheDocument();
 	});
 });

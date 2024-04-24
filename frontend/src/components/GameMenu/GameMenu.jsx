@@ -135,7 +135,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							},
 						}}
 					>
-						{selectedGameId !== null && <LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} />}
+						{selectedGameId !== null && <LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} username={username} userID={userID}/>}
 					</Modal>
 					<Modal
 						isOpen={showSelectSeatModal}

@@ -1,50 +1,64 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import closeModalBtn from '../../assets/close.svg';
 import notifSVG from '../../assets/notif-icon.svg';
+import { Client } from '@stomp/stompjs';
 import './LobbyScreen.css';
 
-function LobbyScreen({ closeModal, selectedGameId }) {
+function LobbyScreen({ closeModal, selectedGameId, username, userID }) {
 
-	const [gameInfo, setGameInfo] = useState(null);
+	const [gameStatus, setGameStatus] = useState(''); //will need to use this to know when game starts, will be GAME value when game is playing
+	const [players, setPlayers] = useState([]);
+	const [webSocketMessage, setWebSocketMessage] = useState(null); //gets set initally when subscribing to the game endpoint, send this up to parent for game screen for live updates
+	const stompClientRef = useRef(null);
 
 	useEffect(() => {
-		const fetchGameInfo = async () => {
-			try {
-				const response = await fetch(`http://localhost:8080/games/euchre/${selectedGameId}`);
-				if (!response.ok) {
-					throw new Error('Failed to fetch game info');
+		const stompClient = new Client({
+			brokerURL: 'ws://localhost:8080/full-house-bucky-websocket',
+			debug: (str) => {
+				console.log(str);
+			},
+			reconnectDelay: 5000, // Automatically reconnect after 5 seconds if the connection is lost
+			heartbeatIncoming: 4000, // Expected heartbeat interval from the server (in milliseconds)
+			heartbeatOutgoing: 4000, // Outgoing heartbeat interval (in milliseconds)
+			onConnect: () => {
+				console.log('STOMP client connected');
+				stompClientRef.current = stompClient;
+				stompClient.subscribe(`/topic/games/euchre/${selectedGameId}`, (message) => {
+					setWebSocketMessage(JSON.parse(message.body)); //id, status, Players[0:playerID, username, readyToStart, score, hand]
+					const data = JSON.parse(message.body);
+					setGameStatus(data.status);
+					setPlayers(data.players);
+					console.log(data); // logging websocketMessage
+				}, (error) => {
+					console.error('Error subscribing to topic:', error);
+				});
 			}
-			const data = await response.json();
-			setGameInfo(data);
-			console.log(data);
-			// TODO: need to subscribe to websocket here
-			} catch (error) {
-				console.error('Error fetching game info:', error);
-			}
-		};
-	
-		fetchGameInfo();
+		});
+		
+		stompClient.activate();
 	}, [selectedGameId]);
 
-	// TODO: need another use effect for the websockets
+	const handleCheckboxChange = (index, checked) => {
 
-	// had to do this monstrosity to render only names that are in the game
-	const playerNames = (gameInfo?.player1_name?.trim() ||
-		gameInfo?.player2_name?.trim() ||
-		gameInfo?.player3_name?.trim() ||
-		gameInfo?.player4_name?.trim())
-		? [
-			gameInfo.player1_name,
-			gameInfo.player2_name,
-			gameInfo.player3_name,
-			gameInfo.player4_name,
-			].filter(name => name?.trim())
-		: [];
-	
-	// Loading indicator while it's waiting for the game info
-	if (!gameInfo) {
-		return <div>Loading...</div>;
-	}
+		const stompClient = stompClientRef.current; // Access the stompClient from the ref
+		if (stompClient) {
+			if (checked) {
+				console.log("SENDING MESSAGE");
+				stompClient.publish({
+					destination: `/app/games/euchre/${selectedGameId}/vote-start`,
+					body: userID,
+				});
+			} else {
+				stompClient.publish({
+					destination: `/app/games/euchre/${selectedGameId}/vote-not-to-start`,
+					body: userID,
+				});
+			}
+		}
+	};
+
+	// showing player names from websockets, had to filter for null players
+	const playerNames = players.filter(player => player !== null).map(player => player.username);
 
 	return(
 		<>
@@ -57,10 +71,23 @@ function LobbyScreen({ closeModal, selectedGameId }) {
 					<h4 style={{ width: '45%', display: 'inline-block'}}>Players:</h4>
 					<h4 style={{ width: '45%', display: 'inline-block', textAlign: 'center' }}>Ready:</h4>
 				</div>
-				{playerNames.map((name) => (
+				{playerNames.map((name, index) => (
 					<div key={name} style={{ marginLeft: '1rem' }}>
 						<span style={{ width: '45%', display: 'inline-block', fontSize: '32px', marginBottom: '1rem' }}>{name}</span>
-						<input style={{ width: '45%', display: 'inline-block' }} type="checkbox" />
+						{name === username ? (
+							<input
+								style={{ width: '45%', display: 'inline-block' }}
+								type="checkbox"
+								onChange={(e) => handleCheckboxChange(index, e.target.checked)}
+							/>
+						) : (
+							<input
+								style={{ width: '45%', display: 'inline-block' }}
+								type="checkbox"
+								checked={players[index]?.readyToStart || false}
+								disabled
+							/>
+						)}
 					</div>
 				))}
 				<div className="notif-box" style={{display: 'flex', justifyContent: 'space-between', marginTop: '1rem'}}>
@@ -69,7 +96,9 @@ function LobbyScreen({ closeModal, selectedGameId }) {
 						Your game will start filled with bots.
 					</div>
 					<button>Start game &gt;</button> 
-					{/* whenver all ready from websocket start game, voteToStart, voteNotToStartGame */}
+					{/* TODO: whenever all ready from websocket start game, this will come from gameStatus var from websockets
+						should be closing this modal and changing screens from GameMenu to the new GameBoard screen. 
+					*/}
 				</div>
 			</div>
 		</>
