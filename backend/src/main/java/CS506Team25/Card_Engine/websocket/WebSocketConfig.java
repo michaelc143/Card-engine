@@ -24,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/full-house-bucky-websocket");
+        registry.addEndpoint("/full-house-bucky-websocket").setAllowedOrigins("http://localhost:3000");
     }
 
 }
