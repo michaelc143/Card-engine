@@ -8,6 +8,10 @@ docker compose -f db_setup.yml up -d --build
 
 Running this command will spin up the frontend, backend, and database as well as PHPMyAdmin to view/edit the db.
 
+## Running local backend
+
+If you're running the backend locally, switch the db host from jdbc:mysql://db2:3306/full_house_badger to jdbc:mysql://localhost:53306/full_house_badger
+
 ## Ports for each system within the running compose
 
 DB: db2:3306/full_house_badger
