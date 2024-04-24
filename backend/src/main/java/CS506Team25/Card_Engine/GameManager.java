@@ -42,7 +42,7 @@ public class GameManager extends LinkedHashMap<Integer, Game> {
   public static void startGame(int gameID, Player[] players){
     liveLobbies.remove(gameID);
     liveGames.put(gameID, new Game(gameID, players));
-    System.out.println("Game started on backend");
+    System.out.println("Game started on backend, gameID=" + gameID);
     liveGames.get(gameID).start();
 
   }

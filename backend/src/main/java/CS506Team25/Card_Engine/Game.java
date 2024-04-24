@@ -70,7 +70,6 @@ public class Game extends Thread{
      *         and 3)
      */
     public void run() {
-        System.out.println("Game started");
         options = new ArrayList<>();
         message_to_output = new StringBuilder();
         isWaitingForInput = true;
