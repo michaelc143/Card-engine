@@ -1,14 +1,9 @@
 package CS506Team25.Card_Engine.websocket;
 
-import CS506Team25.Card_Engine.ConnectToDataBase;
-import CS506Team25.Card_Engine.Game;
-import CS506Team25.Card_Engine.GameManager;
-import CS506Team25.Card_Engine.Lobby;
+import CS506Team25.Card_Engine.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
@@ -16,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,14 +35,13 @@ public class GameWebsocketController {
      */
     @SubscribeMapping("/games/euchre/{gameID}")
     @SendTo("/topic/games/euchre/{gameID}")
-    public GameMessage handleSubscribingToEuchreGame(@DestinationVariable int gameID){
+    public LobbyMessage handleSubscribingToEuchreGame(@DestinationVariable int gameID){
         Lobby lobby = GameManager.getLobby(gameID);
         Game game = GameManager.getGame(gameID);
         if (lobby != null){
-            return new GameMessage(lobby);
+            return new LobbyMessage(lobby);
         } else if (game != null){
             updateLobbyToGameInDB(gameID);
-            //TODO return a JSON of game info
             return new GameMessage(game);
         }
         return null;
@@ -67,11 +62,11 @@ public class GameWebsocketController {
      */
     @MessageMapping("/games/euchre/{gameID}/vote-start")
     @SendTo("/topic/games/euchre/{gameID}")
-    public GameMessage voteStart(@DestinationVariable int gameID, @Payload int userID){
+    public LobbyMessage voteStart(@DestinationVariable int gameID, @Payload int userID){
         Lobby lobby = GameManager.getLobby(gameID);
         int result = lobby.changeVote(userID, true);
         if (result == 0){
-            return new GameMessage(lobby);
+            return new LobbyMessage(lobby);
         }
         else if (result == 1){
             updateLobbyToGameInDB(gameID);
@@ -95,24 +90,90 @@ public class GameWebsocketController {
      */
     @MessageMapping("/games/euchre/{gameID}/vote-not-to-start")
     @SendTo("/topic/games/euchre/{gameID}")
-    public GameMessage voteNotToStart(@DestinationVariable int gameID, int userID){
+    public LobbyMessage voteNotToStart(@DestinationVariable int gameID, int userID){
         Lobby lobby = GameManager.getLobby(gameID);
         if (lobby.changeVote(userID, false) >= 0){
-            return new GameMessage(lobby);
+            return new LobbyMessage(lobby);
+        }
+        return null;
+    }
+
+    @MessageMapping("/games/euchre/{gameID}/{userID}/make-move")
+    @SendTo("/topic/games/euchre/{gameID}")
+    public GameMessage makeMove(@DestinationVariable int gameID, @DestinationVariable int userID, String move){
+        Game game = GameManager.getGame(gameID);
+        if (game == null){
+            return null;
+        }
+
+        if (!game.makeMove(move, userID)){
+            return null;
+        }
+        // Wait until the game is waiting for input to send out a message
+        game.isWaitingForInput = false;
+        while (!game.isWaitingForInput){
+            Thread.onSpinWait();
+        }
+        GameMessage output = new GameMessage(game, move);
+        return output;
+    }
+
+    /**
+     * Endpoint that privately sends a player their hand
+     * @param gameID ID of current lobby
+     * @param userID ID of player that is requesting hand
+     * @return A JSON representing the players cards in with the rank and suit as the key and a boolean denoting if it's
+     * playable as the value, else return null if game or player in game couldn't be found
+     * {
+     *     "{card-name}": Boolean
+     * }
+     */
+    @MessageMapping("/games/euchre/{gameID}/request-hand")
+    @SendToUser("/queue/{gameID}/hand")
+    public ArrayList<Card> getHand(@DestinationVariable int gameID, int userID) {
+        Game game = GameManager.getGame(gameID);
+        if (game == null){
+            return null;
+        }
+
+        Player[] players = game.players;
+
+        for (Player player:
+             players) {
+            if (player.playerID == userID) {
+                return player.hand;
+            }
         }
         return null;
     }
 
     /**
-     * TODO: Implement
      * Endpoint that privately sends a player their hand
-     * @param message
-     * @return
+     * @param gameID ID of current lobby
+     * @param userID ID of player that is requesting hand
+     * @return A JSON representing the players cards in with the rank and suit as the key and a boolean denoting if it's
+     * playable as the value, else return null if game or player in game couldn't be found
+     * {
+     *     "{card-name}": Boolean
+     * }
      */
-    @MessageMapping("/games/euchre/{gameID}/request-hand")
+    @MessageMapping("/games/euchre/{gameID}/request-playable-cards")
     @SendToUser("/queue/{gameID}/hand")
-    public String getHand(String message) {
-        return "Hello, " + message + ", this is a private message!";
+    public ArrayList<Card> getPlayableCards(@DestinationVariable int gameID, int userID) {
+        Game game = GameManager.getGame(gameID);
+        if (game == null){
+            return null;
+        }
+
+        Player[] players = game.players;
+
+        for (Player player:
+                players) {
+            if (player.playerID == userID) {
+                return game.getValidCards(player.hand);
+            }
+        }
+        return null;
     }
 
     /**
@@ -136,15 +197,10 @@ public class GameWebsocketController {
              PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
             insertStatement.setString(1, "in_progress");
             insertStatement.setInt(2, gameID);
-            int rowsInserted = insertStatement.executeUpdate();
+            insertStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Helper method to structure the JSON which will be returned by endpoints
-     * @param message
-     */
 
 }
