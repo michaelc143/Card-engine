@@ -109,8 +109,12 @@ public class GameWebsocketController {
         if (!game.makeMove(move, userID)){
             return null;
         }
-        GameMessage output = new GameMessage(game);
+        // Wait until the game is waiting for input to send out a message
         game.isWaitingForInput = false;
+        while (!game.isWaitingForInput){
+            Thread.onSpinWait();
+        }
+        GameMessage output = new GameMessage(game, move);
         return output;
     }
 

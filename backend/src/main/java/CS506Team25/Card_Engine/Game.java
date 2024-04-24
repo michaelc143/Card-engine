@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class Game extends Thread{
     // Response from the user, game waits for this to be set when and then resets it to null
@@ -191,9 +190,7 @@ public class Game extends Thread{
                     // Dealer must pick up the card and choose a card to discard
                     players[dealerIndex].hand.add(upCard);
                     message_to_output.append("Player ").append(players[dealerIndex].username).append(", discard one of your cards (respond with the index): ").append(players[dealerIndex].hand.toString()).append("\n");
-                    for (int cardIndex = 0; cardIndex < currentPlayer.hand.size(); cardIndex++) {
-                        options.add(String.valueOf(cardIndex));
-                    }
+                    addIndexesOfCardsInHand(options);
                     int discard = Integer.parseInt(getPlayerInput());
                     options = new ArrayList<>();
                     players[dealerIndex].hand.remove(discard);
@@ -346,7 +343,7 @@ public class Game extends Thread{
         }
         // send valid cards to frontend
         message_to_output.append("Player ").append(player.username).append(", play one of these cards (respond with index): ").append(validCards.toString()).append("\n");
-        options.add(IntStream.range(0, currentPlayer.cardsInHand).toString());
+        addIndexesOfCardsInHand(options);
         // Let the player choose their card
         Card playedCard = validCards.get(Integer.parseInt(getPlayerInput()));
         options = new ArrayList<>();
@@ -479,16 +476,20 @@ public class Game extends Thread{
         return deck.size();
     }
 
+    private void addIndexesOfCardsInHand(ArrayList<String> options){
+        for (int cardIndex = 0; cardIndex < currentPlayer.hand.size(); cardIndex++) {
+            options.add(String.valueOf(cardIndex));
+        }
+    }
+
     private String getPlayerInput(){
-        System.out.println("Waiting for input, isWaitingForInput="+isWaitingForInput + " and response=" + user_response);
+        isWaitingForInput = true;
         while (isWaitingForInput || user_response == null) {
             Thread.onSpinWait();
         }
         String result = user_response;
         user_response = null;
         message_to_output = new StringBuilder();
-        isWaitingForInput = true;
-        System.out.println("Got input, isWaitingForInput="+isWaitingForInput + " and result=" + result);
         return result;
     }
 }

@@ -10,13 +10,14 @@ import java.util.ArrayList;
  * Used to represent a game's data for API purposes
  */
 public class GameMessage extends LobbyMessage{
-    public String message;
     public String upCard;
     public Player currentPlayer;
     public int cardsInDeck;
     public ArrayList<Card> currentTrick;
     public String trump;
     public ArrayList<String> options;
+    public String message;
+    public String most_recent_move;
 
 
     public GameMessage(Game game){
@@ -26,13 +27,18 @@ public class GameMessage extends LobbyMessage{
             this.upCard = game.upCard.toString();
         if (game.currentTrick != null)
             this.currentTrick = game.currentTrick;
-        if (game.trump != null && game.trump.name() != null)
+        if (game.trump != null)
             this.trump = game.trump.name();
         if (game.message_to_output != null)
             this.message = game.message_to_output.toString();
         this.cardsInDeck = game.getCardsInDeck();
         this.options = new ArrayList<>(game.options);
         deepCopyPlayers(game);
+    }
+
+    public GameMessage(Game game, String move){
+        this(game);
+        this.most_recent_move = move;
     }
 
     private void deepCopyPlayers(Game game){
