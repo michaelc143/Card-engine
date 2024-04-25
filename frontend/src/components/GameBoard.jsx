@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 const GameBoard = ({ userID, selectedGameID }) => {
 
     const [cards, setCards] = useState(null);
+    const [gameData, setGameData] = useState(null);
     const stompRef = useRef(null);
 
     useEffect(() => {
@@ -20,6 +21,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
                 stompRef.current = stompClient;
                 stompClient.subscribe(`/topic/games/euchre/${selectedGameID}`, (message) => {
                     console.log(JSON.parse(message.body)); // logging websocketMessage
+                    setGameData(JSON.parse(message.body));
                 }, (error) => {
                     console.error('Error subscribing to topic:', error);
                 });
@@ -27,35 +29,59 @@ const GameBoard = ({ userID, selectedGameID }) => {
                     console.log(JSON.parse(message.body));
                     setCards(JSON.parse(message.body));
                 });
-                stompClient.publish({
-                    destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
-                });
+                getCards();
             }
         });
         stompClient.activate();
     }, []);
 
+    // function to get cards from WS
     const getCards = () => {
         const stompClient = stompRef.current;
         if (stompClient) {
             stompClient.publish({
-                destination: `/app//games/euchre/${selectedGameID}/${userID}/request-hand`,
+                destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
                 body: userID,
             });
         }
     }
 
+    // Loading screen for while game data is being grabbed originally
+    if(!gameData) {
+        return <h1>Loading...</h1>
+    }
 
-  return (
-    <div>
-        <h2>Game Board {userID}</h2>
-        {cards && cards.map((card, index) => (
-                <div key={index}>
-                    <p>Card {index} Suit: {card.suit} Rank: {card.rank}</p>
-                </div>
-        ))}
-    </div>
-  );
+    const makeMoveYesNo = (move) => {
+        const stompClient = stompRef.current;
+        if (stompClient) {
+            stompClient.publish({
+                destination: `/app/games/euchre/${selectedGameID}/${userID}/make-move`,
+                body: move,
+            });
+        }
+    }
+
+    const isCurrentPlayer = gameData.currentPlayer.playerID === userID;
+
+    return (
+        <div>
+            <h2>Game Board USERID: {userID}</h2>
+            {cards && cards.map((card, index) => (
+                    <div key={index}>
+                        <p>Card {index} Suit: {card.suit} Rank: {card.rank}</p>
+                    </div>
+            ))}
+            {
+                isCurrentPlayer &&
+                <>
+                    <p>{gameData.message}</p>
+                    {gameData.options.map((option, index) => (
+                        <button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
+                    ))}
+                </>
+            }
+        </div>
+    );
 };
 
 export default GameBoard;
