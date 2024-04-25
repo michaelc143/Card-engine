@@ -27,7 +27,9 @@ const GameBoard = ({ userID, selectedGameID }) => {
                     console.log(JSON.parse(message.body));
                     setCards(JSON.parse(message.body));
                 });
-                getCards();
+                stompClient.publish({
+                    destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
+                });
             }
         });
         stompClient.activate();
@@ -37,7 +39,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
         const stompClient = stompRef.current;
         if (stompClient) {
             stompClient.publish({
-                destination: `/app/games/euchre/${selectedGameID}/request-hand`,
+                destination: `/app//games/euchre/${selectedGameID}/${userID}/request-hand`,
                 body: userID,
             });
         }
