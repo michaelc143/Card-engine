@@ -15,23 +15,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * API for websockets which allow live updates to multiple users
+ */
 @Controller
 public class GameWebsocketController {
 
-    private static Logger logger = LoggerFactory.getLogger(GameWebsocketController.class);
+    private static final Logger logger = LoggerFactory.getLogger(GameWebsocketController.class);
 
     /**
      * Message that is sent when player subscribes to an Euchre game.
      * @param gameID gameID you're joining
-     * @return A JSON with information about the lobby
-     * {
-     *     "seat_{seat-number}": JSON
-     *     {
-     *         "player_id": Integer,
-     *         "username": String,
-     *         "ready_to_start": Boolean
-     *     }
-     * }
+     * @return A JSON with information about the lobby if game isn't ready to start see {@link LobbyMessage} for format.
+     * If game is ready to start returns a JSON with info about the game see {@link GameMessage} for format.
+     * Otherwise, if the game couldn't be found
      */
     @SubscribeMapping("/games/euchre/{gameID}")
     @SendTo("/topic/games/euchre/{gameID}")
@@ -50,15 +47,9 @@ public class GameWebsocketController {
     /**
      * @param gameID ID of current lobby
      * @param userID Voting user's ID
-     * @return A JSON with information about the lobby
-     * {
-     *     "seat_{seat-number}": JSON
-     *     {
-     *         "player_id": Integer,
-     *         "username": String,
-     *         "ready_to_start": Boolean
-     *     }
-     * }
+     * @return A JSON with information about the lobby if game isn't ready to start see {@link LobbyMessage} for format.
+     * If game is ready to start returns a JSON with info about the game see {@link GameMessage} for format.
+     * Otherwise, if the vote's unable to be changed return null
      */
     @MessageMapping("/games/euchre/{gameID}/vote-start")
     @SendTo("/topic/games/euchre/{gameID}")
@@ -78,15 +69,9 @@ public class GameWebsocketController {
     /**
      * @param gameID ID of current lobby
      * @param userID Voting user's ID
-     * @return A JSON with information about the lobby
-     * {
-     *     "seat_{seat-number}": JSON
-     *     {
-     *         "player_id": Integer,
-     *         "username": String,
-     *         "ready_to_start": Boolean
-     *     }
-     * }
+     * @return A JSON with information about the lobby if game isn't ready to start see {@link LobbyMessage} for format.
+     * If game is ready to start returns a JSON with info about the game see {@link GameMessage} for format.
+     * Otherwise, if the vote's unable to be changed return null
      */
     @MessageMapping("/games/euchre/{gameID}/vote-not-to-start")
     @SendTo("/topic/games/euchre/{gameID}")
@@ -98,6 +83,13 @@ public class GameWebsocketController {
         return null;
     }
 
+    /**
+     * @param gameID ID of current game
+     * @param userID ID of the user trying to make a move
+     * @param move The move being made, see options in {@link GameMessage} to know which moves can be made
+     * @return A JSON of the updated game state if move successfully made, see {@link GameMessage} for format
+     * Otherwise if game could not be found or if move could not be made, return null
+     */
     @MessageMapping("/games/euchre/{gameID}/{userID}/make-move")
     @SendTo("/topic/games/euchre/{gameID}")
     public GameMessage makeMove(@DestinationVariable int gameID, @DestinationVariable int userID, String move){
@@ -122,15 +114,12 @@ public class GameWebsocketController {
      * Endpoint that privately sends a player their hand
      * @param gameID ID of current lobby
      * @param userID ID of player that is requesting hand
-     * @return A JSON representing the players cards in with the rank and suit as the key and a boolean denoting if it's
-     * playable as the value, else return null if game or player in game couldn't be found
-     * {
-     *     "{card-name}": Boolean
-     * }
+     * @return A JSON representing the players cards in hand, see {@link Player#hand} for format
+     * else return null if game or player in game couldn't be found
      */
-    @MessageMapping("/games/euchre/{gameID}/request-hand")
+    @MessageMapping("/games/euchre/{gameID}/{userID}/request-hand")
     @SendToUser("/queue/{gameID}/hand")
-    public ArrayList<Card> getHand(@DestinationVariable int gameID, int userID) {
+    public ArrayList<Card> getHand(@DestinationVariable int gameID, @DestinationVariable int userID) {
         Game game = GameManager.getGame(gameID);
         if (game == null){
             return null;
@@ -151,15 +140,12 @@ public class GameWebsocketController {
      * Endpoint that privately sends a player their hand
      * @param gameID ID of current lobby
      * @param userID ID of player that is requesting hand
-     * @return A JSON representing the players cards in with the rank and suit as the key and a boolean denoting if it's
-     * playable as the value, else return null if game or player in game couldn't be found
-     * {
-     *     "{card-name}": Boolean
-     * }
+     * @return A JSON of the cards in players hand that they can play, see {@link Player#hand} for format
+     * Otherwise, return null if game or player in game couldn't be found
      */
-    @MessageMapping("/games/euchre/{gameID}/request-playable-cards")
+    @MessageMapping("/games/euchre/{gameID}/{userID}/request-playable-cards")
     @SendToUser("/queue/{gameID}/hand")
-    public ArrayList<Card> getPlayableCards(@DestinationVariable int gameID, int userID) {
+    public ArrayList<Card> getPlayableCards(@DestinationVariable int gameID, @DestinationVariable int userID) {
         Game game = GameManager.getGame(gameID);
         if (game == null){
             return null;
@@ -190,7 +176,7 @@ public class GameWebsocketController {
 
     /**
      * Helper method to deal with the transition form lobby to game
-     * @param gameID
+     * @param gameID ID of the game to be updated in the DB
      */
     private void updateLobbyToGameInDB(int gameID){
         try (Connection connection = ConnectToDataBase.connect();

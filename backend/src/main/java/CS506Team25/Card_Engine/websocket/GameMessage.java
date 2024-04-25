@@ -8,6 +8,42 @@ import java.util.ArrayList;
 
 /**
  * Used to represent a game's data for API purposes
+ *         The JSON object has the following structure:
+ *         {
+ *             "id": Integer <game_id>,
+ *             "status": String <game_status>,
+ *             "players": [
+ *                 {
+ *                     "playerID": Integer <player_id_1>,
+ *                     "username": String "<username_1>",
+ *                     "readyToStart": Boolean <ready_to_start_1>,
+ *                     "cardsInHand": Integer <cards_in_hand_1>,
+ *                     "hand": null
+ *                 },
+ *                 {
+ *                     "playerID": Integer <player_id_2>,
+ *                     "username": String "<username_2>",
+ *                     "readyToStart": Boolean <ready_to_start_2>,
+ *                     "cardsInHand": Integer <cards_in_hand_2>,
+ *                     "hand": NULL
+ *                 },
+ *                 ...
+ *             ],
+ *             "upCard": String "<up_card>",
+ *             "currentPlayer": {
+ *                 "playerID": Integer <current_player_id>,
+ *                 "username": String "<current_username>",
+ *                 "readyToStart": Boolean <current_ready_to_start>,
+ *                 "cardsInHand": Integer <current_cards_in_hand>,
+ *                 "hand": NULL
+ *             },
+ *             "cardsInDeck": Integer <cards_in_deck>,
+ *             "currentTrick": ArrayList <current_trick>,
+ *             "trump": String <trump>,
+ *             "options": [String "<option_1>", String "<option_2>", ...],
+ *             "message": String "<game_message>",
+ *             "most_recent_move": String "<most_recent_move>"
+ *         }
  */
 public class GameMessage extends LobbyMessage{
     public String upCard;

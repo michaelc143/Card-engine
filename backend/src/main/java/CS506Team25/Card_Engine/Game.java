@@ -471,16 +471,27 @@ public class Game extends Thread{
         return true;
     }
 
+    /**
+     * @return number of cards currently in the deck
+     */
     public int getCardsInDeck(){
         return deck.size();
     }
 
+    /**
+     * Helper method to add a String array of the indexes of cards in hand
+     * @param options The ArrayList to update with indexes
+     */
     private void addIndexesOfCardsInHand(ArrayList<String> options){
         for (int cardIndex = 0; cardIndex < currentPlayer.hand.size(); cardIndex++) {
             options.add(String.valueOf(cardIndex));
         }
     }
 
+    /**
+     * Handles when the code needs player input. Locks the thread until input is received via the websocket
+     * @return The passed message
+     */
     private String getPlayerInput(){
         isWaitingForInput = true;
         while (isWaitingForInput || user_response == null) {
