@@ -40,7 +40,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
         const stompClient = stompRef.current;
         if (stompClient) {
             stompClient.publish({
-                destination: `/app//games/euchre/${selectedGameID}/${userID}/request-hand`,
+                destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
                 body: userID,
             });
         }
@@ -49,6 +49,16 @@ const GameBoard = ({ userID, selectedGameID }) => {
     // Loading screen for while game data is being grabbed originally
     if(!gameData) {
         return <h1>Loading...</h1>
+    }
+
+    const makeMoveYesNo = (move) => {
+        const stompClient = stompRef.current;
+        if (stompClient) {
+            stompClient.publish({
+                destination: `/app/games/euchre/${selectedGameID}/${userID}/make-move`,
+                body: move,
+            });
+        }
     }
 
     const isCurrentPlayer = gameData.currentPlayer.playerID === userID;
@@ -66,7 +76,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
                 <>
                     <p>{gameData.message}</p>
                     {gameData.options.map((option, index) => (
-                        <p key={index}>{option}</p>
+                        <button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
                     ))}
                 </>
             }
