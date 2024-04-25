@@ -283,9 +283,7 @@ public class Game extends Thread{
         // Each of the 4 players gets 5 cards
         for (int i = 0; i < 4; i++) {
             ArrayList<Card> hand = new ArrayList<>(deck.subList(5 * i, 5 * (i + 1)));
-            for (Player player : players) {
-                player.hand = hand;
-            }
+            players[i].hand = hand;
 
         }
 
