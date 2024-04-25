@@ -46,6 +46,8 @@ public class Game extends Thread{
     public String mostRecentMove;
     // What phase the game currently is in
     public GamePhase currentPhase;
+    // Which team won the game
+
 
     private final Logger logger = LoggerFactory.getLogger(Game.class);
 
@@ -85,11 +87,19 @@ public class Game extends Thread{
         while (scores[0] < 10 && scores[1] < 10) {
             dealRound();
         }
+        isWaitingForInput = true;
         // Return the winning team
         if (scores[0] >= 10) {
             messageToOutput.append("Team 0 wins\n");
         } else {
             messageToOutput.append("Team 1 wins\n");
+        }
+
+        // Have the thread sleep to make sure the game lingers long enough to get results
+        try {
+            sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -186,11 +196,16 @@ public class Game extends Thread{
                     // Set the calling team
                     callingTeam = ((dealerIndex + i) % 4) % 2;
 
+                    currentPlayer = players[dealerIndex];
+
                     // Dealer must pick up the card and choose a card to discard
-                    players[dealerIndex].hand.add(upCard);
-                    messageToOutput.append("Player ").append(players[dealerIndex].username).append(", discard one of your cards (respond with the index): ").append(players[dealerIndex].hand.toString()).append("\n");
+                    currentPlayer.hand.add(upCard);
+                    messageToOutput.append("Player ").append(currentPlayer.username).append(", discard one of your cards (respond with the index): ").append(currentPlayer.hand.toString()).append("\n");
                     int discard = Integer.parseInt(getPlayerInput(GamePhase.DISCARD_FOR_TRUMP, getIndexesOfCardsInHand()));
-                    players[dealerIndex].hand.remove(discard);
+                    currentPlayer.hand.remove(discard);
+
+                    currentPlayer = currentPlayer = players[(dealerIndex + i) % 4];
+
                     break;
                 }
             } else {

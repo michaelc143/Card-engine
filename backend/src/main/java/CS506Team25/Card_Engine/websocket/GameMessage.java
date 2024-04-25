@@ -75,6 +75,10 @@ public class GameMessage extends LobbyMessage{
         deepCopyPlayers(game);
     }
 
+    public void GameResult(){
+
+    }
+
     private void deepCopyPlayers(Game game){
         Player[] game_players = game.players;
         this.players = new Player[game_players.length];
