@@ -65,6 +65,9 @@ const GameBoard = ({ userID, selectedGameID }) => {
                 isCurrentPlayer &&
                 <>
                     <p>{gameData.message}</p>
+                    {gameData.options.map((option, index) => (
+                        <p key={index}>{option}</p>
+                    ))}
                 </>
             }
         </div>
