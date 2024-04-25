@@ -106,8 +106,7 @@ public class GameWebsocketController {
         while (!game.isWaitingForInput){
             Thread.onSpinWait();
         }
-        GameMessage output = new GameMessage(game, move);
-        return output;
+        return new GameMessage(game);
     }
 
     /**

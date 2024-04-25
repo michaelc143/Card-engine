@@ -51,9 +51,10 @@ public class GameMessage extends LobbyMessage{
     public int cardsInDeck;
     public ArrayList<Card> currentTrick;
     public String trump;
-    public ArrayList<String> options;
+    public String[] options;
     public String message;
-    public String most_recent_move;
+    public String moveMade;
+    public String phase;
 
 
     public GameMessage(Game game){
@@ -65,16 +66,13 @@ public class GameMessage extends LobbyMessage{
             this.currentTrick = game.currentTrick;
         if (game.trump != null)
             this.trump = game.trump.name();
-        if (game.message_to_output != null)
-            this.message = game.message_to_output.toString();
+        if (game.messageToOutput != null)
+            this.message = game.messageToOutput.toString();
         this.cardsInDeck = game.getCardsInDeck();
-        this.options = new ArrayList<>(game.options);
+        this.options = game.optionsForPlayer.clone();
+        this.moveMade = game.mostRecentMove;
+        this.phase = game.currentPhase.name();
         deepCopyPlayers(game);
-    }
-
-    public GameMessage(Game game, String move){
-        this(game);
-        this.most_recent_move = move;
     }
 
     private void deepCopyPlayers(Game game){
