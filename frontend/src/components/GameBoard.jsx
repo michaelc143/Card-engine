@@ -27,9 +27,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
                     console.log(JSON.parse(message.body));
                     setCards(JSON.parse(message.body));
                 });
-                stompClient.publish({
-                    destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
-                });
+                getCards();
             }
         });
         stompClient.activate();
@@ -48,7 +46,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
 
   return (
     <div>
-        <h2>Game Board {userID}</h2>
+        <h2>Game Board USERID: {userID}</h2>
         {cards && cards.map((card, index) => (
                 <div key={index}>
                     <p>Card {index} Suit: {card.suit} Rank: {card.rank}</p>
