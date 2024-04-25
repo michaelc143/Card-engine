@@ -7,6 +7,7 @@ import CreateGame from '../CreateGame/CreateGame';
 import LobbyScreen from '../LobbyScreen/LobbyScreen';
 import SelectSeat from '../SelectSeat/SelectSeat';
 import SettingScreen from '../SettingScreen/SettingScreen';
+import GameBoard from '../GameBoard';
 
 function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, userID,username, reloadLogin} ) {
 
@@ -14,7 +15,6 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 	const [showSelectSeatModal, setShowSelectSeatModal] = useState(false);
 	const [selectedGameId, setSelectedGameId] = useState(null);
 	const [currentlyPlaying, setCurrentlyPlaying] = useState(false); // used to decide whether to show normal game menu or the game board
-	const [gameWebsocketMessage, setGameWebsocketMessage] = useState(null); // passing websocket message from lobby to the game board
 
 	const [presentUsername, setPresentUsername] = useState(username)
 	const [settingScreenModalIsOpen, setSettingScreenModalIsOpen] = useState(false);
@@ -58,20 +58,12 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 		setSettingScreenModalIsOpen(true);
 	};
 
-	// update gameWebsocketMessage whenever there's a new one
-	const handleWebSocketMessageUpdate = (message) => {
-		setGameWebsocketMessage(message);
-	};
-
-	console.log(gameWebsocketMessage);
-
 	return(
 			currentlyPlaying ? 
 				<>
-				{/* put game board component here, pass in gameWebsocketMessage into here or the client to get new messages 
-					will need to pass userID, selectedGameID, and gameWebsocketMessage in here to send move msgs to websocket
-				*/}
-				<h1>Testing...</h1>
+				<GameBoard 
+					userID={userID}
+					selectedGameID={selectedGameId}/>
 				</> 
 				: 
 				<>
@@ -153,7 +145,13 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 						>
 							{selectedGameId !== null &&
-								<LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} username={username} userID={userID} setCurrentlyPlaying={setCurrentlyPlaying} updateWebSocketMessage={handleWebSocketMessageUpdate}/>}
+								<LobbyScreen 
+									closeModal={closeLobbyScreenModal}
+									selectedGameId={selectedGameId}
+									username={username}
+									userID={userID}
+									setCurrentlyPlaying={setCurrentlyPlaying}
+								/>}
 						</Modal>
 						<Modal
 							isOpen={showSelectSeatModal}

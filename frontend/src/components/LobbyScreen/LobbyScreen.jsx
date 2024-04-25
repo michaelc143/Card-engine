@@ -4,7 +4,7 @@ import notifSVG from '../../assets/notif-icon.svg';
 import { Client } from '@stomp/stompjs';
 import './LobbyScreen.css';
 
-function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentlyPlaying, updateWebSocketMessage }) {
+function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentlyPlaying }) {
 
 	const [gameStatus, setGameStatus] = useState(''); //will need to use this to know when game starts, will be GAME value when game is playing
 	const [players, setPlayers] = useState([]);
@@ -28,7 +28,6 @@ function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentl
 					const data = JSON.parse(message.body);
 					setGameStatus(data.status);
 					setPlayers(data.players);
-					updateWebSocketMessage(data); // update the websocket message being passed to parent and sibling components
 					console.log(data); // logging websocketMessage
 				}, (error) => {
 					console.error('Error subscribing to topic:', error);
@@ -41,9 +40,7 @@ function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentl
 
 	// when game starts, set the parent state var to true to transition screens and close this modal
 	if (gameStatus == "Game") {
-		// if we the closed modal doesn't pass the updates along to parent/siblings, then do the following
-		// const stompClient = stompClientRef.current;
-		// stompClient.deactivate();
+		stompClientRef.current.deactivate();
 		// this disconnects the client from the websocket, then just need to send the ref up and over to sibling to reconnect in new component
 		setCurrentlyPlaying(true);
 		closeModal();
@@ -54,7 +51,6 @@ function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentl
 		const stompClient = stompClientRef.current; // Access the stompClient from the ref
 		if (stompClient) {
 			if (checked) {
-				console.log("SENDING MESSAGE");
 				stompClient.publish({
 					destination: `/app/games/euchre/${selectedGameId}/vote-start`,
 					body: userID,
