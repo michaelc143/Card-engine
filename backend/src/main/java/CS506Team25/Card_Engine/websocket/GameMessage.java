@@ -55,7 +55,9 @@ public class GameMessage extends LobbyMessage{
     public String message;
     public String moveMade;
     public String phase;
+    public Player[] winners;
 
+    public GameMessage(){}
 
     public GameMessage(Game game){
         this.status = Status.Game.name();
@@ -75,8 +77,12 @@ public class GameMessage extends LobbyMessage{
         deepCopyPlayers(game);
     }
 
-    public void GameResult(){
-
+    public GameMessage getFinishedGameMessage(Game game){
+        this.status = Status.Game.name();
+        this.id = game.gameID;
+        this.winners = game.winningPlayers;
+        this.players = game.players;
+        return this;
     }
 
     private void deepCopyPlayers(Game game){
@@ -86,6 +92,7 @@ public class GameMessage extends LobbyMessage{
             Player curPlayer = game_players[i];
             this.players[i] = new Player(curPlayer.playerID, curPlayer.username);
             this.players[i].cardsInHand = curPlayer.hand.size();
+            this.players[i].score = game.scores[i%2];
         }
         if (game.currentPlayer != null)
             currentPlayer = new Player(game.currentPlayer.playerID, game.currentPlayer.username);

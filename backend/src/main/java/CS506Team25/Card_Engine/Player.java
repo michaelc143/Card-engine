@@ -22,6 +22,8 @@ public class Player {
     public boolean readyToStart = false;
     // Number of cards in hand
     public int cardsInHand;
+    // The player's current score
+    public int score;
     /**
      * Cards in player's hand, has the following format
      * [

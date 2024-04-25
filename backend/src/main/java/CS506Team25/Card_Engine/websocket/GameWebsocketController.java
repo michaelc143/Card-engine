@@ -108,8 +108,9 @@ public class GameWebsocketController {
             Thread.onSpinWait();
         }
 
-        if (game == null){
-            
+        if (game.winningPlayers != null){
+            updateGameToFinishedInDB(gameID);
+            return new GameMessage().getFinishedGameMessage(game);
         }
 
         return new GameMessage(game);
@@ -174,6 +175,23 @@ public class GameWebsocketController {
              PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
             insertStatement.setString(1, "in_progress");
             insertStatement.setInt(2, gameID);
+            insertStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Helper method to deal with the transition to a finished game
+     * @param gameID ID of the game to be updated in the DB
+     */
+    private void updateGameToFinishedInDB(int gameID){
+        try (Connection connection = ConnectToDataBase.connect();
+             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ?, winner_1 = ?, winner_2 = ? WHERE game_id = ?")) {
+            insertStatement.setString(1, "done");
+            insertStatement.setInt(2, GameManager.getGame(gameID).winningPlayers[0].playerID);
+            insertStatement.setInt(3, GameManager.getGame(gameID).winningPlayers[1].playerID);
+            insertStatement.setInt(4, gameID);
             insertStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

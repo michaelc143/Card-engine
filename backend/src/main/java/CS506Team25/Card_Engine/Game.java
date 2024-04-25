@@ -47,7 +47,7 @@ public class Game extends Thread{
     // What phase the game currently is in
     public GamePhase currentPhase;
     // Which team won the game
-
+    public Player[] winningPlayers;
 
     private final Logger logger = LoggerFactory.getLogger(Game.class);
 
@@ -90,8 +90,10 @@ public class Game extends Thread{
         isWaitingForInput = true;
         // Return the winning team
         if (scores[0] >= 10) {
+            winningPlayers = new Player[]{players[0], players[2]};
             messageToOutput.append("Team 0 wins\n");
         } else {
+            winningPlayers = new Player[]{players[1], players[3]};
             messageToOutput.append("Team 1 wins\n");
         }
 
