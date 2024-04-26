@@ -206,7 +206,7 @@ public class Game extends Thread{
                     int discard = Integer.parseInt(getPlayerInput(GamePhase.DISCARD_FOR_TRUMP, getIndexesOfCardsInHand()));
                     currentPlayer.hand.remove(discard);
 
-                    currentPlayer = currentPlayer = players[(dealerIndex + i) % 4];
+                    currentPlayer = players[(dealerIndex + i) % 4];
 
                     break;
                 }
@@ -272,6 +272,7 @@ public class Game extends Thread{
      * @param player, the player going alone
      */
     public void chooseGoingAlone(Player player) {
+        currentPlayer = player;
         messageToOutput.append("Player ").append(player.username).append(", would you like to go alone? Options are 'Yes' or 'No'\n");
         String response = getPlayerInput(GamePhase.GO_ALONE,
             new String[] {"Yes", "No"});
@@ -337,6 +338,7 @@ public class Game extends Thread{
      * @param player the player who will play the card
      */
     public void playCard(Player player) {
+        currentPlayer = player;
         if (player == players[(Arrays.asList(players).indexOf(lonerPlayer) + 2) % 4]) {
             // This player's partner is going alone, so the player cannot play any cards
             // this hand
