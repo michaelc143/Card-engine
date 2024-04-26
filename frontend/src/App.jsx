@@ -196,7 +196,7 @@ function App() {
 			: 
 			( //User not logged in yet, prompt with login and option to register
 			<>
-				<h1 style={{textAlign: 'center', margin: '2rem'}}>Eucre</h1>
+				<h1>Eucre</h1>
 				<Login
 					onLogin={handleLogin}
 					openModal={openRegModal}
