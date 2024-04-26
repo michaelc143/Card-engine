@@ -202,8 +202,8 @@ public class Game extends Thread{
 
                     // Dealer must pick up the card and choose a card to discard
                     currentPlayer.hand.add(upCard);
-                    messageToOutput.append("Player ").append(currentPlayer.username).append(", discard one of your cards (respond with the index): ").append(currentPlayer.hand.toString()).append("\n");
-                    int discard = Integer.parseInt(getPlayerInput(GamePhase.DISCARD_FOR_TRUMP, getIndexesOfCardsInHand()));
+                    messageToOutput.append("Player ").append(currentPlayer.username).append(", discard one of your cards (respond with the name): ").append(currentPlayer.hand.toString()).append("\n");
+                    int discard = Arrays.asList(getStringOfCardsInCurrentPlayerHand()).indexOf(getPlayerInput(GamePhase.PLAY_CARD, getStringOfCardsInCurrentPlayerHand()));
                     currentPlayer.hand.remove(discard);
 
                     currentPlayer = players[(dealerIndex + i) % 4];
@@ -355,10 +355,10 @@ public class Game extends Thread{
             validCards = getValidCards(hand);
         }
         // send valid cards to frontend
-        messageToOutput.append("Player ").append(player.username).append(", play one of these cards (respond with index): ").append(validCards.toString()).append("\n");
+        messageToOutput.append("Player ").append(player.username).append(", play one of these cards (respond with name): ").append(validCards.toString()).append("\n");
         // Let the player choose their card
-        Card playedCard = validCards.get(Integer.parseInt(getPlayerInput(GamePhase.PLAY_CARD, getIndexesOfCardsInHand())));
-
+        int indexOfPlayedCard = Arrays.asList(getStringOfCardsInCurrentPlayerHand()).indexOf(getPlayerInput(GamePhase.PLAY_CARD, getPlayableCardsInHand()));
+        Card playedCard = hand.get(indexOfPlayedCard);
         // If the player led, update the ledSuit to enforce following suit
         if (ledSuit == null) {
             ledSuit = playedCard.getSuit(trump);
@@ -491,15 +491,30 @@ public class Game extends Thread{
     }
 
     /**
-     * Helper method to add a String array of the indexes of cards in hand
-     * @return A string array of the indexes of the card starting from 0
+     * Helper method to get the names of the playable cards
+     * @return A string array of the names of cards that can be played
      */
-    private String[] getIndexesOfCardsInHand(){
-        String[] numberedIndexes = new String[currentPlayer.hand.size()];
-        for (int cardIndex = 0; cardIndex < currentPlayer.hand.size(); cardIndex++) {
-            numberedIndexes[cardIndex] = String.valueOf(cardIndex);
+    private String[] getPlayableCardsInHand(){
+        ArrayList<Card> validCards = getValidCards(currentPlayer.hand);
+        String[] numberedIndexes = new String[validCards.size()];
+        for (int cardIndex = 0; cardIndex < validCards.size(); cardIndex++) {
+            numberedIndexes[cardIndex] = validCards.get(cardIndex).toString();
         }
         return numberedIndexes;
+    }
+
+    /**
+     * @return the cards the current player has in their hand as a string array
+     */
+    private String[] getStringOfCardsInCurrentPlayerHand(){
+        ArrayList<Card> hand = currentPlayer.hand;
+        String[] handStrings = new String[hand.size()];
+
+        for (int i = 0; i < hand.size(); i++) {
+            handStrings[i] = hand.get(i).toString();
+        }
+
+        return handStrings;
     }
 
     /**
