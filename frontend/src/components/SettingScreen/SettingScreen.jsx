@@ -10,8 +10,8 @@ function SettingScreen({ closeModal, userid, username }) {
     const [presentUsername, setPresentUsername] = useState(username);
 
     const deleteAccount = () => {
-            fetch(`http://localhost:8080//player/${userid}`, {method: 'DELETE',})
-                .then(response => response.json())
+            fetch(`http://localhost:8080/player/deleteplayer/${userid}`, {method: 'DELETE',})
+                .then(response => response.text())
                     .then(data => {
                         console.log(data); // Used in development to debug
                         if (data > -1) {
@@ -87,7 +87,7 @@ function SettingScreen({ closeModal, userid, username }) {
                         }}
                     shouldCloseOnOverlayClick={false}
                     >
-                    <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} />
+                    <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} userID={userid} />
                 </Modal>
             </div>            
         </>

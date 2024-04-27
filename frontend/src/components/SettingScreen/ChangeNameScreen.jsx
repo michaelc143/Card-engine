@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import closeModalBtn from '../../assets/close.svg';
-import BiddingScreen from '../BiddingScreen/BiddingScreen';
+import GameScreen from '../GameScreen/GameScreen';
+import {ToastContainer, toast} from 'react-toastify';
 
-function ChangeNameScreen({closeModal, currentUsername}){
+function ChangeNameScreen({closeModal, userID, currentUsername}){
     const [username, setUsername] = useState('');
     const [displayName, setDisplayName] = useState(currentUsername);
-    const [biddingScreenModalIsOpen, setBiddingScreenModalIsOpen] = useState(false);
     
+    const [gameScreenModalIsOpen, setGameScreenModalIsOpen] = useState(false);
+    
+    const showToast = (message, type) => {
+		toast[type](message);
+	}
 
     const handleChange = () => {
         if(username == '')
@@ -15,9 +20,23 @@ function ChangeNameScreen({closeModal, currentUsername}){
             alert("new username cannot be blank or empty!");
         }
         else{
-            alert("Change is send to backend!Changing username from current: '" + displayName + "' to new: '" + username  + "'.");
-            setDisplayName(username);
-            setUsername('');
+            fetch(`http://localhost:8080/player/${userID}/change-username?newUserName=${username}`, {method: 'POST'})
+            .then(response => response.text())
+                .then(data => {
+                    if (data == 'successful') {
+                        //alert("Username changes from " + displayName + "' to '" + username  + "'.");
+                        showToast(`Successfully change username from ${displayName} to ${username}`, 'success');
+                        setDisplayName(username);
+                        setUsername('');
+                    } 
+                    else {
+                        alert("Changing username is failed.");
+                    }
+                })
+            .catch(error => {
+                console.error('Error:', error);
+        });
+            
         }		
 	};
 
@@ -25,17 +44,22 @@ function ChangeNameScreen({closeModal, currentUsername}){
         closeModal(displayName);
     };
 
-    const closeBiddingScreenModal = (value) => {
-        console.log(value);
-        setBiddingScreenModalIsOpen(false);
+    const handleGameScreen = () => {
+        setGameScreenModalIsOpen(true);
+    };
+
+    const closeGameScreenModal = (value) => {
+        setGameScreenModalIsOpen(false);
         
     };
 
-    const handleBidding = () => {
-        setBiddingScreenModalIsOpen(true);
-    };
+    const playCards = ["ace_hearts","jack_hearts","queen_clubs","nine_hearts","queen_hearts"];
     
     return <>
+        <ToastContainer 
+			limit={5}
+			stacked={true}
+		/>
         <div>
             <div className='upper-bar'>
                 <h2 style={{marginLeft: '1rem'}} className='menu-header'>Change Username.</h2>
@@ -57,29 +81,28 @@ function ChangeNameScreen({closeModal, currentUsername}){
                     <button style={{ marginTop:10,marginBottom:20,marginLeft: '1rem',fontSize: '30px' }}  onClick={handleChange}>Change</button>
                 </div>
                 <div>
-                <button style={{border:'none',background:'none',marginTop:10, marginLeft: '1rem',fontSize: '40px' }}  onClick={handleBidding}>Bidding</button>
+                    <button style={{border:'none',background:'none',marginTop:10, marginLeft: '1rem',fontSize: '40px' }}  onClick={handleGameScreen}>GameScreen</button>
                 </div>
-            </div>
+            </div>            
             <Modal
-                    isOpen={biddingScreenModalIsOpen}
-                    onRequestClose={closeBiddingScreenModal}
-                    contentLabel="Bidding screen Modal"
+                    isOpen={gameScreenModalIsOpen}
+                    onRequestClose={closeGameScreenModal}
+                    contentLabel="Game screen Modal"
                     style={{
                         overlay: {
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
                         },
                         content: {
-                            width: '900px',
-                            height: '700px',
+                            width: '1000px',
+                            height: '900px',
                             margin: 'auto',
                             borderRadius: '10px',
-                            backgroundColor: 'lightcyan'
                         },
                     }}
                     shouldCloseOnOverlayClick={false}
                     >
-                    <BiddingScreen closeModal={closeBiddingScreenModal} userID={'test'} BiddingSuit={"jack_diamonds"} />
-                </Modal>
+                    <GameScreen closeGameScreen={closeGameScreenModal} player02={'Player 02'} player03={'Player 03'} player04={'Player 04'} gamephase={'First Bidding'} gameCards={[]} playingCards={playCards} />
+            </Modal>
         </div>        
     </>
 
