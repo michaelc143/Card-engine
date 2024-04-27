@@ -217,7 +217,7 @@ public class Game extends Thread{
                             .append(currentPlayer.hand)
                             .append("\n");
 
-                    String nameOfCardToDiscard = getInput(GamePhase.PLAY_CARD, getStringOfCardsInCurrentPlayerHand());
+                    String nameOfCardToDiscard = getInput(GamePhase.DISCARD_FOR_TRUMP, getStringOfCardsInCurrentPlayerHand());
                     int discard = Arrays.asList(getStringOfCardsInCurrentPlayerHand()).indexOf(nameOfCardToDiscard);
 
                     currentPlayer.hand.remove(discard);
@@ -593,6 +593,7 @@ public class Game extends Thread{
      * @return The passed message
      */
     private String getInput(GamePhase newPhase, String[] newOptions){
+        String result;
         currentPhase = newPhase;
         optionsForPlayer = newOptions;
 
@@ -600,12 +601,14 @@ public class Game extends Thread{
 
         if (currentPlayer.playerID < 0){
             botIsPlaying = true;
+
             switch (currentPhase){
-                case NAME_TRUMP -> botNameTrump(currentPlayer);
-                case AGREE_TO_TRUMP -> botPickUpCard(currentPlayer);
-                case DISCARD_FOR_TRUMP -> botDiscardCard(currentPlayer);
-                case GO_ALONE -> botChooseAlone(currentPlayer);
-                case PLAY_CARD -> botPlayCard(currentPlayer);
+                case NAME_TRUMP -> userResponse = botNameTrump(currentPlayer);
+                case AGREE_TO_TRUMP -> userResponse = botPickUpCard(currentPlayer);
+                case DISCARD_FOR_TRUMP -> userResponse = botDiscardCard(currentPlayer);
+                case GO_ALONE -> userResponse = botChooseAlone(currentPlayer);
+                case PLAY_CARD -> userResponse = botPlayCard(currentPlayer);
+                default -> userResponse = "";
             }
         }
 
@@ -613,7 +616,7 @@ public class Game extends Thread{
             Thread.onSpinWait();
         }
         setMostRecentMove(userResponse);
-        String result = userResponse;
+        result = userResponse;
         userResponse = null;
         messageToOutput = new StringBuilder();
         return result;
@@ -642,7 +645,7 @@ public class Game extends Thread{
             ArrayList<Card> handWithCard = bot.hand;
             handWithCard.add(upCard);
             for (int i = 0; i < 6; i++) {
-                ArrayList<Card> handWithoutCard = handWithCard;
+                ArrayList<Card> handWithoutCard = new ArrayList<>(handWithCard);
                 handWithoutCard.remove(i);
                 int potentialStrength = getHandStrength(handWithoutCard, upCard.getSuit());
                 if (potentialStrength > maxStrength) {
@@ -679,7 +682,7 @@ public class Game extends Thread{
         }
     }
 
-    public int botDiscardCard(Player bot) {
+    public String botDiscardCard(Player bot) {
         int maxStrength = 0;
         int discard = 0;
         for (int i = 0; i < 6; i++) {
@@ -691,7 +694,7 @@ public class Game extends Thread{
                 discard = i;
             }
         }
-        return discard;
+        return getStringOfCardsInCurrentPlayerHand()[discard];
     }
 
     public String botNameTrump(Player bot) {
@@ -721,9 +724,9 @@ public class Game extends Thread{
         }
     }
 
-    public int botPlayCard(Player bot) {
+    public String botPlayCard(Player bot) {
         // TODO
-        return 0;
+        return getPlayableCardsInHand()[0];
     }
 
     /**
