@@ -19,9 +19,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 	const [presentUsername, setPresentUsername] = useState(username)
 	const [settingScreenModalIsOpen, setSettingScreenModalIsOpen] = useState(false);
 
-	// console.log("userID:" + userID);
-	// console.log("username:" + username);
-
+	// opens the select seat modal
 	const openSelectSeatModal = (gameId) => {
 		closefindGameModal();
 		console.log("GameID:" + gameId);
@@ -30,6 +28,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 		setShowSelectSeatModal(true);
 	};
 
+	// closes the select seat modal
 	const closeSelectSeatModal = () => {
 		setShowSelectSeatModal(false);
 	};
@@ -54,6 +53,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 		}
 	};
 
+	// opens setting screen modal popup
 	const openSettingScreenModal = () => {
 		setSettingScreenModalIsOpen(true);
 	};
