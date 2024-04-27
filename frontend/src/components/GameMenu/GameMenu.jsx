@@ -58,6 +58,25 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 		setSettingScreenModalIsOpen(true);
 	};
 
+	/**
+	 * Renders either the game board or the main menu based on the `currentlyPlaying` flag.
+	 * @param {boolean} currentlyPlaying - Indicates whether the player is currently in a game.
+	 * @param {string} userID - The user ID of the player.
+	 * @param {string} selectedGameID - The ID of the selected game.
+	 * @param {string} username - The username of the player.
+	 * @param {Function} openSettingScreenModal - Function to open the settings screen modal.
+	 * @param {Function} openfindGameModal - Function to open the find game modal.
+	 * @param {Function} openCreateGameModal - Function to open the create game modal.
+	 * @param {Function} openLobbyScreenModal - Function to open the lobby screen modal.
+	 * @param {Function} closefindGameModal - Function to close the find game modal.
+	 * @param {Function} closeCreateGameModal - Function to close the create game modal.
+	 * @param {Function} closeLobbyScreenModal - Function to close the lobby screen modal.
+	 * @param {Function} closeSelectSeatModal - Function to close the select seat modal.
+	 * @param {Function} closeSettingScreenModal - Function to close the setting screen modal.
+	 * @param {Function} showToast - Function to display a toast message.
+	 * @param {Function} setCurrentlyPlaying - Function to set the current playing status.
+	 * @param {string} presentUsername - The present username.
+	 */
 	return(
 			currentlyPlaying ? 
 				<>
