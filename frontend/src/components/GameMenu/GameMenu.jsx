@@ -7,7 +7,7 @@ import CreateGame from '../CreateGame/CreateGame';
 import LobbyScreen from '../LobbyScreen/LobbyScreen';
 import SelectSeat from '../SelectSeat/SelectSeat';
 import SettingScreen from '../SettingScreen/SettingScreen';
-import GameBoard from '../GameBoard';
+import GameBoard from '../GameBoard/GameBoard';
 
 function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, userID,username, reloadLogin} ) {
 
