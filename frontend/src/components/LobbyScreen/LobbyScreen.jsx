@@ -8,7 +8,6 @@ function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentl
 
 	const [gameStatus, setGameStatus] = useState(''); //will need to use this to know when game starts, will be GAME value when game is playing
 	const [players, setPlayers] = useState([]);
-	const [webSocketMessage, setWebSocketMessage] = useState(null); //gets set initally when subscribing to the game endpoint, send this up to parent for game screen for live updates
 	const stompClientRef = useRef(null);
 
 	useEffect(() => {
@@ -24,7 +23,7 @@ function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentl
 				console.log('STOMP client connected');
 				stompClientRef.current = stompClient;
 				stompClient.subscribe(`/topic/games/euchre/${selectedGameId}`, (message) => {
-					setWebSocketMessage(JSON.parse(message.body)); //id, status, Players[0:playerID, username, readyToStart, score, hand]
+					//id, status, Players[0:playerID, username, readyToStart, score, hand]
 					const data = JSON.parse(message.body);
 					setGameStatus(data.status);
 					setPlayers(data.players);

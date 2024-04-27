@@ -188,7 +188,12 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 							shouldCloseOnOverlayClick={false}
 						>
-							<SettingScreen closeModal={closeSettingScreenModal} userid={userID} username={presentUsername} />
+							<SettingScreen 
+								closeModal={closeSettingScreenModal}
+								userid={userID}
+								username={presentUsername}
+								showToast={showToast}
+							/>
 						</Modal>
 					</div>
 				</>
