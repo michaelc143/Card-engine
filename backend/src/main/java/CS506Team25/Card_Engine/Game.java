@@ -5,10 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class Game extends Thread {
-    // Response from the user, game waits for this to be set when and then resets it
-    // to null
-    private volatile String user_response;
+public class Game extends Thread{
+    // Response from the user, game waits for this to be set when and then resets it to null
+    private volatile String userResponse;
     // This game's ID in the database
     public int gameID;
     // The card that is turned up in the first round of bidding
@@ -18,9 +17,9 @@ public class Game extends Thread {
     // The player whose turn we're currently on
     public Player currentPlayer;
     // Used to build the outputs to players for debugging purposes
-    public StringBuilder message_to_output;
+    public StringBuilder messageToOutput;
     // A list of inputs user can respond with
-    public ArrayList<String> options;
+    public String[] optionsForPlayer;
     // The number of tricks each player has taken in the current round
     int[] trickCount;
     // The running score for each team, once someone reaches 10, they win the game
@@ -46,8 +45,15 @@ public class Game extends Thread {
     public volatile boolean isWaitingForInput;
     // Marks whether a bot player is currently moving
     public boolean botIsPlaying;
+    // The most recent move made by a player
+    public String mostRecentMove;
+    // What phase the game currently is in
+    public GamePhase currentPhase;
+    // Which team won the game
+    public Player[] winningPlayers;
 
     private final Logger logger = LoggerFactory.getLogger(Game.class);
+
 
     /**
      * Creates a new game object
@@ -68,29 +74,36 @@ public class Game extends Thread {
 
     /**
      * Runs a game of Euchre
-     * 
-     * @return the winning team (0 for players with indexes 0 and 2, 1 for players 1
-     *         and 3)
+     * After the game is over,  is set (0 for players with indexes 0 and 2, 1 for players 1 and 3)
      */
     public void run() {
-        options = new ArrayList<>();
-        message_to_output = new StringBuilder();
+        messageToOutput = new StringBuilder();
         isWaitingForInput = true;
         botIsPlaying = false;
         createDeck();
         // Set a random player to start
         startingPlayerIndex = (int) (Math.random() * 4);
-        // Initalize the scores
+        // Initialize the scores
         scores = new int[2];
         // Deal rounds until a team wins
         while (scores[0] < 10 && scores[1] < 10) {
             dealRound();
         }
+        isWaitingForInput = true;
         // Return the winning team
         if (scores[0] >= 10) {
-            message_to_output.append("Team 0 wins\n");
+            winningPlayers = new Player[]{players[0], players[2]};
+            messageToOutput.append("Team 0 wins\n");
         } else {
-            message_to_output.append("Team 1 wins\n");
+            winningPlayers = new Player[]{players[1], players[3]};
+            messageToOutput.append("Team 1 wins\n");
+        }
+
+        // Have the thread sleep to make sure the game lingers long enough to get results
+        try {
+            sleep(10000);
+        } catch (InterruptedException ignored) {
+
         }
     }
 
@@ -115,7 +128,7 @@ public class Game extends Thread {
         shuffle();
 
         // display up card
-        message_to_output.append(upCard.toString()).append(" is turned up\n");
+        messageToOutput.append(upCard.toString()).append(" is turned up\n");
 
         firstBiddingRound();
 
@@ -127,7 +140,7 @@ public class Game extends Thread {
 
         // No trump was named, redeal
         if (trump == null) {
-            message_to_output.append("No trump named, redealing\n");
+            messageToOutput.append("No trump named, redealing\n");
             return;
         }
 
@@ -142,7 +155,7 @@ public class Game extends Thread {
         }
 
         scoreRound();
-        message_to_output.append("New scores: [").append(scores[0]).append(", ").append(scores[1]).append("]\n");
+        messageToOutput.append("New scores: [").append(scores[0]).append(", ").append(scores[1]).append("]\n");
 
         // Rotate the dealer to the left
         dealerIndex = (dealerIndex + 1) % 4;
@@ -170,21 +183,12 @@ public class Game extends Thread {
             }
             if (canPickUp) {
                 // Use websocket to ask playerIndex if they wish to pick up the card
-                message_to_output.append("Player ").append(currentPlayer.username).append(", would you like player ")
+                messageToOutput.append("Player ").append(currentPlayer.username).append(", would you like player ")
                         .append(players[dealerIndex].username).append(" to pick up ").append(upCard.toString())
                         .append("? 'Yes' or 'No'\n");
-                options.add("Yes");
-                options.add("No");
                 // Wait for response
-                String response;
-                if (currentPlayer.playerID > 0) {
-                    botIsPlaying = false;
-                    response = getPlayerInput();
-                } else {
-                    botIsPlaying = true;
-                    response = botPickUpCard(currentPlayer, i);
-                }
-                options = new ArrayList<>();
+                String response = getInput(GamePhase.AGREE_TO_TRUMP,
+                    new String[] {"Yes", "No"});
 
                 // Parse whether response is Yes or No
                 if (response.equals("Yes")) {
@@ -194,32 +198,37 @@ public class Game extends Thread {
                     chooseGoingAlone(currentPlayer);
 
                     // Alert players that the trump has been named
-                    message_to_output.append("Player ").append(currentPlayer.username).append(" has named ")
-                            .append(trump).append(" as trump\n");
+                    messageToOutput.append("Player ")
+                            .append(currentPlayer.username)
+                            .append(" has named ")
+                            .append(trump)
+                            .append(" as trump\n");
 
                     // Set the calling team
                     callingTeam = ((dealerIndex + i) % 4) % 2;
 
+                    currentPlayer = players[dealerIndex];
+
                     // Dealer must pick up the card and choose a card to discard
-                    players[dealerIndex].hand.add(upCard);
-                    message_to_output.append("Player ").append(players[dealerIndex].username)
-                            .append(", discard one of your cards (respond with the index): ")
-                            .append(players[dealerIndex].hand.toString()).append("\n");
-                    addIndexesOfCardsInHand(options);
-                    int discard;
-                    if (players[dealerIndex].playerID > 0) {
-                        botIsPlaying = false;
-                        discard = Integer.parseInt(getPlayerInput());
-                    } else {
-                        botIsPlaying = true;
-                        discard = botDiscardCard(players[dealerIndex]);
-                    }
-                    options = new ArrayList<>();
-                    players[dealerIndex].hand.remove(discard);
+                    currentPlayer.hand.add(upCard);
+                    messageToOutput.append("Player ")
+                            .append(currentPlayer.username)
+                            .append(", discard one of your cards (respond with the name): ")
+                            .append(currentPlayer.hand)
+                            .append("\n");
+
+                    String nameOfCardToDiscard = getInput(GamePhase.PLAY_CARD, getStringOfCardsInCurrentPlayerHand());
+                    int discard = Arrays.asList(getStringOfCardsInCurrentPlayerHand()).indexOf(nameOfCardToDiscard);
+
+                    currentPlayer.hand.remove(discard);
+
+                    currentPlayer = players[(dealerIndex + i) % 4];
+
                     break;
                 }
             } else {
-                message_to_output.append("Player ").append(currentPlayer.username)
+                messageToOutput.append("Player ")
+                        .append(currentPlayer.username)
                         .append(", you cannot pick up/order up this card\n");
             }
 
@@ -234,32 +243,27 @@ public class Game extends Thread {
 
         for (int i = 1; i < 5; i++) {
             currentPlayer = players[(dealerIndex + i) % 4];
+            ArrayList<String> nameableSuits = new ArrayList<>();
 
             // The player can name any suit they have in their hand except for the suit of
             // the rejected up card
             for (Card card : currentPlayer.hand) {
-                if (!options.contains(card.getSuit().name())) {
-                    options.add(card.getSuit().name());
+                if (!nameableSuits.contains(card.getSuit().name())) {
+                    nameableSuits.add(card.getSuit().name());
                 }
             }
-            options.remove(upCard.getSuit().name());
-            options.add("Pass");
+            nameableSuits.remove(upCard.getSuit().name());
+            nameableSuits.add("Pass");
 
             // Use websocket to ask playerIndex if they would like to name trump
-            message_to_output.append("Player ").append(currentPlayer.username)
-                    .append(", would you like to name trump? Options are \"Pass\" or one of:").append(options)
+            messageToOutput.append("Player ")
+                    .append(currentPlayer.username)
+                    .append(", would you like to name trump? Options are \"Pass\" or one of:")
+                    .append(nameableSuits)
                     .append("\n");
 
             // Wait for response
-            String response;
-            if (currentPlayer.playerID > 0) {
-                botIsPlaying = false;
-                response = getPlayerInput();
-            } else {
-                botIsPlaying = true;
-                response = botNameTrump(currentPlayer);
-            }
-            options = new ArrayList<>();
+            String response = getInput(GamePhase.NAME_TRUMP, nameableSuits.toArray(new String[0]));
 
             // Parse response
             if (response.equals("Pass")) {
@@ -271,15 +275,18 @@ public class Game extends Thread {
 
                     trump = Card.Suit.valueOf(response);
                     // Alert players that trump has been named
-                    message_to_output.append("Player ").append(currentPlayer.username).append(" has named ")
-                            .append(trump).append(" as trump\n");
+                    messageToOutput.append("Player ")
+                            .append(currentPlayer.username)
+                            .append(" has named ")
+                            .append(trump)
+                            .append(" as trump\n");
 
                     // Set the calling team
                     callingTeam = ((dealerIndex + i) % 4) % 2;
 
                     break;
                 } catch (IllegalArgumentException e) { // This should not be needed after moving to websockets
-                    message_to_output.append("Invalid suit, passing\n");
+                    messageToOutput.append("Invalid suit, passing\n");
                 }
             }
         }
@@ -287,30 +294,23 @@ public class Game extends Thread {
 
     /**
      * Allows the player to choose whether they wish to go alone
-     * 
+     *
      * @param player, the player going alone
      */
     public void chooseGoingAlone(Player player) {
-        message_to_output.append("Player ").append(player.username)
+        currentPlayer = player;
+        messageToOutput.append("Player ")
+                .append(player.username)
                 .append(", would you like to go alone? Options are 'Yes' or 'No'\n");
-        options.add("Yes");
-        options.add("No");
-        String response;
-        if (player.playerID > 0) {
-            botIsPlaying = false;
-            response = getPlayerInput();
-        } else {
-            botIsPlaying = true;
-            response = botChooseAlone(player);
-        }
-
-        options = new ArrayList<>();
+        String response = getInput(GamePhase.GO_ALONE,
+            new String[] {"Yes", "No"});
         if (response.equals("Yes")) {
             lonerPlayer = player;
         }
-
+        
         // This will probably need some way to be handled visually on the frontend
-        message_to_output.append("Player ")
+        messageToOutput
+            .append("Player ")
                 .append(players[(Arrays.asList(players).indexOf(currentPlayer) + 2) % 4].username)
                 .append(", your partner has chosen to go alone, you cannot play this hand\n");
     }
@@ -329,10 +329,7 @@ public class Game extends Thread {
 
         // Each of the 4 players gets 5 cards
         for (int i = 0; i < 4; i++) {
-            ArrayList<Card> hand = new ArrayList<>(deck.subList(5 * i, 5 * (i + 1)));
-            for (Player player : players) {
-                player.hand = hand;
-            }
+            players[i].hand = new ArrayList<>(deck.subList(5 * i, 5 * (i + 1)));
 
         }
 
@@ -362,8 +359,12 @@ public class Game extends Thread {
         trickCount[winnerIndex % 2]++;
 
         // Alert users who won the trick
-        message_to_output.append("Player ").append(players[winnerIndex].username).append(" won with ")
-                .append(currentTrick.get((4 + winnerIndex - startingPlayerIndex) % 4)).append("\n");
+        messageToOutput
+                .append("Player ")
+                .append(players[winnerIndex].username)
+                .append(" won with ")
+                .append(currentTrick.get((4 + winnerIndex - startingPlayerIndex) % 4))
+                .append("\n");
         return winnerIndex; // return the index of the player who won the trick
     }
 
@@ -373,6 +374,7 @@ public class Game extends Thread {
      * @param player the player who will play the card
      */
     public void playCard(Player player) {
+        currentPlayer = player;
         if (player == players[(Arrays.asList(players).indexOf(lonerPlayer) + 2) % 4]) {
             // This player's partner is going alone, so the player cannot play any cards
             // this hand
@@ -389,29 +391,27 @@ public class Game extends Thread {
             validCards = getValidCards(hand);
         }
         // send valid cards to frontend
-        message_to_output.append("Player ").append(player.username)
-                .append(", play one of these cards (respond with index): ").append(validCards.toString()).append("\n");
-        addIndexesOfCardsInHand(options);
+        messageToOutput.append("Player ")
+                .append(player.username)
+                .append(", play one of these cards (respond with name): ")
+                .append(validCards.toString())
+                .append("\n");
         // Let the player choose their card
-        Card playedCard;
-        if (player.playerID > 0) {
-            botIsPlaying = false;
-            playedCard = validCards.get(Integer.parseInt(getPlayerInput()));
-        } else {
-            botIsPlaying = true;
-            playedCard = validCards.get(botPlayCard(player));
-        }
-
-        options = new ArrayList<>();
-
+        String playersChosenCard;
+        playersChosenCard = getInput(GamePhase.PLAY_CARD, getPlayableCardsInHand());
+        int indexOfPlayedCard = Arrays.asList(getStringOfCardsInCurrentPlayerHand()).indexOf(playersChosenCard);
+        Card playedCard = hand.get(indexOfPlayedCard);
         // If the player led, update the ledSuit to enforce following suit
         if (ledSuit == null) {
             ledSuit = playedCard.getSuit(trump);
         }
         // remove played card from hand
         hand.remove(playedCard);
-        message_to_output.append("You played ").append(playedCard.toString()).append(". Your new hand is: ")
-                .append(hand.toString()).append("\n");
+        messageToOutput.append("You played ")
+                .append(playedCard.toString())
+                .append(". Your new hand is: ")
+                .append(hand)
+                .append("\n");
         currentTrick.add(playedCard);
     }
 
@@ -500,22 +500,30 @@ public class Game extends Thread {
     public void scoreRound() {
         if (trickCount[callingTeam] < 3) {
             // Calling team got euchred, add 2 points to the other team
-            scores[(callingTeam + 1) % 2] += 2;
-            message_to_output.append("Team ").append(callingTeam).append(" got euchred, opposing team gets 2 points\n");
+            scores[(callingTeam + 1)%2] += 2;
+            messageToOutput.append("Team ")
+                    .append(callingTeam)
+                    .append(" got euchred, opposing team gets 2 points\n");
         } else if (trickCount[callingTeam] < 5) {
             // Calling team took 3-4 tricks, and get 1 point
             scores[callingTeam] += 1;
-            message_to_output.append("Team ").append(callingTeam).append(" took ").append(trickCount[callingTeam])
+            messageToOutput.append("Team ")
+                    .append(callingTeam)
+                    .append(" took ")
+                    .append(trickCount[callingTeam])
                     .append(" tricks, and get 1 point\n");
-        } else if (lonerPlayer != null) {
-            // Calling team took all tricks and went alone, and get 4 points
+        } else if(lonerPlayer != null){
+            //Calling team took all tricks and went alone, and get 4 points
             scores[callingTeam] += 4;
-            message_to_output.append("Team ").append(callingTeam)
+            messageToOutput.append("Team ")
+                    .append(callingTeam)
                     .append(" went alone and took all tricks, and get 4 points\n");
         } else {
             // Calling team took all tricks, and get 2 points
             scores[callingTeam] += 2;
-            message_to_output.append("Team ").append(callingTeam).append(" took all tricks, and get 2 points\n");
+            messageToOutput.append("Team ")
+                    .append(callingTeam)
+                    .append(" took all tricks, and get 2 points\n");
         }
     }
 
@@ -529,7 +537,7 @@ public class Game extends Thread {
             logger.debug("Player other then current player trying ot make a move");
             return false;
         }
-        user_response = move;
+        userResponse = move;
         return true;
     }
 
@@ -541,37 +549,91 @@ public class Game extends Thread {
     }
 
     /**
-     * Helper method to add a String array of the indexes of cards in hand
-     * 
-     * @param options The ArrayList to update with indexes
+     * Helper method to get the names of the playable cards
+     *
+     * @return A string array of the names of cards that can be played
      */
-    private void addIndexesOfCardsInHand(ArrayList<String> options) {
-        for (int cardIndex = 0; cardIndex < currentPlayer.hand.size(); cardIndex++) {
-            options.add(String.valueOf(cardIndex));
+    private String[] getPlayableCardsInHand(){
+        ArrayList<Card> validCards = getValidCards(currentPlayer.hand);
+        String[] numberedIndexes = new String[validCards.size()];
+        for (int cardIndex = 0; cardIndex < validCards.size(); cardIndex++) {
+            numberedIndexes[cardIndex] = validCards.get(cardIndex).toString();
+        }
+        return numberedIndexes;
+    }
+
+    /**
+     * @return the cards the current player has in their hand as a string array
+     */
+    private String[] getStringOfCardsInCurrentPlayerHand(){
+        ArrayList<Card> hand = currentPlayer.hand;
+        String[] handStrings = new String[hand.size()];
+
+        for (int i = 0; i < hand.size(); i++) {
+            handStrings[i] = hand.get(i).toString();
+        }
+
+        return handStrings;
+    }
+
+    /**
+     * @param input the string value of the move player is trying to make
+     */
+    private void setMostRecentMove(String input){
+        try {
+            mostRecentMove = currentPlayer.hand.get(Integer.parseInt(input)).toString();
+
+        } catch (NumberFormatException e) {
+            mostRecentMove = input;
         }
     }
 
     /**
-     * Handles when the code needs player input. Locks the thread until input is
-     * received via the websocket
-     * 
+     * Handles when the code needs player input. Locks the thread until input is received via the websocket
      * @return The passed message
      */
-    private String getPlayerInput() {
+    private String getInput(GamePhase newPhase, String[] newOptions){
+        currentPhase = newPhase;
+        optionsForPlayer = newOptions;
+
         isWaitingForInput = true;
-        while (isWaitingForInput || user_response == null) {
+
+        if (currentPlayer.playerID < 0){
+            botIsPlaying = true;
+            switch (currentPhase){
+                case NAME_TRUMP -> botNameTrump(currentPlayer);
+                case AGREE_TO_TRUMP -> botPickUpCard(currentPlayer);
+                case DISCARD_FOR_TRUMP -> botDiscardCard(currentPlayer);
+                case GO_ALONE -> botChooseAlone(currentPlayer);
+                case PLAY_CARD -> botPlayCard(currentPlayer);
+            }
+        }
+
+        while (isWaitingForInput || userResponse == null) {
             Thread.onSpinWait();
         }
-        String result = user_response;
-        user_response = null;
-        message_to_output = new StringBuilder();
+        setMostRecentMove(userResponse);
+        String result = userResponse;
+        userResponse = null;
+        messageToOutput = new StringBuilder();
         return result;
+    }
+
+    public enum GamePhase {
+        NAME_TRUMP,
+        DISCARD_FOR_TRUMP,
+        AGREE_TO_TRUMP,
+        GO_ALONE,
+        PLAY_CARD
     }
 
     /*
      * Bot method to determine if a bot player wants to pick up/order up the upCard
      */
-    public String botPickUpCard(Player bot, int index) {
+    public String botPickUpCard(Player bot) {
+        //TODO: Check if index is correct here
+        int currentPlayerIndex = Arrays.asList(players).indexOf(bot);
+        int index = (dealerIndex + currentPlayerIndex) % 4 + 1;
         int strength = getHandStrength(bot.hand, upCard.getSuit());
         int upCardStrength = upCard.getPower(upCard.getSuit());
         if (index == 4) {
@@ -667,7 +729,7 @@ public class Game extends Thread {
     /**
      * Helper method for the bot that returns the currently-winning card in the
      * trick (TODO)
-     * 
+     *
      * @return the card that is currently winning the trick
      */
     // private Card winningCard() {
@@ -678,10 +740,10 @@ public class Game extends Thread {
     /**
      * Helper method that analyzes a hand to get a rough estimate of how strong it
      * is given a trump suit, used for determining bot moves
-     * 
+     *
      * @param hand the hand to analyze
      * @return An integer representing the strength of the given hand
-     * 
+     *
      */
     private int getHandStrength(ArrayList<Card> hand, Card.Suit trump) {
         int strength = 0;

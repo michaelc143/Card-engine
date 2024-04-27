@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
 import sprite from '../../assets/sprite.svg'
 
-
-function BiddingScreen({ closeModal,userID,BiddingSuit}) {
+function BiddingScreen({ closeModal, BiddingSuit}) {
     
     const handlePickup = () => {
         closeModal('Pickitup');
