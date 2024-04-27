@@ -3,9 +3,9 @@ import { Client } from '@stomp/stompjs';
 
 const GameBoard = ({ userID, selectedGameID, username }) => {
 
-	const [cards, setCards] = useState([]);
-	const [gameData, setGameData] = useState(null);
-	const stompRef = useRef(null);
+	const [cards, setCards] = useState([]); // cards
+	const [gameData, setGameData] = useState(null); // game data received from websocket
+	const stompRef = useRef(null); // reference to stomp client to call funcs outside of original useEffect
 
 	// Connect to websocket and subscribe to game topic and hand topic
 	useEffect(() => {
@@ -18,14 +18,15 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 			heartbeatIncoming: 4000, // Expected heartbeat interval from the server (in milliseconds)
 			heartbeatOutgoing: 4000, // Outgoing heartbeat interval (in milliseconds)
 			onConnect: () => {
-				// console.log('STOMP client connected');
 				stompRef.current = stompClient;
+				// resubscribe to the game topic
 				stompClient.subscribe(`/topic/games/euchre/${selectedGameID}`, (message) => {
 					console.log(JSON.parse(message.body)); // logging websocketMessage
 					setGameData(JSON.parse(message.body));
 				}, (error) => {
 					console.error('Error subscribing to topic:', error);
 				});
+				// subscribe to hand topic to privately get card hand data
 				stompClient.subscribe(`/user/queue/${selectedGameID}/hand`, (message) => {
                     console.log(JSON.parse(message.body));
                     const receivedCards = JSON.parse(message.body);
@@ -35,6 +36,7 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 					}));
 					setCards(cards);
                 });
+				// grab hand on initial component load
 				stompClient.publish({
 					destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
 					body: userID,
@@ -74,6 +76,17 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 	// Check if it is the current player's turn (used to choose whether or not to display msg)
 	const isCurrentPlayer = gameData.currentPlayer.playerID === userID;
 
+	/**
+	 * Renders a game board component.
+	 * @param {string} username - The username of the player.
+	 * @param {string} userID - The user ID of the player.
+	 * @param {Array} cards - An array of cards to be displayed.
+	 * @param {boolean} isCurrentPlayer - Indicates if the current player is the user.
+	 * @param {Object} gameData - Data related to the game.
+	 * @param {string} gameData.message - A message related to the game.
+	 * @param {Array} gameData.options - An array of options available for the current player.
+	 * @param {Function} makeMoveYesNo - A function to handle the player's move.
+	 */
 	return (
 		<div>
 			<h2>Game Board {username} {userID}</h2>
