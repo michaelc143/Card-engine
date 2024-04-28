@@ -224,9 +224,12 @@ public class GameWebsocketController {
     private void updateGameToFinishedInDB(int gameID){
         try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ?, winner_1 = ?, winner_2 = ? WHERE game_id = ?")) {
+            // Check to see if a bot won, if so we use an ID of 0 for them
+            int winner1 = Math.max(GameManager.getGame(gameID).winningPlayers[0].playerID, 0);
+            int winner2 = Math.max(GameManager.getGame(gameID).winningPlayers[1].playerID, 0);
             insertStatement.setString(1, "done");
-            insertStatement.setInt(2, GameManager.getGame(gameID).winningPlayers[0].playerID);
-            insertStatement.setInt(3, GameManager.getGame(gameID).winningPlayers[1].playerID);
+            insertStatement.setInt(2, winner1);
+            insertStatement.setInt(3, winner2);
             insertStatement.setInt(4, gameID);
             insertStatement.executeUpdate();
         } catch (SQLException e) {
