@@ -183,9 +183,14 @@ public class Game extends Thread{
             }
             if (canPickUp) {
                 // Use websocket to ask playerIndex if they wish to pick up the card
-                messageToOutput.append("Player ").append(currentPlayer.username).append(", would you like player ")
-                        .append(players[dealerIndex].username).append(" to pick up ").append(upCard.toString())
-                        .append("? 'Yes' or 'No'\n");
+                if (currentPlayer != players[dealerIndex]) {
+                    messageToOutput.append("Player ").append(currentPlayer.username).append(", would you like player ")
+                            .append(players[dealerIndex].username).append(" to pick up ").append(upCard.toString())
+                            .append("? 'Yes' or 'No'\n");
+                } else {
+                    messageToOutput.append("Player ").append(currentPlayer.username).append(", would you like to pick up ").append(upCard.toString())
+                            .append("? 'Yes' or 'No'\n");
+                }
                 // Wait for response
                 String response = getInput(GamePhase.AGREE_TO_TRUMP,
                     new String[] {"Yes", "No"});
@@ -213,8 +218,7 @@ public class Game extends Thread{
                     currentPlayer.hand.add(upCard);
                     messageToOutput.append("Player ")
                             .append(currentPlayer.username)
-                            .append(", discard one of your cards (respond with the name): ")
-                            .append(currentPlayer.hand)
+                            .append(", discard one of your cards")
                             .append("\n");
 
                     String nameOfCardToDiscard = getInput(GamePhase.DISCARD_FOR_TRUMP, getStringOfCardsInCurrentPlayerHand());
@@ -229,7 +233,7 @@ public class Game extends Thread{
             } else {
                 messageToOutput.append("Player ")
                         .append(currentPlayer.username)
-                        .append(", you cannot pick up/order up this card\n");
+                        .append(", cannot pick up/order up this card\n");
             }
 
         }
@@ -393,8 +397,7 @@ public class Game extends Thread{
         // send valid cards to frontend
         messageToOutput.append("Player ")
                 .append(player.username)
-                .append(", play one of these cards (respond with name): ")
-                .append(validCards.toString())
+                .append(", play a card")
                 .append("\n");
         // Let the player choose their card
         String playersChosenCard;
@@ -407,10 +410,8 @@ public class Game extends Thread{
         }
         // remove played card from hand
         hand.remove(playedCard);
-        messageToOutput.append("You played ")
+        messageToOutput.append("Played ")
                 .append(playedCard.toString())
-                .append(". Your new hand is: ")
-                .append(hand)
                 .append("\n");
         currentTrick.add(playedCard);
     }

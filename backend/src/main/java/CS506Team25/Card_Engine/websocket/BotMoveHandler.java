@@ -16,7 +16,7 @@ public class BotMoveHandler implements Runnable{
         while (game.botIsPlaying) {
             // Add a delay so that bots don't instantly make moves
             try {
-                Thread.sleep(1000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
