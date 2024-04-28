@@ -5,6 +5,8 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 
 	const [cards, setCards] = useState([]); // cards
 	const [gameData, setGameData] = useState(null); // game data received from websocket
+	const [score, setScore] = useState(0);
+	const [currentTricks, setCurrentTricks] = useState([]);
 	const stompRef = useRef(null); // reference to stomp client to call funcs outside of original useEffect
 
 	// Connect to websocket and subscribe to game topic and hand topic
@@ -46,14 +48,25 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 		stompClient.activate();
 	}, [selectedGameID, userID]);
 
-	// Request hand when gameData is updated
+	// Request hand and update score when gameData is updated
 	useEffect(() => {
 		const stompClient = stompRef.current;
-		if (stompClient) {
+		if (stompClient && gameData) {
 			stompClient.publish({
 				destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
 				body: userID,
 			});
+		
+			if (gameData.players && Array.isArray(gameData.players)) { // Check if players array exists and is an array
+				const player = gameData.players.find(player => player.playerID === userID);
+				if (player !== undefined) {
+					setScore(player.score);
+				}
+			}
+			if (gameData.currentTrick && Array.isArray(gameData.currentTrick)) { // Check if currentTrick array exists and is an array
+				const currentTricks = gameData.currentTrick.filter(trick => trick !== null);
+				setCurrentTricks(currentTricks);
+			}
 		}
 	},[gameData]);
 
@@ -73,9 +86,6 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 		}
 	}
 
-	// Check if it is the current player's turn (used to choose whether or not to display msg)
-	const isCurrentPlayer = gameData.currentPlayer.playerID === userID;
-
 	/**
 	 * Renders a game board component.
 	 * @param {string} username - The username of the player.
@@ -88,25 +98,49 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 	 * @param {Function} makeMoveYesNo - A function to handle the player's move.
 	 */
 	return (
-		<div>
-			<h2>Game Board {username} {userID}</h2>
-			{cards.length > 0 ? cards.map((card, index) => (
-			<div key={index}>
-				<p>Card: {card.name}, Playable: {card.isPlayable ? 'Yes' : 'No'}</p>
-			</div>
-			))
-			:
-			<p>No cards</p>}
-			<p>{gameData.message}</p>
-			{
-				isCurrentPlayer &&
-				<>
-					{gameData.options.map((option, index) => (
-						<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
+		gameData.status == "Ended" ? 
+		(
+			<>
+				<p>Game over</p>
+				<p>Winners:</p>
+				<ul>
+					{gameData.winners && gameData.winners.map((winner, index) => (
+						<li key={index}>{winner.username}</li>
 					))}
-				</>
-			}
-		</div>
+				</ul>
+			</>
+		)
+		:
+		(
+			<div>
+				<h2>Game Board {username} {userID}</h2>
+				<p>Score: {score} {gameData.trump !== null ? "Trump: " + gameData.trump : ''} {gameData.upCard !== null ? "UpCard: " + gameData.upCard : ''}</p>
+				<h3>Current Tricks:</h3>
+				<ul>
+					{currentTricks !== null && gameData.phase == "PLAY_CARD" && currentTricks.map((trick, index) => (
+						<li key={index}>
+							{trick.suit} - {trick.rank}
+						</li>
+					))}
+				</ul>
+				{cards.length > 0 ? cards.map((card, index) => (
+				<div key={index}>
+					<p>Card: {card.name}, Playable: {card.isPlayable ? 'Yes' : 'No'}</p>
+				</div>
+				))
+				:
+				<p>No cards</p>}
+				<p>{gameData.message}</p>
+				{
+					gameData.currentPlayer.playerID === userID &&
+					<>
+						{gameData.options.map((option, index) => (
+							<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
+						))}
+					</>
+				}
+			</div>
+		)
 	);
 };
 
