@@ -332,6 +332,30 @@ public class CardEngineController {
         return -1;
     }
 
+   /**
+     * Changing username given the userid
+     * @param userid 	id of user
+     * @param username  new username
+     * @return string successful or failed.
+     */
+    @PostMapping("/player/{playerID}/change-username")
+    public String changeUsername(@PathVariable String playerID, String newUserName) {
+        try (Connection connection = ConnectToDataBase.connect();
+            PreparedStatement insertStatement = connection.prepareStatement("UPDATE users SET user_name = ? WHERE user_id = ?")) {
+
+            insertStatement.setString(1, newUserName);
+            insertStatement.setInt(2, Integer.parseInt(playerID));
+            int rowsInserted = insertStatement.executeUpdate();
+            if (rowsInserted > 0) {
+                return "successful";
+            } else {
+                return "failed";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error";
+        }
+    }
     /**
      * Get information about a player
      * @param playerID player's id
@@ -368,7 +392,7 @@ public class CardEngineController {
      * @param playerID player's id
      * @return id of deleted player, -1 if failed
      */
-    @DeleteMapping("/player/{playerID}")
+    @DeleteMapping("/player/deleteplayer/{playerID}")
     public int deletePlayer(@PathVariable String playerID){
         try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM users WHERE user_id = ?")) {
