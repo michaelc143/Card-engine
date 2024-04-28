@@ -121,7 +121,7 @@ public class GameWebsocketController {
 
         // Handle the case where the next turn is a bots turn
         if (game.botIsPlaying){
-            SendBotMove botMoves = new SendBotMove();
+            BotMoveHandler botMoves = new BotMoveHandler(this, game);
             new Thread(botMoves).start();
         }
 
@@ -171,20 +171,13 @@ public class GameWebsocketController {
      * @param game The game the bot is in.
      */
     public void sendBotMove(Game game){
-        while (game.botIsPlaying) {
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e){
-//                e.printStackTrace();
-//            }
-            game.isWaitingForInput = false;
-            waitUntilGameWantsInput(game);
-            if (game.winningPlayers != null) {
-                updateGameToFinishedInDB(game.gameID);
-                this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage().getFinishedGameMessage(game));
-            } else {
-                this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage(game));
-            }
+        game.isWaitingForInput = false;
+        waitUntilGameWantsInput(game);
+        if (game.winningPlayers != null) {
+            updateGameToFinishedInDB(game.gameID);
+            this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage().getFinishedGameMessage(game));
+        } else {
+            this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage(game));
         }
     }
 
@@ -218,7 +211,8 @@ public class GameWebsocketController {
         Game game = GameManager.getGame(gameID);
         waitUntilGameWantsInput(game);
         if (game.botIsPlaying){
-            sendBotMove(game);
+            BotMoveHandler botMoves = new BotMoveHandler(this, game);
+            new Thread(botMoves).start();
         }
     }
 
