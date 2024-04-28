@@ -121,6 +121,55 @@ public class Card {
     }
 
     /**
+     * Returns an integer representation of a card's strength. This is used for bot evaluations of hands.
+     * This is NOT used to determine which card beats another, getRanking is.
+     * The actual values of the returned strength should have meaning, not just their relative position to each other
+     * @param trump the trump suit
+     * @return an integer representation of the value of the card in a bot's hand
+     */
+    public int getPower(Suit trump){
+        //The card is not trump
+        if (!this.suit.color.equals(trump.color) || (!this.suit.equals(trump) && !this.rank.equals(Rank.JACK))) {
+            switch(this.rank){
+                case NINE:
+                    return 0;
+                case TEN:
+                    return 1;
+                case JACK:
+                    return 3;
+                case QUEEN:
+                    return 5;
+                case KING:
+                    return 10;
+                case ACE:
+                    return 15;
+            }
+        }
+        //The card is trump
+        switch(this.rank){
+            case NINE:
+                return 20;
+            case TEN:
+                return 21;
+            case QUEEN:
+                return 23;
+            case KING:
+                return 25;
+            case ACE:
+                return 30;
+            case JACK:
+                if(!this.suit.equals(trump)){
+                    //Left bower
+                    return 40;
+                }else{
+                    //Right bower
+                    return 50;
+                }
+        }
+        //This should never execute
+        return -1;
+    }
+    /**
      * Returns whether the card is a trump given the trump suit
      * 
      * @param trump the trump suit

@@ -3,7 +3,9 @@ package CS506Team25.Card_Engine.websocket;
 import CS506Team25.Card_Engine.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,8 @@ import java.util.Map;
 @Controller
 public class GameWebsocketController {
 
+    @Autowired
+    private SimpMessagingTemplate template;
     private static final Logger logger = LoggerFactory.getLogger(GameWebsocketController.class);
 
     /**
@@ -39,7 +43,7 @@ public class GameWebsocketController {
         if (lobby != null){
             return new LobbyMessage(lobby);
         } else if (game != null){
-            updateLobbyToGameInDB(gameID);
+            handleStartOfGame(gameID);
             return new GameMessage(game);
         }
         return null;
@@ -61,7 +65,7 @@ public class GameWebsocketController {
             return new LobbyMessage(lobby);
         }
         else if (result == 1){
-            updateLobbyToGameInDB(gameID);
+            handleStartOfGame(gameID);
             return new GameMessage(GameManager.getGame(lobby.gameID));
         }
         return null;
@@ -98,19 +102,27 @@ public class GameWebsocketController {
         if (game == null){
             return null;
         }
-
+        // Make the players move, if the move wasn't able to made return null
         if (!game.makeMove(move, userID)){
             return null;
         }
-        // Wait until the game is waiting for input to send out a message
-        game.isWaitingForInput = false;
-        while (!game.isWaitingForInput){
-            Thread.onSpinWait();
-        }
 
+        // Let the game know it can resume now that it has input
+        game.isWaitingForInput = false;
+
+        // Wait until the game is waiting for input to send out a message
+        waitUntilGameWantsInput(game);
+
+        // If there's a winner then send a finished game state
         if (game.winningPlayers != null){
             updateGameToFinishedInDB(gameID);
             return new GameMessage().getFinishedGameMessage(game);
+        }
+
+        // Handle the case where the next turn is a bots turn
+        if (game.botIsPlaying){
+            BotMoveHandler botMoves = new BotMoveHandler(this, game);
+            new Thread(botMoves).start();
         }
 
         return new GameMessage(game);
@@ -155,6 +167,23 @@ public class GameWebsocketController {
     }
 
     /**
+     * Internal message to handle when a bot is making a move
+     * @param game The game the bot is in.
+     */
+    public void sendBotMove(Game game){
+        game.isWaitingForInput = false;
+        game.botIsPlaying = false;
+        waitUntilGameWantsInput(game);
+        if (game.winningPlayers != null) {
+            updateGameToFinishedInDB(game.gameID);
+            this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage().getFinishedGameMessage(game));
+        } else {
+            this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage(game));
+        }
+    }
+
+
+    /**
      * Handles any exceptions occurring here; sends the error message to the originating client
      */
     @MessageExceptionHandler
@@ -170,7 +199,7 @@ public class GameWebsocketController {
      * Helper method to deal with the transition form lobby to game
      * @param gameID ID of the game to be updated in the DB
      */
-    private void updateLobbyToGameInDB(int gameID){
+    private void handleStartOfGame(int gameID){
         try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
             insertStatement.setString(1, "in_progress");
@@ -178,6 +207,13 @@ public class GameWebsocketController {
             insertStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        Game game = GameManager.getGame(gameID);
+        waitUntilGameWantsInput(game);
+        if (game.botIsPlaying){
+            BotMoveHandler botMoves = new BotMoveHandler(this, game);
+            new Thread(botMoves).start();
         }
     }
 
@@ -195,6 +231,16 @@ public class GameWebsocketController {
             insertStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Helper method to make sure there isn't de-sync between a changing game and a sent out message
+     * @param game the game that is to be waited on
+     */
+    public void waitUntilGameWantsInput(Game game){
+        while (!game.isWaitingForInput){
+            Thread.onSpinWait();
         }
     }
 
