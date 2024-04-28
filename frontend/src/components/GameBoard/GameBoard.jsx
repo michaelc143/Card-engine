@@ -86,9 +86,6 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 		}
 	}
 
-	// Check if it is the current player's turn (used to choose whether or not to display msg)
-	const isCurrentPlayer = gameData.currentPlayer.playerID === userID;
-
 	/**
 	 * Renders a game board component.
 	 * @param {string} username - The username of the player.
@@ -101,34 +98,49 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 	 * @param {Function} makeMoveYesNo - A function to handle the player's move.
 	 */
 	return (
-		<div>
-			<h2>Game Board {username} {userID}</h2>
-			<p>Score: {score} {gameData.trump !== null ? "Trump: " + gameData.trump : ''} {gameData.upCard !== null ? "UpCard: " + gameData.upCard : ''}</p>
-			<h3>Current Tricks:</h3>
-			<ul>
-				{currentTricks !== null && gameData.phase == "PLAY_CARD" && currentTricks.map((trick, index) => (
-					<li key={index}>
-						{trick.suit} - {trick.rank}
-					</li>
-				))}
-			</ul>
-			{cards.length > 0 ? cards.map((card, index) => (
-			<div key={index}>
-				<p>Card: {card.name}, Playable: {card.isPlayable ? 'Yes' : 'No'}</p>
-			</div>
-			))
-			:
-			<p>No cards</p>}
-			<p>{gameData.message}</p>
-			{
-				isCurrentPlayer &&
-				<>
-					{gameData.options.map((option, index) => (
-						<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
+		gameData.status == "Ended" ? 
+		(
+			<>
+				<p>Game over</p>
+				<p>Winners:</p>
+				<ul>
+					{gameData.winners && gameData.winners.map((winner, index) => (
+						<li key={index}>{winner.username}</li>
 					))}
-				</>
-			}
-		</div>
+				</ul>
+			</>
+		)
+		:
+		(
+			<div>
+				<h2>Game Board {username} {userID}</h2>
+				<p>Score: {score} {gameData.trump !== null ? "Trump: " + gameData.trump : ''} {gameData.upCard !== null ? "UpCard: " + gameData.upCard : ''}</p>
+				<h3>Current Tricks:</h3>
+				<ul>
+					{currentTricks !== null && gameData.phase == "PLAY_CARD" && currentTricks.map((trick, index) => (
+						<li key={index}>
+							{trick.suit} - {trick.rank}
+						</li>
+					))}
+				</ul>
+				{cards.length > 0 ? cards.map((card, index) => (
+				<div key={index}>
+					<p>Card: {card.name}, Playable: {card.isPlayable ? 'Yes' : 'No'}</p>
+				</div>
+				))
+				:
+				<p>No cards</p>}
+				<p>{gameData.message}</p>
+				{
+					gameData.currentPlayer.playerID === userID &&
+					<>
+						{gameData.options.map((option, index) => (
+							<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
+						))}
+					</>
+				}
+			</div>
+		)
 	);
 };
 
