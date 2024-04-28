@@ -78,7 +78,7 @@ public class GameMessage extends LobbyMessage{
     }
 
     public GameMessage getFinishedGameMessage(Game game){
-        this.status = Status.Game.name();
+        this.status = Status.Ended.name();
         this.id = game.gameID;
         this.winners = game.winningPlayers;
         this.players = game.players;

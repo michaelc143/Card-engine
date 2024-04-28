@@ -89,7 +89,6 @@ public class Game extends Thread{
         while (scores[0] < 10 && scores[1] < 10) {
             dealRound();
         }
-        isWaitingForInput = true;
         // Return the winning team
         if (scores[0] >= 10) {
             winningPlayers = new Player[]{players[0], players[2]};
@@ -98,6 +97,7 @@ public class Game extends Thread{
             winningPlayers = new Player[]{players[1], players[3]};
             messageToOutput.append("Team 1 wins\n");
         }
+        isWaitingForInput = true;
 
         // Have the thread sleep to make sure the game lingers long enough to get results
         try {
