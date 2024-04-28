@@ -97,10 +97,10 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 			))
 			:
 			<p>No cards</p>}
+			<p>{gameData.message}</p>
 			{
 				isCurrentPlayer &&
 				<>
-					<p>{gameData.message}</p>
 					{gameData.options.map((option, index) => (
 						<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
 					))}

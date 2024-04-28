@@ -262,8 +262,7 @@ public class Game extends Thread{
             // Use websocket to ask playerIndex if they would like to name trump
             messageToOutput.append("Player ")
                     .append(currentPlayer.username)
-                    .append(", would you like to name trump? Options are \"Pass\" or one of:")
-                    .append(nameableSuits)
+                    .append(", would you like to name trump?")
                     .append("\n");
 
             // Wait for response
@@ -305,7 +304,7 @@ public class Game extends Thread{
         currentPlayer = player;
         messageToOutput.append("Player ")
                 .append(player.username)
-                .append(", would you like to go alone? Options are 'Yes' or 'No'\n");
+                .append(", would you like to go alone?\n");
         String response = getInput(GamePhase.GO_ALONE,
             new String[] {"Yes", "No"});
         if (response.equals("Yes")) {
@@ -385,15 +384,7 @@ public class Game extends Thread{
             currentTrick.add(null);
             return;
         }
-        ArrayList<Card> validCards;
         ArrayList<Card> hand = player.hand;
-        // The first player can play any card
-        if (player == players[startingPlayerIndex]) {
-            validCards = hand;
-        } else {
-            // Players after the first must follow suit if possible
-            validCards = getValidCards(hand);
-        }
         // send valid cards to frontend
         messageToOutput.append("Player ")
                 .append(player.username)
