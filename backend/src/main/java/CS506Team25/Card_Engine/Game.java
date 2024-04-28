@@ -186,10 +186,10 @@ public class Game extends Thread{
                 if (currentPlayer != players[dealerIndex]) {
                     messageToOutput.append("Player ").append(currentPlayer.username).append(", would you like player ")
                             .append(players[dealerIndex].username).append(" to pick up ").append(upCard.toString())
-                            .append("? 'Yes' or 'No'\n");
+                            .append("?\n");
                 } else {
                     messageToOutput.append("Player ").append(currentPlayer.username).append(", would you like to pick up ").append(upCard.toString())
-                            .append("? 'Yes' or 'No'\n");
+                            .append("?\n");
                 }
                 // Wait for response
                 String response = getInput(GamePhase.AGREE_TO_TRUMP,
@@ -274,9 +274,10 @@ public class Game extends Thread{
             } else {
                 // Set trump to what the player named, then end the loop
                 try {
+                    trump = Card.Suit.valueOf(response);
+
                     chooseGoingAlone(currentPlayer);
 
-                    trump = Card.Suit.valueOf(response);
                     // Alert players that trump has been named
                     messageToOutput.append("Player ")
                             .append(currentPlayer.username)
