@@ -172,6 +172,7 @@ public class GameWebsocketController {
      */
     public void sendBotMove(Game game){
         game.isWaitingForInput = false;
+        game.botIsPlaying = false;
         waitUntilGameWantsInput(game);
         if (game.winningPlayers != null) {
             updateGameToFinishedInDB(game.gameID);

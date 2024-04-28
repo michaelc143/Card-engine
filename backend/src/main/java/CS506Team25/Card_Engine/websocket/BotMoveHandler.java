@@ -14,12 +14,13 @@ public class BotMoveHandler implements Runnable{
     @Override
     public void run(){
         while (game.botIsPlaying) {
-            gameWebsocketController.sendBotMove(game);
+            // Add a delay so that bots don't instantly make moves
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            gameWebsocketController.sendBotMove(game);
         }
     }
 }

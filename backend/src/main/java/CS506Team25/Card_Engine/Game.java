@@ -686,7 +686,7 @@ public class Game extends Thread{
         int maxStrength = 0;
         int discard = 0;
         for (int i = 0; i < 6; i++) {
-            ArrayList<Card> handWithoutCard = bot.hand;
+            ArrayList<Card> handWithoutCard = new ArrayList<>(bot.hand);
             handWithoutCard.remove(i);
             int strength = getHandStrength(handWithoutCard, trump);
             if (strength > maxStrength) {
