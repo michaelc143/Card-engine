@@ -5,6 +5,7 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 
 	const [cards, setCards] = useState([]); // cards
 	const [gameData, setGameData] = useState(null); // game data received from websocket
+	const [score, setScore] = useState(0);
 	const stompRef = useRef(null); // reference to stomp client to call funcs outside of original useEffect
 
 	// Connect to websocket and subscribe to game topic and hand topic
@@ -23,6 +24,8 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 				stompClient.subscribe(`/topic/games/euchre/${selectedGameID}`, (message) => {
 					console.log(JSON.parse(message.body)); // logging websocketMessage
 					setGameData(JSON.parse(message.body));
+					const player = gameData.players.find(player => player.playerID === userID);
+					setScore(player.score);
 				}, (error) => {
 					console.error('Error subscribing to topic:', error);
 				});
@@ -46,7 +49,7 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 		stompClient.activate();
 	}, [selectedGameID, userID]);
 
-	// Request hand when gameData is updated
+	// Request hand and update score when gameData is updated
 	useEffect(() => {
 		const stompClient = stompRef.current;
 		if (stompClient) {
@@ -55,6 +58,8 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 				body: userID,
 			});
 		}
+		const player = gameData.players.find(player => player.playerID === userID);
+		setScore(player.score);
 	},[gameData]);
 
 	// Loading screen for while game data is being grabbed originally
@@ -90,6 +95,7 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 	return (
 		<div>
 			<h2>Game Board {username} {userID}</h2>
+			<p>Score: {score}</p>
 			{cards.length > 0 ? cards.map((card, index) => (
 			<div key={index}>
 				<p>Card: {card.name}, Playable: {card.isPlayable ? 'Yes' : 'No'}</p>
