@@ -1,0 +1,34 @@
+.container {
+	display: flex;
+	justify-content: center;
+}
+
+.column {
+	margin: 50px;
+}
+
+.msgAndOptions,
+.game-board-data {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.options-container {
+	display: flex;
+	justify-content: center;
+}
+
+.options-container button {
+	margin: 0 5px;
+}
+
+p {
+	margin: 12px !important;
+}
+
+.win-screen {
+	display: flex;
+	justify-content: center;
+}

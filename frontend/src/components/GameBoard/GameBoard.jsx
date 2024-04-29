@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
+import './GameBoard.css';
 
-const GameBoard = ({ userID, selectedGameID, username }) => {
+const GameBoard = ({ userID, selectedGameID }) => {
 
 	const [cards, setCards] = useState([]); // cards
 	const [gameData, setGameData] = useState(null); // game data received from websocket
@@ -30,14 +31,14 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 				});
 				// subscribe to hand topic to privately get card hand data
 				stompClient.subscribe(`/user/queue/${selectedGameID}/hand`, (message) => {
-                    console.log(JSON.parse(message.body));
-                    const receivedCards = JSON.parse(message.body);
+					console.log(JSON.parse(message.body));
+					const receivedCards = JSON.parse(message.body);
 					const cards = Object.entries(receivedCards).map(([cardName, isPlayable]) => ({
 						name: cardName,
 						isPlayable,
 					}));
 					setCards(cards);
-                });
+				});
 				// grab hand on initial component load
 				stompClient.publish({
 					destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
@@ -88,7 +89,6 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 
 	/**
 	 * Renders a game board component.
-	 * @param {string} username - The username of the player.
 	 * @param {string} userID - The user ID of the player.
 	 * @param {Array} cards - An array of cards to be displayed.
 	 * @param {boolean} isCurrentPlayer - Indicates if the current player is the user.
@@ -100,45 +100,56 @@ const GameBoard = ({ userID, selectedGameID, username }) => {
 	return (
 		gameData.status == "Ended" ? 
 		(
-			<>
-				<p>Game over</p>
-				<p>Winners:</p>
-				<ul>
+			<div className='win-screen'>
+				<h3>Game over</h3>
+				<h3>Winners:</h3>
 					{gameData.winners && gameData.winners.map((winner, index) => (
-						<li key={index}>{winner.username}</li>
+						<p key={index}>{winner.username}</p>
 					))}
-				</ul>
-			</>
+			</div>
 		)
 		:
 		(
 			<div>
-				<h2>Game Board {username} {userID}</h2>
-				<p>Score: {score} {gameData.trump !== null ? "Trump: " + gameData.trump : ''} {gameData.upCard !== null ? "UpCard: " + gameData.upCard : ''}</p>
-				<h3>Current Tricks:</h3>
-				<ul>
-					{currentTricks !== null && gameData.phase == "PLAY_CARD" && currentTricks.map((trick, index) => (
-						<li key={index}>
-							{trick.suit} - {trick.rank}
-						</li>
-					))}
-				</ul>
-				{cards.length > 0 ? cards.map((card, index) => (
-				<div key={index}>
-					<p>Card: {card.name}, Playable: {card.isPlayable ? 'Yes' : 'No'}</p>
+				<div className='game-board-data'>
+					<h3>Game Board</h3>
+					<p>Score: {score} {gameData.trump !== null ? ", Trump: " + gameData.trump : ''} {gameData.upCard !== null ? ", UpCard: " + gameData.upCard : ''}</p>
 				</div>
-				))
-				:
-				<p>No cards</p>}
-				<p>{gameData.message}</p>
-				{
-					gameData.currentPlayer.playerID === userID &&
-					<>
-						{gameData.options.map((option, index) => (
-							<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
-						))}
-					</>
-				}
+				<div className='container'>
+					<div className="column">
+						<h3>Current Tricks:</h3>
+							{currentTricks !== null && gameData.phase == "PLAY_CARD" && currentTricks.map((trick, index) => (
+								<p key={index}>
+									{trick.suit} - {trick.rank}
+								</p>
+							))}
+					</div>
+					<div className="column">
+						<h3>Current Hand:</h3>
+						{cards.length > 0 ? 
+							cards.map((card, index) => (
+								<div key={index}>
+									<p>Card: {card.name}</p>
+								</div>
+							))
+						:
+							<p>No cards</p>
+						}
+					</div>
+				</div>
+				<div className="msgAndOptions">
+					<p>{gameData.message}</p>
+				</div>
+				<div className="options-container">
+					{
+						gameData.currentPlayer.playerID === userID &&
+						<>
+							{gameData.options.map((option, index) => (
+								<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>
+							))}
+						</>
+					}
+				</div>
 			</div>
 		)
 	);

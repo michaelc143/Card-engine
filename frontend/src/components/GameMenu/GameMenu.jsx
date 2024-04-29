@@ -83,7 +83,6 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 				<GameBoard 
 					userID={userID}
 					selectedGameID={selectedGameId}/>
-					username={username}
 				</> 
 				: 
 				<>
