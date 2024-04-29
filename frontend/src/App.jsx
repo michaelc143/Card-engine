@@ -74,22 +74,28 @@ function App() {
 	* @param {string} username - The username entered by the user.
 	*/
 	const handleLogin = (username) => {
-		fetch(`http://localhost:8080/login?username=${username}`, {method: 'POST',})
-			.then(response => response.json())
-				.then(data => {
-					console.log(data); // Used in development to debug
-					if (data) {
-						setUser(data);
-						setLoggedIn(true);
-					} 
-					else {
-						showToast('User does not exist with that name', 'error');
-					}
-				})
+		fetch(`http://localhost:8080/login?username=${username}`, { method: 'POST' })
+			.then(response => {
+				if (!response.ok) {
+					throw new Error();
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log(data); // Used in development to debug
+				if (data) {
+					setUser(data);
+					setLoggedIn(true);
+				} else {
+					showToast('User does not exist with that name', 'error');
+				}
+			})
 			.catch(error => {
 				console.error('Error:', error);
-		});
+				showToast('User does not exist with that name', 'error');
+			});
 	};
+
 
 	/**
 	* @function
