@@ -46,6 +46,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 	// closes setting screen modal popup
 	const closeSettingScreenModal = (value) => {
 		setPresentUsername(value);
+		username = value; //for validation checks that username has value stored and is actually updated
 		setSettingScreenModalIsOpen(false);
 		if(value == '*Cleared*')
 		{
@@ -164,13 +165,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 						>
 							{selectedGameId !== null &&
-								<LobbyScreen 
-									closeModal={closeLobbyScreenModal}
-									selectedGameId={selectedGameId}
-									username={username}
-									userID={userID}
-									setCurrentlyPlaying={setCurrentlyPlaying}
-								/>}
+								<LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} username={presentUsername} userID={userID} setCurrentlyPlaying={setCurrentlyPlaying} updateWebSocketMessage={handleWebSocketMessageUpdate}/>}
 						</Modal>
 						<Modal
 							isOpen={showSelectSeatModal}
@@ -206,12 +201,8 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 							shouldCloseOnOverlayClick={false}
 						>
-							<SettingScreen 
-								closeModal={closeSettingScreenModal}
-								userid={userID}
-								username={presentUsername}
-								showToast={showToast}
-							/>
+							{/*Modal is consistent for username to be tracked to be the present one */}
+							<SettingScreen closeModal={closeSettingScreenModal} userid={userID} username={presentUsername} />
 						</Modal>
 					</div>
 				</>

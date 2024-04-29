@@ -333,12 +333,40 @@ public class CardEngineController {
     }
 
    /**
+     * Used to delete a player's stored statistics in all games
+     *
+     * @param playerID the id of the player who wishes to reset their statistics
+     * @return true if player stats successfully deleted, false otherwise
+     */
+    @DeleteMapping("player/{playerID}/stats")
+    public Boolean resetPlayersStats(@PathVariable String playerID) {
+        try (Connection connection = ConnectToDataBase.connect();
+             PreparedStatement statement = connection.prepareStatement("UPDATE euchre_game set winner_1 = 0 WHERE game_status = 'done' AND winner_1 = ?")) {
+            statement.setInt(1, Integer.parseInt(playerID));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        try (Connection connection = ConnectToDataBase.connect();
+             PreparedStatement statement = connection.prepareStatement("UPDATE euchre_game set winner_2 = 0 WHERE game_status = 'done' AND winner_2 = ?")) {
+            statement.setInt(1, Integer.parseInt(playerID));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+  
+   /**
      * Changing username given the userid
      * @param userid 	id of user
      * @param username  new username
      * @return string successful or failed.
      */
-    @PostMapping("/player/{playerID}/change-username")
+    @PutMapping("/player/{playerID}")
     public String changeUsername(@PathVariable String playerID, String newUserName) {
         try (Connection connection = ConnectToDataBase.connect();
             PreparedStatement insertStatement = connection.prepareStatement("UPDATE users SET user_name = ? WHERE user_id = ?")) {
@@ -408,6 +436,8 @@ public class CardEngineController {
         }
         return -1;
     }
+
+     
 
     /**
      * @return A JSON of current users

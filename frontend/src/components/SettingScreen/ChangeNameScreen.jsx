@@ -9,7 +9,7 @@ function ChangeNameScreen({closeModal, userID, currentUsername}){
     const [displayName, setDisplayName] = useState(currentUsername);
     
     const [gameScreenModalIsOpen, setGameScreenModalIsOpen] = useState(false);
-
+    
     const showToast = (message, type) => {
 		toast[type](message);
 	}
@@ -20,7 +20,7 @@ function ChangeNameScreen({closeModal, userID, currentUsername}){
             alert("new username cannot be blank or empty!");
         }
         else{
-            fetch(`http://localhost:8080/player/${userID}/change-username?newUserName=${username}`, {method: 'POST'})
+            fetch(`http://localhost:8080/player/${userID}?newUserName=${username}`, {method: 'PUT'})
             .then(response => response.text())
                 .then(data => {
                     if (data == 'successful') {
@@ -28,7 +28,7 @@ function ChangeNameScreen({closeModal, userID, currentUsername}){
                         showToast(`Successfully change username from ${displayName} to ${username}`, 'success');
                         setDisplayName(username);
                         setUsername('');
-                    }
+                    } 
                     else {
                         alert("Changing username is failed.");
                     }
@@ -36,7 +36,7 @@ function ChangeNameScreen({closeModal, userID, currentUsername}){
             .catch(error => {
                 console.error('Error:', error);
         });
-
+            
         }		
 	};
 
@@ -56,7 +56,7 @@ function ChangeNameScreen({closeModal, userID, currentUsername}){
     const playCards = ["ace_hearts","jack_hearts","queen_clubs","nine_hearts","queen_hearts"];
     
     return <>
-        <ToastContainer
+        <ToastContainer 
 			limit={5}
 			stacked={true}
 		/>
@@ -83,7 +83,7 @@ function ChangeNameScreen({closeModal, userID, currentUsername}){
                 <div>
                     <button style={{border:'none',background:'none',marginTop:10, marginLeft: '1rem',fontSize: '40px' }}  onClick={handleGameScreen}>GameScreen</button>
                 </div>
-            </div>
+            </div>            
             <Modal
                     isOpen={gameScreenModalIsOpen}
                     onRequestClose={closeGameScreenModal}

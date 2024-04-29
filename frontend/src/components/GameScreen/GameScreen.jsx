@@ -6,6 +6,7 @@ import closeModalBtn from '../../assets/close.svg';
 import BiddingScreen from '../BiddingScreen/BiddingScreen';
 
 
+//Mockup for Game screen main layout to check bidding rounds works 
 function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameCards,playingCards}) {
     
     const [currentCards, setCurrentCards] = useState(playingCards);
@@ -26,6 +27,7 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
     const [player04Card,setPlayer04Card] = useState('');
 
       
+    //hardcoded values to test if bidding screen works. If pick up, goes into "playing the game"
     const closeBiddingScreenModal = (value) => {
         setBiddingScreenModalIsOpen(false);
         if(value == "Pass")
@@ -51,6 +53,7 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
         }
     };
 
+    //Exit the game if prompted
     const closeGame = () => {
         closeGameScreen();            
     }
@@ -63,6 +66,7 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
         </div>
     ); */
 
+    //Loads the cards to the screen to be shown
     const loadPlayingCards =  currentCards.map((playcard) =>
             <div>
                 <svg key={playcard} id={playcard} width='144' height='200' onClick={(event) => handleCardClick(event.currentTarget.attributes[0].nodeValue)}>
@@ -90,7 +94,6 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
     }, [secondBidding]);
    
     const handleCardClick = (value) => {
-        //style={{animation: `spin 3s linear infinite`}}
         //remove selected card from own current cards        
         setCurrentCards(currentCards.filter(a => a != value));
         loadPlayingCards;
@@ -107,7 +110,7 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
         {
             if(value == "ace_hearts")
             {            
-                setYourCard(value); // add the your card
+                setYourCard(value); // add your card
                 setPlayer02Card("king_spades"); // add the player 2 card
                 setPlayer03Card("ten_spades"); // add the player 3 card
                 setPlayer04Card("ten_clubs"); // add the player 4 card
@@ -203,88 +206,106 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
         }
     }
 
-    return <>
-        <div>
+    return (
+        <>
+            {/* GameScreen Header */}
             <div>
-                <div className='upper-bar'>
-                    <h2 style={{marginLeft: '1rem'}} className='menu-header'>GameScreen.</h2>
-                    <img className='closeModalX' src={closeModalBtn} onClick={closeGame} alt='close'/>				
+                <div>
+                    <div className='upper-bar'>
+                        {/* Header title */}
+                        <h2 style={{ marginLeft: '1rem' }} className='menu-header'>GameScreen.</h2>
+                        {/* Close button */}
+                        <img className='closeModalX' src={closeModalBtn} onClick={closeGame} alt='close'/>
+                    </div>
+                    <div style={{ marginTop: -30, display: 'flex', alignItems: 'center' }}>
+                        <div>
+                            {/* Displaying the trump suit */}
+                            <h4>
+                                The trump suit is:
+                            </h4>
+                        </div>
+                        <div>
+                            {/* Displaying the SVG icon for the trump suit */}
+                            <svg width='50' height='60'>
+                                <use href={`${sprite}#${TrumpSuit}`}/>
+                            </svg>
+                        </div>
+                    </div>                
                 </div>
-                <div style={{marginTop:-30,display: 'flex',alignItems:'center'}}>
-                    <div>
-                        <h4>
-                            The trump suit is:
-                        </h4>
-                    </div>
-                    <div>
-                        <svg width='50' height='60'>
-                            <use href={`${sprite}#${TrumpSuit}`}/>
-                        </svg>
-                    </div>
-                </div>                
-            </div>
-            <div style={{ marginTop:-160, marginBottom:-50, display:'flex', flexDirection: 'column', alignItems:'center',justifyContent:'center' }}>
-                <h3>
-                    {player03}
-                </h3>
-                <svg style={{marginTop:-30}} width='80' height='100'>
-                    <use href={`${sprite}#${player03Card}`}/>
-                </svg>			
-            </div>
-            <div>
-                <div style={{display:'flex', alignItems:'center',justifyContent:'space-between'}}>
-                    <h3>{player02}</h3>
-                    <svg width='80' height='100'>
-                        <use href={`${sprite}#${player02Card}`}/>
-                    </svg>
-                    <svg width='80' height='100'>
-                        <use href={`${sprite}#${player04Card}`}/>
-                    </svg>
-                    <h3>{player04}</h3>
+                {/* Player 03 */}
+                <div style={{ marginTop: -160, marginBottom: -50, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <h3>
+                        {player03}
+                    </h3>
+                    {/* Displaying the card of Player 03 */}
+                    <svg style={{ marginTop: -30 }} width='80' height='100'>
+                        <use href={`${sprite}#${player03Card}`}/>
+                    </svg>			
                 </div>
                 <div>
-                                        
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        {/* Player 02 */}
+                        <h3>{player02}</h3>
+                        {/* Displaying the card of Player 02 */}
+                        <svg width='80' height='100'>
+                            <use href={`${sprite}#${player02Card}`}/>
+                        </svg>
+                        {/* Displaying the card of Player 04 */}
+                        <svg width='80' height='100'>
+                            <use href={`${sprite}#${player04Card}`}/>
+                        </svg>
+                        {/* Player 04 */}
+                        <h3>{player04}</h3>
+                    </div>
+                    <div>
+                        {/* Additional content */}
+                    </div>
                 </div>
-            </div>
-            <div style={{marginTop:-30, display:'flex', flexDirection: 'column',alignItems:'center',justifyContent:'center' }}>
-                <svg width='80' height='100'>
-                    <use href={`${sprite}#${yourCard}`}/>
-                </svg>
-                <h3 style={{marginTop:10}}>
-                    You
-                </h3>				
-            </div>
-            <div style={{ marginTop:-20,display:'flex',alignItems:'center',justifyContent:'space-between' }}>
-                <h3 style={{ width: '10%', display: 'inline-block'}} ></h3>
-                <div style={{display: 'flex'}}>
-                    {loadPlayingCards}
+                <div style={{ marginTop: -30, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    {/* Displaying the user's card */}
+                    <svg width='80' height='100'>
+                        <use href={`${sprite}#${yourCard}`}/>
+                    </svg>
+                    {/* Label for the user */}
+                    <h3 style={{ marginTop: 10 }}>
+                        You
+                    </h3>				
                 </div>
-                <h3 style={{ width: '10%', display: 'inline-block'}} ></h3>
-            </div>
-            <Modal
-                isOpen={biddingScreenModalIsOpen}
-                onRequestClose={closeBiddingScreenModal}
-                contentLabel="Bidding screen Modal"
-                style={{
-                    overlay: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    },
-                    content: {
-                        width: '700px',
-                        height: '680px',
-                        margin: 'auto',
-                        borderRadius: '10px',
-                        backgroundColor: 'lightcyan'
-                    },
-                }}
-                shouldCloseOnOverlayClick={false}
+                <div style={{ marginTop: -20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h3 style={{ width: '10%', display: 'inline-block' }} ></h3>
+                    {/* Loading playing cards */}
+                    <div style={{ display: 'flex' }}>
+                        {loadPlayingCards}
+                    </div>
+                    <h3 style={{ width: '10%', display: 'inline-block' }} ></h3>
+                </div>
+                {/* BiddingScreen Modal */}
+                <Modal
+                    isOpen={biddingScreenModalIsOpen}
+                    onRequestClose={closeBiddingScreenModal}
+                    contentLabel="Bidding screen Modal"
+                    style={{
+                        overlay: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        },
+                        content: {
+                            width: '700px',
+                            height: '680px',
+                            margin: 'auto',
+                            borderRadius: '10px',
+                            backgroundColor: 'lightcyan'
+                        },
+                    }}
+                    shouldCloseOnOverlayClick={false}
                 >
-                <BiddingScreen closeModal={closeBiddingScreenModal} BiddingRound={biddingRound} BiddingSuit={biddingSuit} />
-            </Modal>
-        </div>
-    </>
+                    {/* Rendering the BiddingScreen component */}
+                    <BiddingScreen closeModal={closeBiddingScreenModal} BiddingRound={biddingRound} BiddingSuit={biddingSuit} />
+                </Modal>
+            </div>
+        </>
+    )
+    
 }
-
 export default GameScreen;
 
 {/* <div style={{ marginLeft: '3rem', marginBottom:-60,display:'flex',alignItems:'center',justifyContent:'space-between' }}>
