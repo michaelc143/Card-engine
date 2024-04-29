@@ -14,6 +14,8 @@ h1 {
     font-size: 150px;
     font-family: 'Inknut Antiqua', Garamond, serif;
     font-weight: 400;
+    text-align: center;
+    margin: 2rem;
 }
 
 /* Style for the headings of "Login" "New?" and "Sign up" */
@@ -300,8 +302,8 @@ p.game {
     border: 4px #FFFAFB dashed;    
 }
 
-/* General styling for a card object */
-/* Currently using a white background as a placeholder */
+/* PLACEHOLDER styling for a card object */
+/* For testing only. Use SVGs in frontend/src/assets/cards. */
 .card {
     width: 166px;
     height: 226px;
