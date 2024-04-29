@@ -395,8 +395,8 @@ public class CardEngineController {
                 game.put("date", String.valueOf(resultSet.getDate(6)));
                 int winner1 = resultSet.getInt(7);
                 int winner2 = resultSet.getInt(8);
-                game.put("winner1", winner1 == 0? "bot" : userIDToUsername(winner1));
-                game.put("winner2", winner1 == 0? "bot" : userIDToUsername(winner2));
+                game.put("winner1", winner1 <= 0? "bot" : userIDToUsername(winner1));
+                game.put("winner2", winner2 <= 0? "bot" : userIDToUsername(winner2));
 
 
                 json.set(String.valueOf(resultSet.getInt(1)), game);
