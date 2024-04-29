@@ -65,7 +65,6 @@ public class Game extends Thread{
     public Game(int gameID, Player[] players) {
         this.gameID = gameID;
         this.players = players;
-        // TODO: Implement bots instead of making fake players
         for (int seat = 0; seat < players.length; seat++) {
             if (players[seat] == null)
                 players[seat] = new Player(-seat, "BOT_" + seat);
@@ -402,7 +401,9 @@ public class Game extends Thread{
         }
         // remove played card from hand
         hand.remove(playedCard);
-        messageToOutput.append("Played ")
+        messageToOutput.append("Player ")
+                .append(player.username)
+                .append(" played ")
                 .append(playedCard.toString())
                 .append("\n");
         currentTrick.add(playedCard);
@@ -627,7 +628,6 @@ public class Game extends Thread{
      * Bot method to determine if a bot player wants to pick up/order up the upCard
      */
     public String botPickUpCard(Player bot) {
-        //TODO: Check if index is correct here
         int currentPlayerIndex = Arrays.asList(players).indexOf(bot);
         int index = (dealerIndex + currentPlayerIndex) % 4 + 1;
         int strength = getHandStrength(bot.hand, upCard.getSuit());

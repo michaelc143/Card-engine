@@ -84,7 +84,6 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 				<GameBoard 
 					userID={userID}
 					selectedGameID={selectedGameId}/>
-					username={username}
 				</> 
 				: 
 				<>
@@ -166,7 +165,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 						>
 							{selectedGameId !== null &&
-								<LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} username={presentUsername} userID={userID} setCurrentlyPlaying={setCurrentlyPlaying} updateWebSocketMessage={handleWebSocketMessageUpdate}/>}
+								<LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} username={presentUsername} userID={userID} setCurrentlyPlaying={setCurrentlyPlaying}/>}
 						</Modal>
 						<Modal
 							isOpen={showSelectSeatModal}

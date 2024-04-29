@@ -51,13 +51,13 @@ function FindGame({ closeModal, openSelectSeatModal }) {
 					{Object.entries(openGames).map(([gameName, gameData]) => (
 							<div key={gameName}>
 								<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block', marginLeft: '0.5rem'}}>
-								{gameName} : ID {gameData.game_id}
+								{gameName}
 								</p>
 								<p style={{fontWeight: 'bold', width: '33%', display: 'inline-block'}}>
 								{gameData.number_players}/4
 								</p>
 								<button
-									style={{ fontWeight: 'bold', width: '33%', display: 'inline-block', background: 'none', border: 'none' }}
+									style={{ fontWeight: 'bold', width: '20%', display: 'inline-block', background: 'none', border: 'none' }}
 									onClick={() => openSelectSeatModal(gameData.game_id)}
 								>
 									&gt;
