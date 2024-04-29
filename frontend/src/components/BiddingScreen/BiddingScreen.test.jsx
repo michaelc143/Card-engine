@@ -3,7 +3,7 @@ import { describe, it, expect} from 'vitest';
 import BiddingScreen from "./BiddingScreen";
 
 
-
+//Checks to see if frontend text is visible on screen
 describe('BiddingScreen', () => {
 
   it('should render Bidding screen with title and screen items correctly', () => {	
