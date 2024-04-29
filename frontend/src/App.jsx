@@ -63,25 +63,10 @@ function App() {
 		setCreateGameModalIsOpen(false);
 	};
 
-	const backToLogin = (value) => {
+	const backToLogin = () => {
 		setUser(null);
 		setLoggedIn(false);
 	}
-
-	/**
-	 * @function
-	 * @description Handles subscribing to a Euchre games websocket when joining a lobby
-	 * @param {int} gameID - The ID of the game to join
-	const handleSubscribeLobby = (gameID) => {
-		stompClient.subscribe('/topic/games/euchre/' + gameID, (message) => {
-			handleGameStatus(JSON.parse(message.body).content);
-		});
-	}
-
-	function handleGameStatus(message){
-		console.log(message)
-	}
-	*/
 
 	/**
 	* @function
@@ -104,14 +89,6 @@ function App() {
 			.catch(error => {
 				console.error('Error:', error);
 		});
-
-		//setUser(testData);
-		/* setUser({
-			user_id: "user_id", 
-			user_name: username,
-			date_joined: "today"
-		  });
-		setLoggedIn(true); */
 	};
 
 	/**

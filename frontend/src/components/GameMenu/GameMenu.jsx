@@ -7,6 +7,7 @@ import CreateGame from '../CreateGame/CreateGame';
 import LobbyScreen from '../LobbyScreen/LobbyScreen';
 import SelectSeat from '../SelectSeat/SelectSeat';
 import SettingScreen from '../SettingScreen/SettingScreen';
+import GameBoard from '../GameBoard/GameBoard';
 
 function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, userID,username, reloadLogin} ) {
 
@@ -14,14 +15,11 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 	const [showSelectSeatModal, setShowSelectSeatModal] = useState(false);
 	const [selectedGameId, setSelectedGameId] = useState(null);
 	const [currentlyPlaying, setCurrentlyPlaying] = useState(false); // used to decide whether to show normal game menu or the game board
-	const [gameWebsocketMessage, setGameWebsocketMessage] = useState(null); // passing websocket message from lobby to the game board
 
 	const [presentUsername, setPresentUsername] = useState(username)
 	const [settingScreenModalIsOpen, setSettingScreenModalIsOpen] = useState(false);
 
-	// console.log("userID:" + userID);
-	// console.log("username:" + username);
-
+	// opens the select seat modal
 	const openSelectSeatModal = (gameId) => {
 		closefindGameModal();
 		console.log("GameID:" + gameId);
@@ -30,6 +28,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 		setShowSelectSeatModal(true);
 	};
 
+	// closes the select seat modal
 	const closeSelectSeatModal = () => {
 		setShowSelectSeatModal(false);
 	};
@@ -54,24 +53,37 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 		}
 	};
 
+	// opens setting screen modal popup
 	const openSettingScreenModal = () => {
 		setSettingScreenModalIsOpen(true);
 	};
 
-	// update gameWebsocketMessage whenever there's a new one
-	const handleWebSocketMessageUpdate = (message) => {
-		setGameWebsocketMessage(message);
-	};
-
-	console.log(gameWebsocketMessage);
-
+	/**
+	 * Renders either the game board or the main menu based on the `currentlyPlaying` flag.
+	 * @param {boolean} currentlyPlaying - Indicates whether the player is currently in a game.
+	 * @param {string} userID - The user ID of the player.
+	 * @param {string} selectedGameID - The ID of the selected game.
+	 * @param {string} username - The username of the player.
+	 * @param {Function} openSettingScreenModal - Function to open the settings screen modal.
+	 * @param {Function} openfindGameModal - Function to open the find game modal.
+	 * @param {Function} openCreateGameModal - Function to open the create game modal.
+	 * @param {Function} openLobbyScreenModal - Function to open the lobby screen modal.
+	 * @param {Function} closefindGameModal - Function to close the find game modal.
+	 * @param {Function} closeCreateGameModal - Function to close the create game modal.
+	 * @param {Function} closeLobbyScreenModal - Function to close the lobby screen modal.
+	 * @param {Function} closeSelectSeatModal - Function to close the select seat modal.
+	 * @param {Function} closeSettingScreenModal - Function to close the setting screen modal.
+	 * @param {Function} showToast - Function to display a toast message.
+	 * @param {Function} setCurrentlyPlaying - Function to set the current playing status.
+	 * @param {string} presentUsername - The present username.
+	 */
 	return(
 			currentlyPlaying ? 
 				<>
-				{/* put game board component here, pass in gameWebsocketMessage into here or the client to get new messages 
-					will need to pass userID, selectedGameID, and gameWebsocketMessage in here to send move msgs to websocket
-				*/}
-				<h1>Testing...</h1>
+				<GameBoard 
+					userID={userID}
+					selectedGameID={selectedGameId}/>
+					username={username}
 				</> 
 				: 
 				<>
@@ -153,7 +165,13 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 						>
 							{selectedGameId !== null &&
-								<LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} username={username} userID={userID} setCurrentlyPlaying={setCurrentlyPlaying} updateWebSocketMessage={handleWebSocketMessageUpdate}/>}
+								<LobbyScreen 
+									closeModal={closeLobbyScreenModal}
+									selectedGameId={selectedGameId}
+									username={username}
+									userID={userID}
+									setCurrentlyPlaying={setCurrentlyPlaying}
+								/>}
 						</Modal>
 						<Modal
 							isOpen={showSelectSeatModal}
@@ -189,7 +207,12 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 							shouldCloseOnOverlayClick={false}
 						>
-							<SettingScreen closeModal={closeSettingScreenModal} userid={userID} username={presentUsername} />
+							<SettingScreen 
+								closeModal={closeSettingScreenModal}
+								userid={userID}
+								username={presentUsername}
+								showToast={showToast}
+							/>
 						</Modal>
 					</div>
 				</>
