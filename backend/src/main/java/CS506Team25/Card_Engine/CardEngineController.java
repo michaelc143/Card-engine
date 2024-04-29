@@ -420,7 +420,7 @@ public class CardEngineController {
      * @param playerID player's id
      * @return id of deleted player, -1 if failed
      */
-    @DeleteMapping("/player/deleteplayer/{playerID}")
+    @DeleteMapping("/player/{playerID}")
     public int deletePlayer(@PathVariable String playerID){
         try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM users WHERE user_id = ?")) {
