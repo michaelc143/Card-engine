@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Modal from 'react-modal';
 import closeModalBtn from '../../assets/close.svg';
 import BiddingScreen from '../BiddingScreen/BiddingScreen';
@@ -78,7 +78,7 @@ function ChangeNameScreen({closeModal, currentUsername}){
                     }}
                     shouldCloseOnOverlayClick={false}
                     >
-                    <BiddingScreen closeModal={closeBiddingScreenModal} userID={'test'} BiddingSuit={"jack_diamonds"} />
+                    <BiddingScreen closeModal={closeBiddingScreenModal} BiddingSuit={"jack_diamonds"} />
                 </Modal>
         </div>        
     </>

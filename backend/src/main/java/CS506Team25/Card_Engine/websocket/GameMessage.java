@@ -51,10 +51,13 @@ public class GameMessage extends LobbyMessage{
     public int cardsInDeck;
     public ArrayList<Card> currentTrick;
     public String trump;
-    public ArrayList<String> options;
+    public String[] options;
     public String message;
-    public String most_recent_move;
+    public String moveMade;
+    public String phase;
+    public Player[] winners;
 
+    public GameMessage(){}
 
     public GameMessage(Game game){
         this.status = Status.Game.name();
@@ -65,16 +68,21 @@ public class GameMessage extends LobbyMessage{
             this.currentTrick = game.currentTrick;
         if (game.trump != null)
             this.trump = game.trump.name();
-        if (game.message_to_output != null)
-            this.message = game.message_to_output.toString();
+        if (game.messageToOutput != null)
+            this.message = game.messageToOutput.toString();
         this.cardsInDeck = game.getCardsInDeck();
-        this.options = new ArrayList<>(game.options);
+        this.options = game.optionsForPlayer.clone();
+        this.moveMade = game.mostRecentMove;
+        this.phase = game.currentPhase.name();
         deepCopyPlayers(game);
     }
 
-    public GameMessage(Game game, String move){
-        this(game);
-        this.most_recent_move = move;
+    public GameMessage getFinishedGameMessage(Game game){
+        this.status = Status.Ended.name();
+        this.id = game.gameID;
+        this.winners = game.winningPlayers;
+        this.players = game.players;
+        return this;
     }
 
     private void deepCopyPlayers(Game game){
@@ -84,6 +92,7 @@ public class GameMessage extends LobbyMessage{
             Player curPlayer = game_players[i];
             this.players[i] = new Player(curPlayer.playerID, curPlayer.username);
             this.players[i].cardsInHand = curPlayer.hand.size();
+            this.players[i].score = game.scores[i%2];
         }
         if (game.currentPlayer != null)
             currentPlayer = new Player(game.currentPlayer.playerID, game.currentPlayer.username);

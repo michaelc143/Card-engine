@@ -10,7 +10,8 @@ import java.util.*;
  *              "username": String "<username_1>",
  *              "readyToStart": Boolean <ready_to_start_1>,
  *              "cardsInHand": Integer <cards_in_hand_1>,
- *              "hand": null
+ *              "hand": null,
+ *              "score" Integer <players_current_score>
  *          }
  */
 public class Player {
@@ -22,6 +23,8 @@ public class Player {
     public boolean readyToStart = false;
     // Number of cards in hand
     public int cardsInHand;
+    // The player's current score
+    public int score;
     /**
      * Cards in player's hand, has the following format
      * [

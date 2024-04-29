@@ -3,7 +3,9 @@ package CS506Team25.Card_Engine.websocket;
 import CS506Team25.Card_Engine.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -21,6 +24,8 @@ import java.util.Map;
 @Controller
 public class GameWebsocketController {
 
+    @Autowired
+    private SimpMessagingTemplate template;
     private static final Logger logger = LoggerFactory.getLogger(GameWebsocketController.class);
 
     /**
@@ -38,7 +43,7 @@ public class GameWebsocketController {
         if (lobby != null){
             return new LobbyMessage(lobby);
         } else if (game != null){
-            updateLobbyToGameInDB(gameID);
+            handleStartOfGame(gameID);
             return new GameMessage(game);
         }
         return null;
@@ -60,7 +65,7 @@ public class GameWebsocketController {
             return new LobbyMessage(lobby);
         }
         else if (result == 1){
-            updateLobbyToGameInDB(gameID);
+            handleStartOfGame(gameID);
             return new GameMessage(GameManager.getGame(lobby.gameID));
         }
         return null;
@@ -97,70 +102,86 @@ public class GameWebsocketController {
         if (game == null){
             return null;
         }
-
+        // Make the players move, if the move wasn't able to made return null
         if (!game.makeMove(move, userID)){
             return null;
         }
-        // Wait until the game is waiting for input to send out a message
+
+        // Let the game know it can resume now that it has input
         game.isWaitingForInput = false;
-        while (!game.isWaitingForInput){
-            Thread.onSpinWait();
+
+        // Wait until the game is waiting for input to send out a message
+        waitUntilGameWantsInput(game);
+
+        // If there's a winner then send a finished game state
+        if (game.winningPlayers != null){
+            updateGameToFinishedInDB(gameID);
+            return new GameMessage().getFinishedGameMessage(game);
         }
-        GameMessage output = new GameMessage(game, move);
-        return output;
+
+        // Handle the case where the next turn is a bots turn
+        if (game.botIsPlaying){
+            BotMoveHandler botMoves = new BotMoveHandler(this, game);
+            new Thread(botMoves).start();
+        }
+
+        return new GameMessage(game);
     }
 
     /**
      * Endpoint that privately sends a player their hand
      * @param gameID ID of current lobby
      * @param userID ID of player that is requesting hand
-     * @return A JSON representing the players cards in hand, see {@link Player#hand} for format
+     * @return A JSON representing the players cards in hand, see {@link Player#hand} for format, coupled with a boolean value which is true if the card is currently playable
      * else return null if game or player in game couldn't be found
      */
     @MessageMapping("/games/euchre/{gameID}/{userID}/request-hand")
     @SendToUser("/queue/{gameID}/hand")
-    public ArrayList<Card> getHand(@DestinationVariable int gameID, @DestinationVariable int userID) {
+    public LinkedHashMap<Card, Boolean> getHand(@DestinationVariable int gameID, @DestinationVariable int userID) {
         Game game = GameManager.getGame(gameID);
+        LinkedHashMap<Card, Boolean> hand = new LinkedHashMap<>();
+        ArrayList<Card> cardsInHand = new ArrayList<>();
         if (game == null){
             return null;
         }
 
-        Player[] players = game.players;
-
-        for (Player player:
-             players) {
-            if (player.playerID == userID) {
-                return player.hand;
-            }
+        // Find the player associated with the userID
+        for (Player player : game.players){
+            if (player.playerID == userID)
+                cardsInHand = player.hand;
         }
-        return null;
+
+        // If player couldn't be found or there's no cards in hand return null
+        if (cardsInHand.isEmpty())
+            return null;
+
+        if (game.trump != null) {
+            ArrayList<Card> validCards = game.getValidCards(cardsInHand);
+            for (Card card : cardsInHand) {
+                hand.put(card, validCards.contains(card));
+            }
+        } else {
+            cardsInHand.forEach(card -> hand.put(card, false));
+        }
+        return hand;
     }
 
     /**
-     * Endpoint that privately sends a player their hand
-     * @param gameID ID of current lobby
-     * @param userID ID of player that is requesting hand
-     * @return A JSON of the cards in players hand that they can play, see {@link Player#hand} for format
-     * Otherwise, return null if game or player in game couldn't be found
+     * Internal message to handle when a bot is making a move
+     * @param game The game the bot is in.
      */
-    @MessageMapping("/games/euchre/{gameID}/{userID}/request-playable-cards")
-    @SendToUser("/queue/{gameID}/hand")
-    public ArrayList<Card> getPlayableCards(@DestinationVariable int gameID, @DestinationVariable int userID) {
-        Game game = GameManager.getGame(gameID);
-        if (game == null){
-            return null;
+    public void sendBotMove(Game game){
+        game.isWaitingForInput = false;
+        game.botIsPlaying = false;
+        waitUntilGameWantsInput(game);
+        if (game.winningPlayers != null) {
+            updateGameToFinishedInDB(game.gameID);
+            this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage().getFinishedGameMessage(game));
+        } else {
+            this.template.convertAndSend("/topic/games/euchre/" + game.gameID, new GameMessage(game));
         }
-
-        Player[] players = game.players;
-
-        for (Player player:
-                players) {
-            if (player.playerID == userID) {
-                return game.getValidCards(player.hand);
-            }
-        }
-        return null;
     }
+
 
     /**
      * Handles any exceptions occurring here; sends the error message to the originating client
@@ -178,7 +199,7 @@ public class GameWebsocketController {
      * Helper method to deal with the transition form lobby to game
      * @param gameID ID of the game to be updated in the DB
      */
-    private void updateLobbyToGameInDB(int gameID){
+    private void handleStartOfGame(int gameID){
         try (Connection connection = ConnectToDataBase.connect();
              PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ? WHERE game_id = ?")) {
             insertStatement.setString(1, "in_progress");
@@ -186,6 +207,40 @@ public class GameWebsocketController {
             insertStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        Game game = GameManager.getGame(gameID);
+        waitUntilGameWantsInput(game);
+        if (game.botIsPlaying){
+            BotMoveHandler botMoves = new BotMoveHandler(this, game);
+            new Thread(botMoves).start();
+        }
+    }
+
+    /**
+     * Helper method to deal with the transition to a finished game
+     * @param gameID ID of the game to be updated in the DB
+     */
+    private void updateGameToFinishedInDB(int gameID){
+        try (Connection connection = ConnectToDataBase.connect();
+             PreparedStatement insertStatement = connection.prepareStatement("UPDATE euchre_game SET game_status = ?, winner_1 = ?, winner_2 = ? WHERE game_id = ?")) {
+            insertStatement.setString(1, "done");
+            insertStatement.setInt(2, GameManager.getGame(gameID).winningPlayers[0].playerID);
+            insertStatement.setInt(3, GameManager.getGame(gameID).winningPlayers[1].playerID);
+            insertStatement.setInt(4, gameID);
+            insertStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Helper method to make sure there isn't de-sync between a changing game and a sent out message
+     * @param game the game that is to be waited on
+     */
+    public void waitUntilGameWantsInput(Game game){
+        while (!game.isWaitingForInput){
+            Thread.onSpinWait();
         }
     }
 
