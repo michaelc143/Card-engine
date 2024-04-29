@@ -4,7 +4,7 @@
 
 ### Project Abstract
 
-The card game engine is a piece of software designed to cater to the players, offering a wide variety of card games. Players are welcomed into a dynamic virtual arena where they can engage in thrilling matches against friends or challengers from around the globe. The users will interact with a React frontend that communicates with our java backend card engine. The engine will connect to a MySQL database pod to store user logins as well as user scores and leaderboards.
+The card game engine is a piece of software designed to cater to the players, offering a wide variety of card games. Players are welcomed into a dynamic virtual arena where they can engage in thrilling matches against friends or challengers from around the globe. The users will interact with a React frontend that communicates with our java backend card engine. The engine will connect to a MySQL database pod to store user logins as well as user scores and leaderboards and uses websockets on the backend to manage games.
 
 ### Customer
 
@@ -337,15 +337,24 @@ erDiagram
     User ||--o{ EuchreStats : "created by"
 
     User {
-        uuid user_id PK
+        int user_id PK
         string user_name
         string email
     }
 
     EuchreStats {
-        uuid user_id PK, FK
-        int high_score
-        date date_of_high_score
+        int game_id
+        game_name string
+        private boolean
+        password string
+        player1_id int
+        player2_id int
+        player3_id int
+        player4_id int
+        game_status enum ['waiting_for_players','in_progress','done']
+        winner_1 int
+        winner_2 int
+        creation_date date
     }
 ```
 
