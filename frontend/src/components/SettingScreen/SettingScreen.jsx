@@ -11,7 +11,7 @@ function SettingScreen({ closeModal, userid, username, showToast }) {
 
     const deleteAccount = () => {
             fetch(`http://localhost:8080/player/${userid}`, {method: 'DELETE',})
-                .then(response => response.json())
+                .then(response => response.text())
                     .then(data => {
                         console.log(data); // Used in development to debug
                         if (data > -1) {
@@ -20,21 +20,32 @@ function SettingScreen({ closeModal, userid, username, showToast }) {
                             closeModal('*Cleared*');
                         } 
                         else {
-                            showToast('Delete Account is failed.', 'error');
+                            alert('Delete Account is failed');
                         }
                     })
                 .catch(error => {
                     console.error('Error:', error);
-            });
-            /* alert("Account has been deleted. This will return to Login screen.");
-            setPresentUsername('*Cleared*');
-            closeModal('*Cleared*');   */         
+            });    
             
         }
     const resetStats = () => {
             //console.log("Reset Stats is called")
-            alert("Reset Stats is sent to backend. Stats have been reset. Game stats should be cleared in History screen")
-        }
+            fetch(`http://localhost:8080/player/${userid}/stats`, {method: 'DELETE',})
+            .then(response => response.text())
+                .then(data => {
+                    console.log(data); // Used in development to debug
+                    if (data == "true") {
+                        alert("Stats have been reset");
+                       
+                    } 
+                    else {
+                        alert('Stats reset failed');
+                    }
+                })
+            .catch(error => {
+                console.error('Error:', error);
+        });
+    }
     
     const changeUser = () => {
             setChangeNameScreenModalIsOpen(true);
@@ -87,7 +98,7 @@ function SettingScreen({ closeModal, userid, username, showToast }) {
                         }}
                     shouldCloseOnOverlayClick={false}
                     >
-                    <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} />
+                    <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} userID={userid} />
                 </Modal>
             </div>            
         </>
