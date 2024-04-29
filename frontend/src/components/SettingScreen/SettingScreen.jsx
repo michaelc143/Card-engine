@@ -99,7 +99,6 @@ function SettingScreen({ closeModal, userid, username }) {
                     shouldCloseOnOverlayClick={false}
                     >
                     <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} userID={userid} />
-                    <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} userID={userid} />
                 </Modal>
             </div>            
         </>
