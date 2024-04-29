@@ -327,6 +327,11 @@ deactivate JavaBackend
 
 [External Link to architecture diagram](https://drive.google.com/file/d/1oqKS26a37G5v7DhYKaEtYxw-6xVGIYjf/view?usp=sharing)
 
+### API
+#### RESTFUL
+[documentation](./Java Docs/CS506Team25/Card_Engine/CardEngineController.html)
+#### WebSocket
+[documentation](./Java Docs/CS506Team25/Card_Engine/websocket/GameWebsocketController.html)
 ### Database
 
 ```mermaid
