@@ -13,6 +13,8 @@ cd ./frontend
 npm test
 ```
 
+To run the unit tests with coverage enabled, edit the test command to: "vitest --run --coverage.enabled"
+
 Note: Unit test files should be placed in the same folder as the component JSX and CSS files.
 
 ## Project Structure
