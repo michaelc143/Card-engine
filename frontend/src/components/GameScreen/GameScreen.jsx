@@ -81,7 +81,7 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,playi
             setBiddingScreenModalIsOpen(true);
         }
 
-    }, []);
+    }, [firstBidding]);
 
     useEffect(() => {
         if(secondBidding == "Second Bidding")

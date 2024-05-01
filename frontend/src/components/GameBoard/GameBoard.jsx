@@ -71,7 +71,7 @@ const GameBoard = ({ selectedGameID }) => {
 				setCurrentTricks(currentTricks);
 			}
 		}
-	},[gameData]);
+	},[gameData, selectedGameID, user.user_id]);
 
 	// Loading screen for while game data is being grabbed originally
 	if(!gameData) {
