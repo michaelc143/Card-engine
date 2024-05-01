@@ -1,44 +1,43 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import LobbyScreen from './LobbyScreen';
+import { describe, it, expect } from 'vitest';
+import LobbyScreen from './LobbyScreen'; // Import the component
+import { UserContext } from '../../contexts/UserContext';
 
-// Mock the WebSocket connection
-vi.mock('@stomp/stompjs', () => ({
-	Client: vi.fn().mockImplementation(() => ({
-		activate: vi.fn(),
-		subscribe: vi.fn((topic, callback) => {
-		// Simulate the WebSocket message
-		const mockMessage = {
-			body: JSON.stringify({
-			status: 'LOBBY',
-			players: [
-				{ playerID: 1, username: 'Player 1', readyToStart: true, score: 0, hand: [] },
-				{ playerID: 2, username: 'Player 2', readyToStart: false, score: 0, hand: [] },
-				null,
-				{ playerID: 4, username: 'Player 4', readyToStart: true, score: 0, hand: [] },
-			],
-			}),
-		};
-		callback(mockMessage);
-	}),
-	publish: vi.fn(),
-  })),
-}));
+// Mock context value
+const mockContextValue = {
+    username: 'Player 1',
+    user_id: 1
+};
+
+// Define a custom context provider for testing
+const MockContextProvider = ({ children }) => {
+    return (
+        <UserContext.Provider value={mockContextValue}>
+            {children}
+        </UserContext.Provider>
+    );
+};
 
 describe('LobbyScreen', () => {
-	it('should render Lobby title, player names, and static text correctly', async () => {
-		render(<LobbyScreen selectedGameId="123" username="Player 1" userID={1} />);
+    it('should render Lobby title, player names, and static text correctly', async () => {
+        // Render LobbyScreen component within MockContextProvider
+        render(
+            <MockContextProvider>
+                <LobbyScreen />
+            </MockContextProvider>
+        );
 
-		// Wait for the WebSocket message to be processed
-		await waitFor(() => expect(screen.getByText('Lobby.')).toBeInTheDocument());
+        // Wait for the WebSocket message (if applicable)
+        await waitFor(() => expect(screen.getByText('Lobby.')).toBeInTheDocument());
 
-		const playersText = screen.getByText('Players:');
-		expect(playersText).toBeInTheDocument();
+        // Assert that Lobby title, player names, and static text are rendered correctly
+        const playersText = screen.getByText('Players:');
+        expect(playersText).toBeInTheDocument();
 
-		const readyText = screen.getByText('Ready:');
-		expect(readyText).toBeInTheDocument();
+        const readyText = screen.getByText('Ready:');
+        expect(readyText).toBeInTheDocument();
 
-		const startWithBotsText = screen.getByText('Your game will start filled with bots.');
-		expect(startWithBotsText).toBeInTheDocument();
-	});
+        const startWithBotsText = screen.getByText('Your game will start filled with bots.');
+        expect(startWithBotsText).toBeInTheDocument();
+    });
 });

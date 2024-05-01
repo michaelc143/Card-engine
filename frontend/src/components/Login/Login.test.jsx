@@ -51,4 +51,14 @@ describe('Login', () => {
 
 		expect(onLoginMock).toHaveBeenCalledWith('testuser');
 	});
+
+	it('displays an error toast if username is not specified for login', () => {
+		const showToastMock = vi.fn();
+		render(<Login onLogin={() => {}} showToast={showToastMock} />);
+		const loginButton = screen.getByRole('button', { name: />/i });
+
+		fireEvent.click(loginButton);
+
+		expect(showToastMock).toHaveBeenCalledWith('Username not specified for login', 'error');
+	});
 });

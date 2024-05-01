@@ -1,14 +1,40 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, vi, expect, beforeEach } from 'vitest';
 import CreateGame from './CreateGame';
+import { UserContext } from '../../contexts/UserContext';
 
-describe('CreateGame', () => { 
+// Mock the context used in CreateGame
+const mockContextValue = {
+	user: {
+		user_id: 'user123',
+		username: 'Test User'
+	}
+};
+
+// Define a custom context provider for testing
+const MockContextProvider = ({ children }) => {
+	return (
+		<UserContext.Provider value={mockContextValue}>
+			{children}
+		</UserContext.Provider>
+	);
+};
+
+// Define tests
+describe('CreateGame', () => {
 	const closeModalMock = vi.fn();
+	const showToastMock = vi.fn();
 
 	beforeEach(() => {
-		render(<CreateGame closeModal={closeModalMock} />);
+		// Render CreateGame within the MockContextProvider
+		render(
+		<MockContextProvider>
+			<CreateGame closeModal={closeModalMock} showToast={showToastMock}/>
+		</MockContextProvider>
+		);
 	});
 
+	// Your test cases go here
 	it('should render the component with the correct title', () => {
 		const titleElement = screen.getByText(/Create Game./i);
 		expect(titleElement).toBeInTheDocument();
@@ -60,5 +86,27 @@ describe('CreateGame', () => {
 		const passwordInput = screen.getByPlaceholderText('Password');
 		fireEvent.change(passwordInput, { target: { value: 'testpassword' } });
 		expect(passwordInput).toHaveValue('testpassword');
+	});
+
+	it('should render the max players dropdown', () => {
+		const dropdown = screen.getByLabelText('Max human players:');
+		expect(dropdown).toBeInTheDocument();
+	});
+	
+	it('should update the max players state when selecting a different value from the dropdown', () => {
+		const dropdown = screen.getByLabelText('Max human players:');
+		fireEvent.change(dropdown, { target: { value: '2' } });
+		expect(dropdown).toHaveValue('2');
+	});
+
+	it('should render the "Create new game" button', () => {
+		const createGameButton = screen.getByRole('button', { name: 'Create new game >' });
+		expect(createGameButton).toBeInTheDocument();
+	});
+
+	it('should show an error toast when game name is empty', () => {
+		const createGameButton = screen.getByRole('button', { name: 'Create new game >' });
+		fireEvent.click(createGameButton);
+		expect(showToastMock).toHaveBeenCalledWith('Game name is required', 'error');
 	});
 });

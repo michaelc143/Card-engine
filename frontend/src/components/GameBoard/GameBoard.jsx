@@ -1,9 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { Client } from '@stomp/stompjs';
 import './GameBoard.css';
+import { UserContext } from '../../contexts/UserContext';
 
-const GameBoard = ({ userID, selectedGameID }) => {
+const GameBoard = ({ selectedGameID }) => {
 
+	const { user } = useContext(UserContext);
 	const [cards, setCards] = useState([]); // cards
 	const [gameData, setGameData] = useState(null); // game data received from websocket
 	const [score, setScore] = useState(0);
@@ -41,25 +43,25 @@ const GameBoard = ({ userID, selectedGameID }) => {
 				});
 				// grab hand on initial component load
 				stompClient.publish({
-					destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
-					body: userID,
+					destination: `/app/games/euchre/${selectedGameID}/${user.user_id}/request-hand`,
+					body: user.user_id,
 				});
 			}
 		});
 		stompClient.activate();
-	}, [selectedGameID, userID]);
+	}, [selectedGameID, user.user_id]);
 
 	// Request hand and update score when gameData is updated
 	useEffect(() => {
 		const stompClient = stompRef.current;
 		if (stompClient && gameData) {
 			stompClient.publish({
-				destination: `/app/games/euchre/${selectedGameID}/${userID}/request-hand`,
-				body: userID,
+				destination: `/app/games/euchre/${selectedGameID}/${user.user_id}/request-hand`,
+				body: user.user_id,
 			});
 		
 			if (gameData.players && Array.isArray(gameData.players)) { // Check if players array exists and is an array
-				const player = gameData.players.find(player => player.playerID === userID);
+				const player = gameData.players.find(player => player.playerID === user.user_id);
 				if (player !== undefined) {
 					setScore(player.score);
 				}
@@ -69,7 +71,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
 				setCurrentTricks(currentTricks);
 			}
 		}
-	},[gameData]);
+	},[gameData, selectedGameID, user.user_id]);
 
 	// Loading screen for while game data is being grabbed originally
 	if(!gameData) {
@@ -81,7 +83,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
 		const stompClient = stompRef.current;
 		if (stompClient) {
 			stompClient.publish({
-				destination: `/app/games/euchre/${selectedGameID}/${userID}/make-move`,
+				destination: `/app/games/euchre/${selectedGameID}/${user.user_id}/make-move`,
 				body: move,
 			});
 		}
@@ -89,7 +91,6 @@ const GameBoard = ({ userID, selectedGameID }) => {
 
 	/**
 	 * Renders a game board component.
-	 * @param {string} userID - The user ID of the player.
 	 * @param {Array} cards - An array of cards to be displayed.
 	 * @param {boolean} isCurrentPlayer - Indicates if the current player is the user.
 	 * @param {Object} gameData - Data related to the game.
@@ -142,7 +143,7 @@ const GameBoard = ({ userID, selectedGameID }) => {
 				</div>
 				<div className="options-container">
 					{
-						gameData.currentPlayer.playerID === userID &&
+						gameData.currentPlayer.playerID === user.user_id &&
 						<>
 							{gameData.options.map((option, index) => (
 								<button onClick={() => makeMoveYesNo(option)} key={index}>{option}</button>

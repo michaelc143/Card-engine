@@ -45,4 +45,14 @@ describe('Registration', () => {
 
 		expect(onRegisterMock).toHaveBeenCalledWith('testuser');
 	});
+
+	it('displays an error toast if username is not specified for registration', () => {
+		const showToastMock = vi.fn();
+		render(<Registration onRegister={() => {}} showToast={showToastMock} />);
+		const registerButton = screen.getByRole('button', { name: />/i });
+
+		fireEvent.click(registerButton);
+
+		expect(showToastMock).toHaveBeenCalledWith('Username not specified for registration', 'error');
+	});
 });

@@ -1,13 +1,12 @@
-import React, { useState,useEffect } from 'react';
+import { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import './GameScreen.css';
 import sprite from '../../assets/sprite.svg'
 import closeModalBtn from '../../assets/close.svg';
 import BiddingScreen from '../BiddingScreen/BiddingScreen';
 
-
 //Mockup for Game screen main layout to check bidding rounds works 
-function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameCards,playingCards}) {
+function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,playingCards}) {
     
     const [currentCards, setCurrentCards] = useState(playingCards);
     //const [cardsuits, setCardsuits] = useState(gameCards);
@@ -68,8 +67,8 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
 
     //Loads the cards to the screen to be shown
     const loadPlayingCards =  currentCards.map((playcard) =>
-            <div>
-                <svg key={playcard} id={playcard} width='144' height='200' onClick={(event) => handleCardClick(event.currentTarget.attributes[0].nodeValue)}>
+            <div key={playcard}>
+                <svg id={playcard} width='144' height='200' onClick={(event) => handleCardClick(event.currentTarget.attributes[0].nodeValue)}>
                     <use href={`${sprite}#${playcard}`}/>
                 </svg>
             </div>        
@@ -82,7 +81,7 @@ function GameScreen({ closeGameScreen,player02,player03,player04,gamephase,gameC
             setBiddingScreenModalIsOpen(true);
         }
 
-    }, []);
+    }, [firstBidding]);
 
     useEffect(() => {
         if(secondBidding == "Second Bidding")

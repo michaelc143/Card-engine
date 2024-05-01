@@ -1,11 +1,13 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import closeModalBtn from '../../assets/close.svg';
 import notifSVG from '../../assets/notif-icon.svg';
 import { Client } from '@stomp/stompjs';
 import './LobbyScreen.css';
+import { UserContext } from '../../contexts/UserContext';
 
-function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentlyPlaying }) {
+function LobbyScreen({ closeModal, selectedGameId, setCurrentlyPlaying }) {
 
+	const { user } = useContext(UserContext);
 	const [gameStatus, setGameStatus] = useState(''); //will need to use this to know when game starts, will be GAME value when game is playing
 	const [players, setPlayers] = useState([]);
 	const stompClientRef = useRef(null);
@@ -52,12 +54,12 @@ function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentl
 			if (checked) {
 				stompClient.publish({
 					destination: `/app/games/euchre/${selectedGameId}/vote-start`,
-					body: userID,
+					body: user.user_id,
 				});
 			} else {
 				stompClient.publish({
 					destination: `/app/games/euchre/${selectedGameId}/vote-not-to-start`,
-					body: userID,
+					body: user.user_id,
 				});
 			}
 		}
@@ -80,7 +82,7 @@ function LobbyScreen({ closeModal, selectedGameId, username, userID, setCurrentl
 				{playerNames.map((name, index) => (
 					<div key={name} style={{ marginLeft: '1rem' }}>
 						<span style={{ width: '45%', display: 'inline-block', fontSize: '32px', marginBottom: '1rem' }}>{name}</span>
-						{name === username ? (
+						{name === user.user_name ? (
 							<input
 								style={{ width: '45%', display: 'inline-block' }}
 								type="checkbox"

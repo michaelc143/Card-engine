@@ -5,7 +5,12 @@ import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
 import GameMenu from './components/GameMenu/GameMenu';
 import {ToastContainer, toast} from 'react-toastify';
+import { UserContext } from './contexts/UserContext';
 import Modal from 'react-modal';
+import AceDiamonds from './assets/cards/ace_diamonds.svg';
+import AceClubs from './assets/cards/ace_clubs.svg';
+import AceSpades from './assets/cards/ace_spades.svg';
+import AceHearts from './assets/cards/ace_hearts.svg';
 Modal.setAppElement('#root');
 
 function App() {
@@ -162,56 +167,72 @@ function App() {
 			loggedIn 
 			?
 			
-			( // Once we have components for the game/lobby, they go in this area
-				<GameMenu
-					openfindGameModal={openfindGameModal}
-					closefindGameModal={closefindGameModal}
-					findGameModalIsOpen={findGameModalIsOpen}
-					openCreateGameModal={openCreateGameModal}
-					closeCreateGameModal={closeCreateGameModal}
-					createGameModalIsOpen={createGameModalIsOpen}
-					showToast={showToast}
-					userID={user.user_id}
-					username={user.user_name}
-					reloadLogin={backToLogin}
-				/>
+			(
+				<>
+					<UserContext.Provider value={{ user, setUser}}>
+						<GameMenu
+							openfindGameModal={openfindGameModal}
+							closefindGameModal={closefindGameModal}
+							findGameModalIsOpen={findGameModalIsOpen}
+							openCreateGameModal={openCreateGameModal}
+							closeCreateGameModal={closeCreateGameModal}
+							createGameModalIsOpen={createGameModalIsOpen}
+							showToast={showToast}
+							reloadLogin={backToLogin}
+						/>
+					</UserContext.Provider>
+				</>
 			) 
 			: 
 			( //User not logged in yet, prompt with login and option to register
-			<>
-				<h1>Eucre</h1>
-				<Login
-					onLogin={handleLogin}
-					openModal={openRegModal}
-					showToast={showToast}
-				/>
-				<Modal
-					isOpen={regModalIsOpen}
-					onRequestClose={closeRegModal}
-					contentLabel="Registration Modal"
-					style={{
-						overlay: {
-							backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-						},
-						content: {
-							width: '800px',
-							height: '350px',
-							margin: 'auto', // Center the modal vertically and horizontally
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center', // Center the content horizontally
-							justifyContent: 'center', // Center the content vertically
-							borderRadius: '10px', // Add this line to round the edges
-						},
-					}}
-				>
-					<Registration
-						onRegister={handleRegister}
+			<div className='login-screen-with-cards' style={{display: 'flex', justifyContent: 'space-evenly'}}>
+				<div className='cards' style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+					<img src={AceDiamonds} alt='Ace of Diamonds'/>
+					<img src={AceClubs} alt='Ace of Clubs'/>
+					<img src={AceSpades} alt='Ace of Spades'/>
+					<img src={AceHearts} alt='Ace of Hearts'/>
+				</div>
+				<div style={{display: 'flex', flexDirection: 'column'}}>
+					<h1>Eucre</h1>
+					<Login
+						onLogin={handleLogin}
+						openModal={openRegModal}
 						showToast={showToast}
-						closeModal={closeRegModal}
 					/>
-				</Modal>
-			</>
+					<Modal
+						isOpen={regModalIsOpen}
+						onRequestClose={closeRegModal}
+						contentLabel="Registration Modal"
+						style={{
+							overlay: {
+								backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+							},
+							content: {
+								width: '800px',
+								height: '350px',
+								margin: 'auto', // Center the modal vertically and horizontally
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center', // Center the content horizontally
+								justifyContent: 'center', // Center the content vertically
+								borderRadius: '10px', // Add this line to round the edges
+							},
+						}}
+					>
+						<Registration
+							onRegister={handleRegister}
+							showToast={showToast}
+							closeModal={closeRegModal}
+						/>
+					</Modal>
+				</div>
+				<div className='cards' style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+					<img src={AceHearts} alt='Ace of Hearts'/>
+					<img src={AceSpades} alt='Ace of Spades'/>
+					<img src={AceClubs} alt='Ace of Clubs'/>
+					<img src={AceDiamonds} alt='Ace of Diamonds'/>
+				</div>
+			</div>
 			)
 		}
 		</>
