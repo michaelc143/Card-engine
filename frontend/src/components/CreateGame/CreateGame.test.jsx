@@ -1,14 +1,39 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, vi, expect, beforeEach } from 'vitest';
 import CreateGame from './CreateGame';
+import { UserContext } from '../../contexts/UserContext';
 
-describe('CreateGame', () => { 
+// Mock the context used in CreateGame
+const mockContextValue = {
+	user: {
+		user_id: 'user123',
+		username: 'Test User'
+	}
+};
+
+// Define a custom context provider for testing
+const MockContextProvider = ({ children }) => {
+	return (
+		<UserContext.Provider value={mockContextValue}>
+			{children}
+		</UserContext.Provider>
+	);
+};
+
+// Define tests
+describe('CreateGame', () => {
 	const closeModalMock = vi.fn();
 
 	beforeEach(() => {
-		render(<CreateGame closeModal={closeModalMock} />);
+		// Render CreateGame within the MockContextProvider
+		render(
+		<MockContextProvider>
+			<CreateGame closeModal={closeModalMock} />
+		</MockContextProvider>
+		);
 	});
 
+	// Your test cases go here
 	it('should render the component with the correct title', () => {
 		const titleElement = screen.getByText(/Create Game./i);
 		expect(titleElement).toBeInTheDocument();
