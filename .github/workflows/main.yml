@@ -45,6 +45,9 @@ jobs:
         with:
           name: backend
           path: backend/build/libs/*.jar
+    services:
+        docker:
+            image: openjdk:18-jdk-alpine
 
   build-docker-images:
     runs-on: ubuntu-latest
