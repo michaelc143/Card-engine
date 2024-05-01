@@ -23,12 +23,13 @@ const MockContextProvider = ({ children }) => {
 // Define tests
 describe('CreateGame', () => {
 	const closeModalMock = vi.fn();
+	const showToastMock = vi.fn();
 
 	beforeEach(() => {
 		// Render CreateGame within the MockContextProvider
 		render(
 		<MockContextProvider>
-			<CreateGame closeModal={closeModalMock} />
+			<CreateGame closeModal={closeModalMock} showToast={showToastMock}/>
 		</MockContextProvider>
 		);
 	});
@@ -85,5 +86,27 @@ describe('CreateGame', () => {
 		const passwordInput = screen.getByPlaceholderText('Password');
 		fireEvent.change(passwordInput, { target: { value: 'testpassword' } });
 		expect(passwordInput).toHaveValue('testpassword');
+	});
+
+	it('should render the max players dropdown', () => {
+		const dropdown = screen.getByLabelText('Max human players:');
+		expect(dropdown).toBeInTheDocument();
+	});
+	
+	it('should update the max players state when selecting a different value from the dropdown', () => {
+		const dropdown = screen.getByLabelText('Max human players:');
+		fireEvent.change(dropdown, { target: { value: '2' } });
+		expect(dropdown).toHaveValue('2');
+	});
+
+	it('should render the "Create new game" button', () => {
+		const createGameButton = screen.getByRole('button', { name: 'Create new game >' });
+		expect(createGameButton).toBeInTheDocument();
+	});
+
+	it('should show an error toast when game name is empty', () => {
+		const createGameButton = screen.getByRole('button', { name: 'Create new game >' });
+		fireEvent.click(createGameButton);
+		expect(showToastMock).toHaveBeenCalledWith('Game name is required', 'error');
 	});
 });
