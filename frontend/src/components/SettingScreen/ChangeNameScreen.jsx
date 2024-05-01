@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Modal from 'react-modal';
 import closeModalBtn from '../../assets/close.svg';
 import GameScreen from '../GameScreen/GameScreen';
 import {ToastContainer, toast} from 'react-toastify';
+import { UserContext } from '../../contexts/UserContext';
 
-function ChangeNameScreen({closeModal, userID, currentUsername}){
+function ChangeNameScreen({closeModal, currentUsername}){
+
+    const { user } = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [displayName, setDisplayName] = useState(currentUsername);
     
@@ -20,7 +23,7 @@ function ChangeNameScreen({closeModal, userID, currentUsername}){
             alert("new username cannot be blank or empty!");
         }
         else{
-            fetch(`http://localhost:8080/player/${userID}?newUserName=${username}`, {method: 'PUT'})
+            fetch(`http://localhost:8080/player/${user.user_id}?newUserName=${username}`, {method: 'PUT'})
             .then(response => response.text())
                 .then(data => {
                     if (data == 'successful') {

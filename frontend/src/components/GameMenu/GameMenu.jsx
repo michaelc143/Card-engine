@@ -8,15 +8,17 @@ import LobbyScreen from '../LobbyScreen/LobbyScreen';
 import SelectSeat from '../SelectSeat/SelectSeat';
 import SettingScreen from '../SettingScreen/SettingScreen';
 import GameBoard from '../GameBoard/GameBoard';
+import { UserContext } from '../../contexts/UserContext';
 
-function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, userID,username, reloadLogin} ) {
+function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, openCreateGameModal, closeCreateGameModal, createGameModalIsOpen, showToast, reloadLogin} ) {
 
+	const { user } = useContext(UserContext);
 	const [lobbyScreenModalIsOpen, setLobbyScreenModalIsOpen] = useState(false);
 	const [showSelectSeatModal, setShowSelectSeatModal] = useState(false);
 	const [selectedGameId, setSelectedGameId] = useState(null);
 	const [currentlyPlaying, setCurrentlyPlaying] = useState(false); // used to decide whether to show normal game menu or the game board
 
-	const [presentUsername, setPresentUsername] = useState(username)
+	const [presentUsername, setPresentUsername] = useState(user.user_name)
 	const [settingScreenModalIsOpen, setSettingScreenModalIsOpen] = useState(false);
 
 	// opens the select seat modal
@@ -62,7 +64,6 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 	/**
 	 * Renders either the game board or the main menu based on the `currentlyPlaying` flag.
 	 * @param {boolean} currentlyPlaying - Indicates whether the player is currently in a game.
-	 * @param {string} userID - The user ID of the player.
 	 * @param {string} selectedGameID - The ID of the selected game.
 	 * @param {string} username - The username of the player.
 	 * @param {Function} openSettingScreenModal - Function to open the settings screen modal.
@@ -82,7 +83,6 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 			currentlyPlaying ? 
 				<>
 				<GameBoard 
-					userID={userID}
 					selectedGameID={selectedGameId}/>
 				</> 
 				: 
@@ -144,7 +144,6 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 								showToast={showToast}
 								closeModal={closeCreateGameModal}
 								openLobbyScreenModal={openLobbyScreenModal}
-								userID={userID}
 								setSelectedGameId={setSelectedGameId}
 							/>
 						</Modal>
@@ -165,7 +164,12 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							}}
 						>
 							{selectedGameId !== null &&
-								<LobbyScreen closeModal={closeLobbyScreenModal} selectedGameId={selectedGameId} username={presentUsername} userID={userID} setCurrentlyPlaying={setCurrentlyPlaying}/>}
+								<LobbyScreen 
+									closeModal={closeLobbyScreenModal}
+									selectedGameId={selectedGameId}
+									username={presentUsername}
+									setCurrentlyPlaying={setCurrentlyPlaying}
+								/>}
 						</Modal>
 						<Modal
 							isOpen={showSelectSeatModal}
@@ -181,7 +185,6 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 								selectedGameId={selectedGameId}
 								closeModal={closeSelectSeatModal}
 								openLobbyScreenModal={openLobbyScreenModal}
-								userID={userID}
 							/>
 						</Modal>
 						<Modal
@@ -202,7 +205,7 @@ function GameMenu( {openfindGameModal, closefindGameModal, findGameModalIsOpen, 
 							shouldCloseOnOverlayClick={false}
 						>
 							{/*Modal is consistent for username to be tracked to be the present one */}
-							<SettingScreen closeModal={closeSettingScreenModal} userid={userID} username={presentUsername} />
+							<SettingScreen closeModal={closeSettingScreenModal} userid={user.user_id} username={presentUsername} />
 						</Modal>
 					</div>
 				</>

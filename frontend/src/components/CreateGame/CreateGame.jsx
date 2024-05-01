@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import './CreateGame.css';
 import closeModalBtn from '../../assets/close.svg';
 import arrowSVG from '../../assets/return-arrow.svg';
 import notifSVG from '../../assets/notif-icon.svg';
+import { UserContext } from '../../contexts/UserContext';
 
-function CreateGame({ closeModal, openLobbyScreenModal, showToast, userID, setSelectedGameId }) {
+function CreateGame({ closeModal, openLobbyScreenModal, showToast, setSelectedGameId }) {
 
+	const { user } = useContext(UserContext);
 	const [gameName, setGameName] = useState('');
 	const [isPrivate, setIsPrivate] = useState(false);
 	const [password, setPassword] = useState('');
@@ -27,7 +29,7 @@ function CreateGame({ closeModal, openLobbyScreenModal, showToast, userID, setSe
 
 		else {
 			// send newly created game to the backend using gameName
-			fetch(`http://localhost:8080/games/euchre/create-game?playerID=${userID}&gameName=${gameName}`, {method: 'POST',})
+			fetch(`http://localhost:8080/games/euchre/create-game?playerID=${user.user_id}&gameName=${gameName}`, {method: 'POST',})
 			.then(response => response.text())
 				.then(data => {
 					console.log(data); // Used in development to debug

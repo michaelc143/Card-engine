@@ -1,8 +1,10 @@
 import closeModalBtn from '../../assets/close.svg';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { UserContext } from '../../contexts/UserContext';
 
-function SelectSeat({ showToast, closeModal, selectedGameId, openLobbyScreenModal, userID }) {
+function SelectSeat({ showToast, closeModal, selectedGameId, openLobbyScreenModal }) {
 
+	const { user } = useContext(UserContext);
 	const [gameInfo, setGameInfo] = useState(null);
 
 	// Grabs the latest game info for a game with the specified selectedGameId
@@ -27,7 +29,7 @@ function SelectSeat({ showToast, closeModal, selectedGameId, openLobbyScreenModa
 	//request that gets called to have a user join a game 
 	const joinGame = async (seatNumber) => {
 		try {
-			const response = await fetch(`http://localhost:8080/games/euchre/${selectedGameId}/select-seat?playerID=${userID}&seatNumber=${seatNumber}`, {
+			const response = await fetch(`http://localhost:8080/games/euchre/${selectedGameId}/select-seat?playerID=${user.user_id}&seatNumber=${seatNumber}`, {
 			method: 'POST',
 			});
 		

@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Modal from 'react-modal';
 import closeModalBtn from '../../assets/close.svg';
 import ChangeNameScreen from './ChangeNameScreen';
+import { UserContext } from '../../contexts/UserContext';
 
 
-function SettingScreen({ closeModal, userid, username }) {
+function SettingScreen({ closeModal, username }) {
 
+    const { user } = useContext(UserContext);
     const [changeNameScreenModalIsOpen, setChangeNameScreenModalIsOpen] = useState(false);
     const [presentUsername, setPresentUsername] = useState(username);
 
     const deleteAccount = () => {
-            fetch(`http://localhost:8080/player/${userid}`, {method: 'DELETE',})
+            fetch(`http://localhost:8080/player/${user.user_id}`, {method: 'DELETE',})
                 .then(response => response.text())
                     .then(data => {
                         console.log(data); // Used in development to debug
@@ -30,7 +32,7 @@ function SettingScreen({ closeModal, userid, username }) {
         }
     const resetStats = () => {
             //console.log("Reset Stats is called")
-            fetch(`http://localhost:8080/player/${userid}/stats`, {method: 'DELETE',})
+            fetch(`http://localhost:8080/player/${user.user_id}/stats`, {method: 'DELETE',})
             .then(response => response.text())
                 .then(data => {
                     console.log(data); // Used in development to debug
@@ -98,7 +100,7 @@ function SettingScreen({ closeModal, userid, username }) {
                         }}
                     shouldCloseOnOverlayClick={false}
                     >
-                    <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} userID={userid} />
+                    <ChangeNameScreen closeModal={closeChangeNameScreenModal} currentUsername={presentUsername} userID={user.user_id} />
                 </Modal>
             </div>            
         </>

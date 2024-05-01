@@ -5,6 +5,7 @@ import Login from './components/Login/Login';
 import Registration from './components/Registration/Registration';
 import GameMenu from './components/GameMenu/GameMenu';
 import {ToastContainer, toast} from 'react-toastify';
+import { UserContext } from './contexts/UserContext';
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
@@ -163,18 +164,20 @@ function App() {
 			?
 			
 			( // Once we have components for the game/lobby, they go in this area
-				<GameMenu
-					openfindGameModal={openfindGameModal}
-					closefindGameModal={closefindGameModal}
-					findGameModalIsOpen={findGameModalIsOpen}
-					openCreateGameModal={openCreateGameModal}
-					closeCreateGameModal={closeCreateGameModal}
-					createGameModalIsOpen={createGameModalIsOpen}
-					showToast={showToast}
-					userID={user.user_id}
-					username={user.user_name}
-					reloadLogin={backToLogin}
-				/>
+				<>
+					<UserContext.Provider value={{ user, setUser}}>
+						<GameMenu
+							openfindGameModal={openfindGameModal}
+							closefindGameModal={closefindGameModal}
+							findGameModalIsOpen={findGameModalIsOpen}
+							openCreateGameModal={openCreateGameModal}
+							closeCreateGameModal={closeCreateGameModal}
+							createGameModalIsOpen={createGameModalIsOpen}
+							showToast={showToast}
+							reloadLogin={backToLogin}
+						/>
+					</UserContext.Provider>
+				</>
 			) 
 			: 
 			( //User not logged in yet, prompt with login and option to register
