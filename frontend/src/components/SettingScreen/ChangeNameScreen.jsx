@@ -51,7 +51,7 @@ function ChangeNameScreen({closeModal, currentUsername}){
         setGameScreenModalIsOpen(true);
     };
 
-    const closeGameScreenModal = (value) => {
+    const closeGameScreenModal = () => {
         setGameScreenModalIsOpen(false);
         
     };
@@ -104,7 +104,7 @@ function ChangeNameScreen({closeModal, currentUsername}){
                     }}
                     shouldCloseOnOverlayClick={false}
                     >
-                    <GameScreen closeGameScreen={closeGameScreenModal} player02={'Player 02'} player03={'Player 03'} player04={'Player 04'} gamephase={'First Bidding'} gameCards={[]} playingCards={playCards} />
+                    <GameScreen closeGameScreen={closeGameScreenModal} player02={'Player 02'} player03={'Player 03'} player04={'Player 04'} gamephase={'First Bidding'} playingCards={playCards} />
             </Modal>
         </div>        
     </>

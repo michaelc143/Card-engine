@@ -1,8 +1,6 @@
-import React from 'react'; 
 import sprite from '../../assets/sprite.svg'; // Import SVG that has all cards compiled into one
 
-// 
-function BiddingScreen({ closeModal, userID, BiddingSuit }) {
+function BiddingScreen({ closeModal, BiddingSuit }) {
 
     // Function to handle picking up the bid
     const handlePickup = () => {
