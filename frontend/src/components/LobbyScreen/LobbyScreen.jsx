@@ -5,7 +5,7 @@ import { Client } from '@stomp/stompjs';
 import './LobbyScreen.css';
 import { UserContext } from '../../contexts/UserContext';
 
-function LobbyScreen({ closeModal, selectedGameId, username, setCurrentlyPlaying }) {
+function LobbyScreen({ closeModal, selectedGameId, setCurrentlyPlaying }) {
 
 	const { user } = useContext(UserContext);
 	const [gameStatus, setGameStatus] = useState(''); //will need to use this to know when game starts, will be GAME value when game is playing
@@ -82,7 +82,7 @@ function LobbyScreen({ closeModal, selectedGameId, username, setCurrentlyPlaying
 				{playerNames.map((name, index) => (
 					<div key={name} style={{ marginLeft: '1rem' }}>
 						<span style={{ width: '45%', display: 'inline-block', fontSize: '32px', marginBottom: '1rem' }}>{name}</span>
-						{name === username ? (
+						{name === user.user_name ? (
 							<input
 								style={{ width: '45%', display: 'inline-block' }}
 								type="checkbox"
