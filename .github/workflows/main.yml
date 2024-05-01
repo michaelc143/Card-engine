@@ -32,6 +32,23 @@ jobs:
           npm ci
           npm run test
 
+  lint-frontend:
+    runs-on: ubuntu-latest
+    needs: test-frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run ESLint
+        run: |
+          cd frontend
+          npm run lint --max-errors=0
+
   build-docker-images:
     runs-on: ubuntu-latest
     needs: test-frontend
